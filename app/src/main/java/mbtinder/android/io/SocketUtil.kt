@@ -1,7 +1,6 @@
-package mbtinder.android.util.io
+package mbtinder.android.io
 
-import mbtinder.android.io.SocketClient
-import mbtinder.android.util.io.component.ServerResult
+import mbtinder.android.io.component.ServerResult
 import mbtinder.lib.component.json.JSONParsable
 import mbtinder.lib.io.component.CommandContent
 import mbtinder.lib.io.constant.Command
@@ -47,6 +46,7 @@ object SocketUtil {
 
     fun checkEmailDuplicated(email: String): ServerResult<Void> {
         val arguments = JSONObject().apply { put("email", email) }
+
         return getVoidResult(getServerResult(Command.CHECK_EMAIL_DUPLICATED, arguments))
     }
 

@@ -1,4 +1,4 @@
-package mbtinder.android.util.io.component
+package mbtinder.android.io.component
 
 data class ServerResult<T>(var isSucceed: Boolean, var code: Int, var result: T?) {
     constructor(isSucceed: Boolean): this(

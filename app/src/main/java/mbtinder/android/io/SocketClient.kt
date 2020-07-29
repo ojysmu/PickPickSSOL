@@ -2,6 +2,7 @@ package mbtinder.android.io
 
 import mbtinder.android.component.CommandResult
 import mbtinder.android.util.ListeningThread
+import mbtinder.android.util.Log
 import mbtinder.lib.io.component.CommandContent
 import mbtinder.lib.util.CloseableThread
 import mbtinder.lib.util.IDList
@@ -70,6 +71,7 @@ class SocketClient(private val address: String, private val port: Int): Closeabl
             } else {
                 val command = commandPool.removeAt(0)
                 val clientMessage = command.jsonObject.toString()
+                Log.v("clientMessage=$clientMessage")
 
                 try {
                     dataOutputStream.writeUTF(clientMessage)

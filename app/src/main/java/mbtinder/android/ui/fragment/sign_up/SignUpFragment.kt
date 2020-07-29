@@ -9,12 +9,15 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ToggleButton
 import androidx.annotation.IdRes
+import androidx.annotation.StringRes
 import androidx.core.view.children
 import androidx.core.widget.addTextChangedListener
 import kotlinx.android.synthetic.main.fragment_sign_up.*
 import mbtinder.android.R
+import mbtinder.android.io.SocketUtil
 import mbtinder.android.ui.model.Fragment
 import mbtinder.android.util.Log
+import mbtinder.android.util.ThreadUtil
 import mbtinder.android.util.ViewUtil
 import kotlin.reflect.KFunction2
 
@@ -91,22 +94,30 @@ class SignUpFragment : Fragment() {
                 formStatus[0] = true
                 sign_up_email.isErrorEnabled = false
             } else if (focusCount[sign_up_email.editText!!] != 1) {
-                onEmailIssued()
+                onEmailIssued(R.string.sign_up_email_error)
             }
             enableNextButton()
         }
     }
 
     private fun onLeaveEmail() {
+        val email = ViewUtil.getText(sign_up_email)
+
         if (!Patterns.EMAIL_ADDRESS.matcher(ViewUtil.getText(sign_up_email)).matches()) {
-            onEmailIssued()
+            onEmailIssued(R.string.sign_up_email_error)
+        } else {
+            ThreadUtil.runOnBackground {
+                if (!SocketUtil.checkEmailDuplicated(email).isSucceed) {
+                    onEmailIssued(R.string.sign_up_email_duplicated)
+                }
+            }
         }
     }
 
-    private fun onEmailIssued() {
+    private fun onEmailIssued(@StringRes error: Int) {
         formStatus[0] = false
         sign_up_email.isErrorEnabled = true
-        sign_up_email.error = getString(R.string.sign_up_email_error)
+        sign_up_email.error = getString(error)
     }
 
     private fun onPasswordChanged(editable: Editable?) {

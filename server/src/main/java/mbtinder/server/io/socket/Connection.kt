@@ -6,16 +6,15 @@ import mbtinder.lib.io.component.CommandContent
 import mbtinder.lib.io.constant.Command
 import mbtinder.lib.util.CloseableThread
 import org.json.JSONObject
-import java.io.BufferedReader
-import java.io.BufferedWriter
-import java.io.InputStreamReader
-import java.io.OutputStreamWriter
+import java.io.*
 import java.net.Socket
 import java.util.*
 
 class Connection(private val socket: Socket): CloseableThread(), IDContent {
-    private val bufferedReader = BufferedReader(InputStreamReader(socket.inputStream))
-    private val bufferedWriter = BufferedWriter(OutputStreamWriter(socket.outputStream))
+//    private val bufferedReader = BufferedReader(InputStreamReader(socket.inputStream))
+//    private val bufferedWriter = BufferedWriter(OutputStreamWriter(socket.outputStream))
+    private val dataInputStream = DataInputStream(socket.getInputStream())
+    private val dataOutputStream = DataOutputStream(socket.getOutputStream())
     private var token = UUID.randomUUID()
 
     init {
@@ -25,20 +24,17 @@ class Connection(private val socket: Socket): CloseableThread(), IDContent {
         }
 
         loop = {
-            val clientMessage = bufferedReader.readLine()
-            if (clientMessage == null) {
-                sleep()
-            } else {
-                println("message=$clientMessage")
+//            val clientMessage = bufferedReader.readLine()
+            val clientMessage = dataInputStream.readUTF()
+            println("message=$clientMessage")
 
-                val parsedMessage = JSONObject(clientMessage)
-                if (parsedMessage.getString("name") == Command.CLOSE.name) {
-                    close()
-                } else {
-                    val command = CommandContent(parsedMessage)
-                    val serverMessage = CommandProcess.onReceived(command)
-                    send(serverMessage)
-                }
+            val parsedMessage = JSONObject(clientMessage)
+            if (parsedMessage.getString("name") == Command.CLOSE.name) {
+                close()
+            } else {
+                val command = CommandContent(parsedMessage)
+                val serverMessage = CommandProcess.onReceived(command)
+                send(serverMessage)
             }
         }
     }
@@ -46,8 +42,10 @@ class Connection(private val socket: Socket): CloseableThread(), IDContent {
     private fun send(serverMessage: JSONObject) {
         println("message=$serverMessage")
 
-        bufferedWriter.write(serverMessage.toString() + '\n')
-        bufferedWriter.flush()
+//        bufferedWriter.write(serverMessage.toString() + '\n')
+//        bufferedWriter.flush()
+        dataOutputStream.writeUTF(serverMessage.toString())
+        dataOutputStream.flush()
     }
 
     override fun getUUID(): UUID = token
@@ -55,8 +53,10 @@ class Connection(private val socket: Socket): CloseableThread(), IDContent {
     override fun close() {
         super.close()
 
-        bufferedReader.close()
-        bufferedWriter.close()
+//        bufferedReader.close()
+//        bufferedWriter.close()
+        dataInputStream.close()
+        dataOutputStream.close()
         socket.close()
 
         SocketServer.getInstance().removeConnection(this)

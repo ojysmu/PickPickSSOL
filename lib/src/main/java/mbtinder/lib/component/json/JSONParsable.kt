@@ -30,7 +30,7 @@ abstract class JSONParsable: JSONContent {
      */
     private fun updateFromJSONObject(jsonObject: JSONObject) {
         // 변수를 초기화할 JSONObject Key
-        val keys = jsonObject.keys()
+        val keys = jsonObject.keySet()
         // JSONParsable을 상속받는 class의 선언된 필드 목록
         val fields = this::class.java.declaredFields
         for (field in fields) {
@@ -89,6 +89,10 @@ abstract class JSONParsable: JSONContent {
                         // 이외에는 String, Int 등 get-set 가능한 타입들
                         else -> field.set(this, jsonObject.get(key))
                     }
+
+                    break
+                } else {
+                    println("key=$key, formatted=$formatted, toUnderscore=${toUnderscore(key)}")
                 }
             }
         }

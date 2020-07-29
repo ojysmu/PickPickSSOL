@@ -11,20 +11,12 @@ import java.net.Socket
 import java.util.*
 
 class Connection(private val socket: Socket): CloseableThread(), IDContent {
-//    private val bufferedReader = BufferedReader(InputStreamReader(socket.inputStream))
-//    private val bufferedWriter = BufferedWriter(OutputStreamWriter(socket.outputStream))
     private val dataInputStream = DataInputStream(socket.getInputStream())
     private val dataOutputStream = DataOutputStream(socket.getOutputStream())
     private var token = UUID.randomUUID()
 
     init {
-        prefix = {
-            val serverMessage = JSONObject().apply { put("value", 200) }
-            send(serverMessage)
-        }
-
         loop = {
-//            val clientMessage = bufferedReader.readLine()
             val clientMessage = dataInputStream.readUTF()
             println("message=$clientMessage")
 
@@ -42,8 +34,6 @@ class Connection(private val socket: Socket): CloseableThread(), IDContent {
     private fun send(serverMessage: JSONObject) {
         println("message=$serverMessage")
 
-//        bufferedWriter.write(serverMessage.toString() + '\n')
-//        bufferedWriter.flush()
         dataOutputStream.writeUTF(serverMessage.toString())
         dataOutputStream.flush()
     }
@@ -63,41 +53,24 @@ class Connection(private val socket: Socket): CloseableThread(), IDContent {
     }
 
     companion object {
-        fun makeServerResponse(uuid: UUID, arguments: JSONObject) = JSONObject().apply {
+        private fun makeServerResponse(uuid: UUID, arguments: JSONObject) = JSONObject().apply {
             put("uuid", uuid.toString())
             put("arguments", arguments)
         }
 
         fun makePositiveResponse(uuid: UUID) =
-            makeServerResponse(
-                uuid,
-                JSONObject().apply {
-                    put("result", true)
-                })
+            makeServerResponse(uuid, JSONObject().apply { put("result", true) })
 
         fun makePositiveResponse(uuid: UUID, arguments: JSONObject) =
-            makeServerResponse(
-                uuid,
-                arguments.apply {
-                    put("result", true)
-                })
-
-        fun makeNegativeResponse(uuid: UUID, code: Int) =
-            makeNegativeResponse(
-                uuid,
-                code,
-                JSONObject()
-            )
+            makeServerResponse(uuid, arguments.apply { put("result", true) })
 
         fun makeNegativeResponse(uuid: UUID, response: ServerResponse) =
             makeNegativeResponse(uuid, response.ordinal, JSONObject())
 
-        fun makeNegativeResponse(uuid: UUID, code: Int, arguments: JSONObject) = makeServerResponse(
-            uuid,
-            arguments
-        ).apply {
-            put("result", false)
-            put("code", code)
-        }
+        fun makeNegativeResponse(uuid: UUID, code: Int, arguments: JSONObject) =
+            makeServerResponse(uuid, arguments).apply {
+                put("result", false)
+                put("code", code)
+            }
     }
 }

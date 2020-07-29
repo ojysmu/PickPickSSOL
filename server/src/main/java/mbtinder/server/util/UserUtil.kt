@@ -8,7 +8,7 @@ import java.util.*
 object UserUtil {
     private const val UPDATE_DURATION = 60 * 1000
 
-    private lateinit var users: List<UserContent>
+    private var users: List<UserContent> = updateUsers()
     private var lastUpdate: Long = 0
 
     private fun updateUsers(): List<UserContent> {

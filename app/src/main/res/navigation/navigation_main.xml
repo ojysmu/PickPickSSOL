@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation_main"
+    app:startDestination="@id/nav_splash">
+
+    <fragment
+        android:id="@+id/nav_splash"
+        android:name="mbtinder.android.ui.fragment.splash.SplashFragment"
+        android:label="@string/splash_title"
+        tools:layout="@layout/fragment_splash">
+
+        <action
+            android:id="@+id/action_to_sign_up"
+            app:destination="@id/nav_sign_up" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_sign_up"
+        android:name="mbtinder.android.ui.fragment.sign_up.SignUpFragment"
+        android:label="@string/sign_up_title"
+        tools:layout="@layout/fragment_sign_up" />
+
+    <fragment
+        android:id="@+id/nav_home"
+        android:name="mbtinder.android.ui.fragment.home.HomeFragment"
+        android:label="@string/home_title"
+        tools:layout="@layout/fragment_splash">
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_message_list"
+        android:name="mbtinder.android.ui.fragment.message_list.MessageListFragment"
+        android:label="@string/message_list_title"
+        tools:layout="@layout/fragment_splash">
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_account"
+        android:name="mbtinder.android.ui.fragment.account.AccountFragment"
+        android:label="@string/account_title"
+        tools:layout="@layout/fragment_splash">
+    </fragment>
+</navigation>

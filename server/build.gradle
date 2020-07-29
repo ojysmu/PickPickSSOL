@@ -1,0 +1,14 @@
+apply plugin: 'java-library'
+apply plugin: 'kotlin'
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    implementation project(path: ':lib')
+    implementation 'org.json:json:20200518'
+    implementation 'mysql:mysql-connector-java:8.0.21'
+    implementation 'org.xerial:sqlite-jdbc:3.32.3.1'
+}
+
+sourceCompatibility = "1.8"
+targetCompatibility = "1.8"

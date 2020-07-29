@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/card_home_store"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginTop="@dimen/card_vertical_margin"
+    android:layout_marginBottom="@dimen/card_vertical_margin"
+    android:layout_marginStart="@dimen/card_horizontal_margin"
+    android:layout_marginEnd="@dimen/card_horizontal_margin"
+    style="@style/CardView.Light">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <mbtinder.android.ui.view.AsyncImageView
+            android:id="@+id/card_main_stack_image"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop" />
+
+        <TextView
+            android:id="@+id/card_main_stack_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/card_vertical_margin"
+            android:layout_marginStart="@dimen/card_horizontal_margin"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/card_main_stack_content"
+            android:textSize="@dimen/text_main_name"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/card_main_stack_age"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/card_horizontal_margin"
+            app:layout_constraintStart_toEndOf="@id/card_main_stack_name"
+            app:layout_constraintBottom_toBottomOf="@id/card_main_stack_name"
+            android:textSize="@dimen/text_main_age"
+            android:textColor="@android:color/white"/>
+
+        <TextView
+            android:id="@+id/card_main_stack_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/card_vertical_margin"
+            android:layout_marginStart="@dimen/card_horizontal_margin"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:textSize="@dimen/text_main_content"
+            android:textColor="@android:color/white"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>

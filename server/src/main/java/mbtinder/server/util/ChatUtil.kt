@@ -1,7 +1,6 @@
 package mbtinder.server.util
 
 import mbtinder.lib.component.ChatContent
-import mbtinder.lib.util.IDList
 import mbtinder.server.io.database.MySQLServer
 import mbtinder.server.io.database.component.Row
 import java.util.*
@@ -9,16 +8,16 @@ import java.util.*
 object ChatUtil {
     private const val UPDATE_DURATION = 60 * 1000
 
-    private lateinit var chats: IDList<ChatContent>
+    private var chats: List<ChatContent> = updateChats()
     private var lastUpdate: Long = 0
 
-    private fun updateChats() {
+    private fun updateChats(): List<ChatContent> {
         val sql = "SELECT * FROM mbtinder.chat"
         val queryId = MySQLServer.getInstance().addQuery(sql)
         val queryResult = MySQLServer.getInstance().getResult(queryId)
 
         lastUpdate = System.currentTimeMillis()
-        chats = queryResult.content.mapTo(IDList()) { buildChat(it) }
+        return queryResult.content.map { buildChat(it) }.sorted()
     }
 
     private fun ensureUpdate() {

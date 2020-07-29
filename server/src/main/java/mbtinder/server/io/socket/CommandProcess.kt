@@ -25,6 +25,7 @@ object CommandProcess {
         return when (Command.findCommand(command.name)) {
             Command.CLOSE -> JSONObject()
 
+            Command.CHECK_EMAIL_DUPLICATED -> checkEmailDuplicated(command)
             Command.ADD_USER -> addUser(command)
             Command.GET_USER -> getUser(command)
             Command.UPDATE_USER -> updateUser(command)
@@ -40,25 +41,32 @@ object CommandProcess {
         }
     }
 
+    private fun checkEmailDuplicated(command: CommandContent): JSONObject {
+        val email = command.arguments.getString("email")
+        UserUtil.getUserByEmail(email)?.let {
+            return Connection.makeNegativeResponse(command.uuid, ServerResponse.EMAIL_DUPLICATED)
+        } ?: let {
+            return Connection.makePositiveResponse(command.uuid)
+        }
+    }
+
     private fun addUser(command: CommandContent): JSONObject {
         val userId = UUID.randomUUID()
         val email = command.arguments.getString("email")
         val password = command.arguments.getString("password")
-        val nickname = command.arguments.getString("nickname")
+        val name = command.arguments.getString("name")
         val birth = Date.valueOf(command.arguments.getString("birth"))
         val gender = command.arguments.getInt("gender")
-        val lastLocationLng = command.arguments.getDouble("lng")
-        val lastLocationLat = command.arguments.getDouble("lat")
         val user = UserContent(
             userId = userId,
             email = email,
             password = password,
-            nickname = nickname,
+            name = name,
             birth = birth,
             gender = gender,
             description = "",
-            lastLocationLng = lastLocationLng,
-            lastLocationLat = lastLocationLat
+            lastLocationLng = -1.0,
+            lastLocationLat = -1.0
         )
 
         MySQLServer.getInstance().addQuery(user.getInsertSql())

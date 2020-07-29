@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ToggleButton
 import androidx.annotation.IdRes
+import androidx.core.view.children
 import androidx.core.widget.addTextChangedListener
 import kotlinx.android.synthetic.main.fragment_sign_up.*
 import mbtinder.android.R
@@ -56,6 +57,12 @@ class SignUpFragment : Fragment() {
 
         sign_up_name.editText!!.setOnFocusChangeListener(this::onFocusChanged)
         sign_up_password_answer.editText!!.addTextChangedListener(afterTextChanged = this::onAnswerChanged)
+
+        sign_up_next.setOnClickListener {
+            sign_up_next.visibility = View.INVISIBLE
+            sign_up_waiting.visibility = View.VISIBLE
+            ViewUtil.disableRecursively(layout_sign_up)
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

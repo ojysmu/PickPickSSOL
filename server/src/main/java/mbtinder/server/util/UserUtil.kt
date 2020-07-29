@@ -44,4 +44,16 @@ object UserUtil {
             return users.find { it.userId == userId }
         }
     }
+
+    fun getUserByEmail(email: String): UserContent? = synchronized(users) {
+        ensureUpdate()
+
+        val found = users.find { it.email == email }
+        return if (found != null) {
+            found
+        } else {
+            updateUsers()
+            return users.find { it.email == email }
+        }
+    }
 }

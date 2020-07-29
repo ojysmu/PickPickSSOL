@@ -9,6 +9,8 @@ enum class Command {
     CLOSE,
 
     // User related commands
+    CHECK_EMAIL_DUPLICATED,
+
     /**
      * Client command.
      * Add user data to server.

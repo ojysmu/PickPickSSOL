@@ -1,6 +1,7 @@
 package mbtinder.android.io
 
 import mbtinder.android.io.component.ServerResult
+import mbtinder.android.util.Log
 import mbtinder.lib.component.json.JSONParsable
 import mbtinder.lib.io.component.CommandContent
 import mbtinder.lib.io.constant.Command
@@ -18,6 +19,8 @@ object SocketUtil {
     }
 
     fun getVoidResult(result: JSONObject): ServerResult<Void> {
+        Log.v("getVoidResult: result=$result")
+
         return if (result.getBoolean("result")) {
             ServerResult(true)
         } else {

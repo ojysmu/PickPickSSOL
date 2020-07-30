@@ -23,7 +23,7 @@ internal class ListeningThread(dataInputStream: DataInputStream,
 
                     notifications[id].perform(title, content)
                 } else {
-                    Log.v(response.toString())
+                    Log.v("ListeningThread: $response")
                     SocketClient.getInstance().addResult(CommandResult(response))
                 }
             } catch (e: IOException) {

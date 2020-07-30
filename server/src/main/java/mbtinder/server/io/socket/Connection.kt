@@ -68,9 +68,9 @@ class Connection(private val socket: Socket): CloseableThread(), IDContent {
             makeNegativeResponse(uuid, response.ordinal, JSONObject())
 
         fun makeNegativeResponse(uuid: UUID, code: Int, arguments: JSONObject) =
-            makeServerResponse(uuid, arguments).apply {
+            makeServerResponse(uuid, arguments.apply {
                 put("result", false)
                 put("code", code)
-            }
+            })
     }
 }

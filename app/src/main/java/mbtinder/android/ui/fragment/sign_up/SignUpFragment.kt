@@ -136,7 +136,7 @@ class SignUpFragment : Fragment() {
         } else {
             ThreadUtil.runOnBackground {
                 if (!SocketUtil.checkEmailDuplicated(email).isSucceed) {
-                    onEmailIssued(R.string.sign_up_email_duplicated)
+                    ThreadUtil.runOnUiThread { onEmailIssued(R.string.sign_up_email_duplicated) }
                 }
             }
         }

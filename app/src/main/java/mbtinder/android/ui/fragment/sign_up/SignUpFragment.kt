@@ -30,7 +30,6 @@ class SignUpFragment : Fragment() {
         false, // 3: 성별
         false, // 4: 나이
         false, // 5: 이름
-        false, // 6: 찾기 질문
         false  // 7: 찾기 답변
     )
 
@@ -227,7 +226,7 @@ class SignUpFragment : Fragment() {
 
     private fun onAnswerChanged(editable: Editable?) {
         editable?.let {
-            formStatus[7] = it.isNotBlank()
+            formStatus[6] = it.isNotBlank()
             enableNextButton()
         }
     }

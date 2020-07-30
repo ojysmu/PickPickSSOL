@@ -60,7 +60,7 @@ object CommandProcess {
         val name = command.arguments.getString("name")
         val age = command.arguments.getInt("age")
         val gender = command.arguments.getInt("gender")
-        val passwordQuestion = command.arguments.getInt("password_question")
+        val passwordQuestionId = command.arguments.getInt("password_question_id")
         val passwordAnswer = command.arguments.getString("password_answer")
         val user = UserContent(
             userId = userId,
@@ -72,7 +72,7 @@ object CommandProcess {
             description = "",
             lastLocationLng = -1.0,
             lastLocationLat = -1.0,
-            passwordQuestion = PasswordQuestion.findQuestion(passwordQuestion)!!,
+            passwordQuestion = PasswordQuestion.findQuestion(passwordQuestionId)!!,
             passwordAnswer = passwordAnswer
         )
 

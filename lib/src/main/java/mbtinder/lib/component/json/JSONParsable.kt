@@ -2,6 +2,7 @@ package mbtinder.lib.component.json
 
 import mbtinder.lib.annotation.SkipParsing
 import mbtinder.lib.component.UserContent
+import mbtinder.lib.constant.PasswordQuestion
 import mbtinder.lib.util.JSONList
 import mbtinder.lib.util.toJSONArray
 import org.json.JSONObject

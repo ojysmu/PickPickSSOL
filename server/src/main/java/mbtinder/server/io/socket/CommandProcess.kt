@@ -1,10 +1,9 @@
 package mbtinder.server.io.socket
 
 import mbtinder.lib.component.ChatContent
-import mbtinder.lib.component.UserContent
 import mbtinder.lib.component.MessageContent
+import mbtinder.lib.component.UserContent
 import mbtinder.lib.component.UserImageContent
-import mbtinder.lib.constant.PasswordQuestion
 import mbtinder.lib.constant.ServerPath
 import mbtinder.lib.constant.ServerResponse
 import mbtinder.lib.io.component.CommandContent
@@ -20,7 +19,6 @@ import mbtinder.server.util.UserUtil
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
-import java.sql.Date
 import java.util.*
 
 object CommandProcess {
@@ -75,7 +73,7 @@ object CommandProcess {
             description = "",
             lastLocationLng = -1.0,
             lastLocationLat = -1.0,
-            passwordQuestion = PasswordQuestion.findQuestion(passwordQuestionId)!!,
+            passwordQuestionId = passwordQuestionId,
             passwordAnswer = passwordAnswer
         )
 
@@ -183,8 +181,7 @@ object CommandProcess {
         val passwordAnswer = command.arguments.getString("password_answer")
 
         return UserUtil.getUserByEmail(email)?.let {
-            if (it.passwordQuestion.questionId == passwordQuestionId &&
-                it.passwordAnswer == passwordAnswer) {
+            if (it.passwordQuestionId == passwordQuestionId && it.passwordAnswer == passwordAnswer) {
                 Connection.makePositiveResponse(command.uuid, JSONObject().apply { put("user_id", it.userId.toString()) })
             } else {
                 Connection.makeNegativeResponse(command.uuid, ServerResponse.USER_NOT_FOUND)

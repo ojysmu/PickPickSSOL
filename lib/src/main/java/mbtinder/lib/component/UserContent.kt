@@ -16,14 +16,14 @@ class UserContent: JSONParsable, IDContent, Comparable<UserContent> {
     lateinit var description: String
     var lastLocationLng: Double = 0.0
     var lastLocationLat: Double = 0.0
-    lateinit var passwordQuestion: PasswordQuestion
+    var passwordQuestionId: Int = -1
     lateinit var passwordAnswer: String
 
     constructor(jsonObject: JSONObject): super(jsonObject)
 
     constructor(userId: UUID, email: String, password: String, name: String, age: Int, gender: Int,
                 description: String, lastLocationLng: Double, lastLocationLat: Double,
-                passwordQuestion: PasswordQuestion, passwordAnswer: String) {
+                passwordQuestionId: Int, passwordAnswer: String) {
         this.userId = userId
         this.email = email
         this.password = password
@@ -33,7 +33,7 @@ class UserContent: JSONParsable, IDContent, Comparable<UserContent> {
         this.description = description
         this.lastLocationLng = lastLocationLng
         this.lastLocationLat = lastLocationLat
-        this.passwordQuestion = passwordQuestion
+        this.passwordQuestionId = passwordQuestionId
         this.passwordAnswer = passwordAnswer
 
         updateJSONObject()
@@ -44,13 +44,13 @@ class UserContent: JSONParsable, IDContent, Comparable<UserContent> {
             "last_location_lat, password_question, password_answer" +
             ") VALUES (" +
             "'$userId', '$email', '$password', '$name', '$age', $gender, '$description', $lastLocationLng, " +
-            "$lastLocationLng, '$passwordQuestion', '$passwordAnswer')"
+            "$lastLocationLng, $passwordQuestionId, '$passwordAnswer')"
 
     fun getUpdateSql() = "UPDATE mbtinder.user SET " +
             "password='$password', " +
             "name='$name', " +
             "description='$description', " +
-            "password_question='$passwordQuestion', " +
+            "password_question=$passwordQuestionId, " +
             "password_answer='$passwordAnswer' " +
             "WHERE user_id='$userId'"
 

@@ -1,6 +1,7 @@
 package mbtinder.lib.component
 
 import mbtinder.lib.component.json.JSONParsable
+import mbtinder.lib.constant.PasswordQuestion
 import org.json.JSONObject
 import java.sql.Date
 import java.util.*
@@ -15,14 +16,14 @@ class UserContent: JSONParsable, IDContent, Comparable<UserContent> {
     lateinit var description: String
     var lastLocationLng: Double = 0.0
     var lastLocationLat: Double = 0.0
-    lateinit var passwordQuestion: String
+    lateinit var passwordQuestion: PasswordQuestion
     lateinit var passwordAnswer: String
 
     constructor(jsonObject: JSONObject): super(jsonObject)
 
     constructor(userId: UUID, email: String, password: String, name: String, age: Int, gender: Int,
                 description: String, lastLocationLng: Double, lastLocationLat: Double,
-                passwordQuestion: String, passwordAnswer: String) {
+                passwordQuestion: PasswordQuestion, passwordAnswer: String) {
         this.userId = userId
         this.email = email
         this.password = password

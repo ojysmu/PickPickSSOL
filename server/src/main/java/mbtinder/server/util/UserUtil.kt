@@ -1,6 +1,7 @@
 package mbtinder.server.util
 
 import mbtinder.lib.component.UserContent
+import mbtinder.lib.constant.PasswordQuestion
 import mbtinder.server.io.database.MySQLServer
 import mbtinder.server.io.database.component.Row
 import java.util.*
@@ -30,7 +31,8 @@ object UserUtil {
         row.getUUID("user_id"), row.getString("email"), row.getString("password"),
         row.getString("name"), row.getInt("age"), row.getInt("gender"),
         row.getString("description"), row.getDouble("last_location_lng"),
-        row.getDouble("last_location_lat"), row.getString("password_question"),
+        row.getDouble("last_location_lat"),
+        PasswordQuestion.findQuestion(row.getInt("password_question"))!!,
         row.getString("password_answer")
     )
 

@@ -9,12 +9,14 @@ import mbtinder.lib.constant.ServerResponse
 import mbtinder.lib.io.component.CommandContent
 import mbtinder.lib.io.constant.Command
 import mbtinder.lib.util.JSONList
+import mbtinder.lib.util.saveJSONArray
 import mbtinder.lib.util.toJSONList
 import mbtinder.server.constant.LocalFile
 import mbtinder.server.io.database.MySQLServer
 import mbtinder.server.io.database.SQLiteConnection
 import mbtinder.server.util.MessageUtil
 import mbtinder.server.util.UserUtil
+import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
 import java.sql.Date
@@ -78,6 +80,8 @@ object CommandProcess {
         val userRoot = "${LocalFile.userRoot}/$userId"
         val userRootDirectory = File(userRoot)
         userRootDirectory.mkdir()
+
+        JSONArray().saveJSONArray(LocalFile.getUserInterestPath(userId))
 
         val sqLiteConnection = SQLiteConnection.getConnection(userId)
         val createTableSql = "CREATE TABLE chat (" +

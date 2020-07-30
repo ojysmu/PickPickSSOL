@@ -6,9 +6,7 @@ import android.util.Patterns
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
-import android.widget.Toast
-import android.widget.ToggleButton
+import android.widget.*
 import androidx.annotation.IdRes
 import androidx.annotation.StringRes
 import androidx.core.view.children
@@ -21,6 +19,7 @@ import mbtinder.android.ui.model.Fragment
 import mbtinder.android.util.Log
 import mbtinder.android.util.ThreadUtil
 import mbtinder.android.util.ViewUtil
+import mbtinder.lib.constant.PasswordQuestion
 import kotlin.reflect.KFunction2
 
 class SignUpFragment : Fragment() {
@@ -40,6 +39,8 @@ class SignUpFragment : Fragment() {
     private var gender: Int = -1
 
     override fun initializeView() {
+        val passwordQuestionSelector = sign_up_password_question_selector.findViewById<Spinner>(R.id.spinner)
+
         sign_up_email.editText!!.setOnFocusChangeListener(this::onFocusChanged)
         sign_up_email.editText!!.addTextChangedListener(afterTextChanged = this::onEmailChanged)
 
@@ -57,10 +58,9 @@ class SignUpFragment : Fragment() {
         sign_up_name.editText!!.setOnFocusChangeListener(this::onFocusChanged)
         sign_up_name.editText!!.addTextChangedListener(afterTextChanged = this::onNameChanged)
 
-        sign_up_password_question.editText!!.setOnFocusChangeListener(this::onFocusChanged)
-        sign_up_password_question.editText!!.addTextChangedListener(afterTextChanged = this::onQuestionChanged)
+        passwordQuestionSelector.adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, PasswordQuestion.values().map { it.question })
 
-        sign_up_name.editText!!.setOnFocusChangeListener(this::onFocusChanged)
+        sign_up_password_answer.editText!!.setOnFocusChangeListener(this::onFocusChanged)
         sign_up_password_answer.editText!!.addTextChangedListener(afterTextChanged = this::onAnswerChanged)
 
         sign_up_next.setOnClickListener {
@@ -75,7 +75,7 @@ class SignUpFragment : Fragment() {
                     ViewUtil.getText(sign_up_name),
                     ViewUtil.getText(sign_up_age).toInt(),
                     gender,
-                    ViewUtil.getText(sign_up_password_question),
+                    PasswordQuestion.findQuestion(passwordQuestionSelector.selectedItem as String)!!.ordinal,
                     ViewUtil.getText(sign_up_password_answer)
                 )
 
@@ -221,13 +221,6 @@ class SignUpFragment : Fragment() {
     private fun onNameChanged(editable: Editable?) {
         editable?.let {
             formStatus[5] = it.isNotBlank()
-            enableNextButton()
-        }
-    }
-
-    private fun onQuestionChanged(editable: Editable?) {
-        editable?.let {
-            formStatus[6] = it.isNotBlank()
             enableNextButton()
         }
     }

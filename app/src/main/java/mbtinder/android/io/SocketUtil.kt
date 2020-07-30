@@ -57,14 +57,14 @@ object SocketUtil {
     /**
      * @see Command.ADD_USER
      */
-    fun signUp(email: String, password: String, name: String, age: Int, gender: Int, passwordQuestion: String, passwordAnswer: String): ServerResult<Void> {
+    fun signUp(email: String, password: String, name: String, age: Int, gender: Int, passwordQuestionId: Int, passwordAnswer: String): ServerResult<Void> {
         val arguments = JSONObject()
         arguments.put("email", email)
         arguments.put("password", password)
         arguments.put("name", name)
         arguments.put("age", age)
         arguments.put("gender", gender)
-        arguments.put("password_question", passwordQuestion)
+        arguments.put("password_question_id", passwordQuestionId)
         arguments.put("password_answer", passwordAnswer)
 
         return getVoidResult(getServerResult(Command.ADD_USER, arguments))

@@ -66,7 +66,9 @@ class SplashFragment : Fragment() {
             findNavController().navigate(R.id.action_to_sign_up)
         }
 
-
+        splash_sign_in.setOnClickListener {
+            findNavController().navigate(R.id.action_to_sign_in)
+        }
     }
 
     private fun initializeHome() {

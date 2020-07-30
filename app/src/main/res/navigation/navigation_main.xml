@@ -14,6 +14,10 @@
         <action
             android:id="@+id/action_to_sign_up"
             app:destination="@id/nav_sign_up" />
+
+        <action
+            android:id="@+id/action_to_sign_in"
+            app:destination="@id/nav_sign_in" />
     </fragment>
 
     <fragment
@@ -21,6 +25,12 @@
         android:name="mbtinder.android.ui.fragment.sign_up.SignUpFragment"
         android:label="@string/sign_up_title"
         tools:layout="@layout/fragment_sign_up" />
+
+    <fragment
+        android:id="@+id/nav_sign_in"
+        android:name="mbtinder.android.ui.fragment.sign_in.SignInFragment"
+        android:label="@string/sign_in_title"
+        tools:layout="@layout/fragment_sign_in" />
 
     <fragment
         android:id="@+id/nav_home"

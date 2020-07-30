@@ -2,6 +2,7 @@ package mbtinder.android.io
 
 import mbtinder.android.io.component.ServerResult
 import mbtinder.android.util.Log
+import mbtinder.lib.component.UserContent
 import mbtinder.lib.component.json.JSONParsable
 import mbtinder.lib.io.component.CommandContent
 import mbtinder.lib.io.constant.Command
@@ -67,5 +68,13 @@ object SocketUtil {
         arguments.put("password_answer", passwordAnswer)
 
         return getVoidResult(getServerResult(Command.ADD_USER, arguments))
+    }
+
+    fun signIn(email: String, password: String): ServerResult<UserContent> {
+        val arguments = JSONObject()
+        arguments.put("email", email)
+        arguments.put("password", password)
+
+        return getSingleResult(getServerResult(Command.SIGN_IN, arguments), "user")
     }
 }

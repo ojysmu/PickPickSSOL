@@ -131,7 +131,7 @@ class SignUpFragment : Fragment() {
     private fun onLeaveEmail() {
         val email = ViewUtil.getText(sign_up_email)
 
-        if (!Patterns.EMAIL_ADDRESS.matcher(ViewUtil.getText(sign_up_email)).matches()) {
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             onEmailIssued(R.string.sign_up_email_error)
         } else {
             ThreadUtil.runOnBackground {

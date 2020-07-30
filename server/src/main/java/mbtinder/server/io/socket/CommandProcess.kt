@@ -153,7 +153,7 @@ object CommandProcess {
         val email = command.arguments.getString("email")
         val password = command.arguments.getString("password")
 
-        val sql = "SELECT user_id FROM WHERE email='$email' AND password='$password'"
+        val sql = "SELECT user_id FROM user WHERE email='$email' AND password='$password'"
         val queryId = MySQLServer.getInstance().addQuery(sql)
         val queryResult = MySQLServer.getInstance().getResult(queryId)
 

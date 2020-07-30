@@ -25,12 +25,11 @@ class SQLiteConnection private constructor(val userId: UUID): CloseableThread(),
         }
 
         fun getCreateChatSql(chatId: UUID) = "CREATE TABLE $chatId (" +
-                "`_id`         INT NOT NULL AUTO_INCREMENT , " +
-                "`sender_id`   CHAR(36) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL , " +
-                "`receiver_id` CHAR(36) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL , " +
-                "`timestamp`   BIGINT NOT NULL , " +
-                "`body`        VARCHAR(200) NOT NULL , " +
-                "PRIMARY KEY (`_id`))"
+                "_id         INTEGER PRIMARY KEY AUTOINCREMENT , " +
+                "sender_id   CHAR(36) NOT NULL , " +
+                "receiver_id CHAR(36) NOT NULL , " +
+                "timestamp   BIGINT NOT NULL , " +
+                "body        VARCHAR(200) NOT NULL)"
 
         fun getInsertNewChatSql(chatId: UUID, participantId: UUID) =
             "INSERT INTO chat (chat_id, receiver_id) VALUES ('${chatId}', '${participantId}')"

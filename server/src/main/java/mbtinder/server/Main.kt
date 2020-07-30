@@ -2,7 +2,6 @@ package mbtinder.server
 
 import mbtinder.server.io.database.MySQLServer
 import mbtinder.server.io.socket.SocketServer
-import mbtinder.server.util.UserUtil
 
 class Main {
     companion object {

@@ -8,10 +8,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.widget.addTextChangedListener
+import androidx.navigation.fragment.findNavController
 import kotlinx.android.synthetic.main.fragment_sign_in.*
 import mbtinder.android.R
+import mbtinder.android.component.StaticComponent
 import mbtinder.android.io.SocketUtil
 import mbtinder.android.ui.model.Fragment
+import mbtinder.android.util.SharedPreferencesUtil
 import mbtinder.android.util.ThreadUtil
 import mbtinder.android.util.ViewUtil
 
@@ -32,13 +35,19 @@ class SignInFragment : Fragment() {
             ViewUtil.disableRecursively(layout_sign_in)
 
             ThreadUtil.runOnBackground {
-                val signInResult = SocketUtil.signIn(
-                    ViewUtil.getText(sign_in_email),
-                    ViewUtil.getText(sign_in_password)
-                )
+                val email = ViewUtil.getText(sign_in_email)
+                val password = ViewUtil.getText(sign_in_password)
 
+                val signInResult = SocketUtil.signIn(email, password)
                 if (signInResult.isSucceed) {
-
+                    SharedPreferencesUtil
+                        .getContext(requireContext(), SharedPreferencesUtil.PREF_ACCOUNT)
+                        .put("email", email)
+                        .put("password", password)
+                    StaticComponent.user = signInResult.result!!
+                    ThreadUtil.runOnUiThread {
+                        findNavController().navigate(R.id.action_to_home)
+                    }
                 } else {
                     ThreadUtil.runOnUiThread {
                         Toast.makeText(requireContext(), R.string.sign_in_failed, Toast.LENGTH_SHORT).show()

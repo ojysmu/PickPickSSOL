@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
@@ -13,6 +14,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
 import kotlinx.android.synthetic.main.fragment_splash.*
 import mbtinder.android.R
+import mbtinder.android.io.SocketUtil
 import mbtinder.android.ui.fragment.home.HomeFragment
 import mbtinder.android.ui.fragment.sign_up.SignUpFragment
 import mbtinder.android.ui.model.Fragment
@@ -26,7 +28,18 @@ class SplashFragment : Fragment() {
 
         ThreadUtil.runOnBackground {
             if (hasAccountInfo()) {
-                // TODO: sign in
+                ThreadUtil.runOnBackground {
+                    val (email, password) = getAccountInfo()
+                    val signInResult = SocketUtil.signIn(email, password)
+                    if (signInResult.isSucceed) {
+                        findNavController().navigate(R.id.action_to_home)
+                    } else {
+                        removeAccountInfo()
+                        ThreadUtil.runOnUiThread {
+                            Toast.makeText(requireContext(), R.string.splash_failed_to_sign_in, Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
             } else {
                 Thread.sleep(1000)
 
@@ -53,9 +66,15 @@ class SplashFragment : Fragment() {
         SharedPreferencesUtil.getString(requireContext(), SharedPreferencesUtil.PREF_ACCOUNT, "email") != null
 
     private fun getAccountInfo() = Pair(
-        SharedPreferencesUtil.getString(requireContext(), SharedPreferencesUtil.PREF_ACCOUNT, "email"),
-        SharedPreferencesUtil.getString(requireContext(), SharedPreferencesUtil.PREF_ACCOUNT, "password")
+        SharedPreferencesUtil.getString(requireContext(), SharedPreferencesUtil.PREF_ACCOUNT, "email")!!,
+        SharedPreferencesUtil.getString(requireContext(), SharedPreferencesUtil.PREF_ACCOUNT, "password")!!
     )
+
+    private fun removeAccountInfo() {
+        SharedPreferencesUtil.getContext(requireContext(), SharedPreferencesUtil.PREF_ACCOUNT)
+            .removeField("email")
+            .removeField("password")
+    }
 
     private fun initializeSignUp() {
         splash_content.visibility = View.VISIBLE

@@ -81,9 +81,8 @@ object CommandProcess {
 
         val sqLiteConnection = SQLiteConnection.getConnection(userId)
         val createTableSql = "CREATE TABLE chat (" +
-                "`_id`         INT NOT NULL AUTO_INCREMENT , " +
-                "`receiver_id` CHAR(36) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL , " +
-                "PRIMARY KEY (`_id`))"
+                "_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "receiver_id CHAR(36) NOT NULL)"
         sqLiteConnection.addQuery(createTableSql)
 
         return Connection.makePositiveResponse(command.uuid)

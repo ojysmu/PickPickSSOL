@@ -24,6 +24,7 @@
     <string name="splash_password">비밀번호</string>
     <string name="splash_find_email">아이디 찾기</string>
     <string name="splash_find_password">비밀번호 찾기</string>
+    <string name="splash_failed_to_sign_in">저장된 정보로 로그인을 실패했습니다. 다시 로그인해주세요.</string>
 
     <string name="sign_up_title">회원가입</string>
     <string name="sign_up_info">정보</string>

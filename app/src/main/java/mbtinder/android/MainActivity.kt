@@ -19,13 +19,19 @@ import mbtinder.android.util.SharedPreferencesUtil.PREF_ACCOUNT
 import mbtinder.android.util.ThreadUtil
 import mbtinder.lib.constant.ServerPath
 import java.io.IOException
+import java.lang.RuntimeException
 
 class MainActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        initializeSocketClient()
+        try {
+            initializeSocketClient()
+        } catch (e: RuntimeException) {
+            SocketClient.releaseInstance()
+            initializeSocketClient()
+        }
 
         val navView = findViewById<BottomNavigationView>(R.id.nav_view)
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment

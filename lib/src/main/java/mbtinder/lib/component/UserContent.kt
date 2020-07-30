@@ -10,7 +10,7 @@ class UserContent: JSONParsable, IDContent, Comparable<UserContent> {
     lateinit var email: String
     lateinit var password: String
     lateinit var name: String
-    lateinit var birth: Date
+    var age: Int = 0
     var gender: Int = 0
     lateinit var description: String
     var lastLocationLng: Double = 0.0
@@ -20,14 +20,14 @@ class UserContent: JSONParsable, IDContent, Comparable<UserContent> {
 
     constructor(jsonObject: JSONObject): super(jsonObject)
 
-    constructor(userId: UUID, email: String, password: String, name: String, birth: Date,
-                gender: Int, description: String, lastLocationLng: Double, lastLocationLat: Double,
+    constructor(userId: UUID, email: String, password: String, name: String, age: Int, gender: Int,
+                description: String, lastLocationLng: Double, lastLocationLat: Double,
                 passwordQuestion: String, passwordAnswer: String) {
         this.userId = userId
         this.email = email
         this.password = password
         this.name = name
-        this.birth = birth
+        this.age = age
         this.gender = gender
         this.description = description
         this.lastLocationLng = lastLocationLng
@@ -39,10 +39,10 @@ class UserContent: JSONParsable, IDContent, Comparable<UserContent> {
     }
 
     fun getInsertSql() = "INSERT INTO mbtinder.user (" +
-            "user_id, email, password, name, birth, gender, description, last_location_lng, " +
+            "user_id, email, password, name, age, gender, description, last_location_lng, " +
             "last_location_lat, password_question, password_answer" +
             ") VALUES (" +
-            "'$userId', '$email', '$password', '$name', '$birth', $gender, '$description', $lastLocationLng, " +
+            "'$userId', '$email', '$password', '$name', '$age', $gender, '$description', $lastLocationLng, " +
             "$lastLocationLng, '$passwordQuestion', '$passwordAnswer')"
 
     fun getUpdateSql() = "UPDATE mbtinder.user SET " +

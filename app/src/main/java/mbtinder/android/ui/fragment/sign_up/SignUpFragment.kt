@@ -7,11 +7,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import android.widget.Toast
 import android.widget.ToggleButton
 import androidx.annotation.IdRes
 import androidx.annotation.StringRes
 import androidx.core.view.children
 import androidx.core.widget.addTextChangedListener
+import androidx.navigation.fragment.findNavController
 import kotlinx.android.synthetic.main.fragment_sign_up.*
 import mbtinder.android.R
 import mbtinder.android.io.SocketUtil
@@ -67,7 +69,7 @@ class SignUpFragment : Fragment() {
             ViewUtil.disableRecursively(layout_sign_up)
 
             ThreadUtil.runOnBackground {
-                SocketUtil.signUp(
+                val signUpResult = SocketUtil.signUp(
                     ViewUtil.getText(sign_up_email),
                     ViewUtil.getText(sign_up_password),
                     ViewUtil.getText(sign_up_name),
@@ -76,6 +78,20 @@ class SignUpFragment : Fragment() {
                     ViewUtil.getText(sign_up_password_question),
                     ViewUtil.getText(sign_up_password_answer)
                 )
+
+                if (signUpResult.isSucceed) {
+                    ThreadUtil.runOnUiThread {
+                        Toast.makeText(requireContext(), R.string.sign_up_succeed, Toast.LENGTH_SHORT).show()
+                        findNavController().popBackStack()
+                    }
+                } else {
+                    ThreadUtil.runOnUiThread {
+                        Toast.makeText(requireContext(), R.string.sign_up_failed, Toast.LENGTH_SHORT).show()
+                        sign_up_next.visibility = View.VISIBLE
+                        sign_up_waiting.visibility = View.INVISIBLE
+                        ViewUtil.enableRecursively(layout_sign_up)
+                    }
+                }
             }
         }
     }

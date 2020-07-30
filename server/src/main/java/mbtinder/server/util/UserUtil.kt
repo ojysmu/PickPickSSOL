@@ -28,7 +28,7 @@ object UserUtil {
 
     private fun buildUser(row: Row) = UserContent(
         row.getUUID("user_id"), row.getString("email"), row.getString("password"),
-        row.getString("nickname"), row.getDate("birth"), row.getInt("gender"),
+        row.getString("nickname"), row.getInt("age"), row.getInt("gender"),
         row.getString("description"), row.getDouble("last_location_lng"),
         row.getDouble("last_location_lat"), row.getString("password_question"),
         row.getString("password_answer")

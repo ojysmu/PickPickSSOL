@@ -6,6 +6,7 @@ import android.util.Patterns
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.Spinner
 import android.widget.Toast
 import androidx.core.widget.addTextChangedListener
@@ -27,6 +28,8 @@ class FindPasswordFragment : ProgressFragment() {
 
         find_password_email.editText!!.setOnFocusChangeListener(this::onFocusChanged)
         find_password_email.editText!!.addTextChangedListener(afterTextChanged = this::onEmailChanged)
+
+        questionSelector.adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, PasswordQuestion.values().map { it.question })
 
         find_password_answer.editText!!.addTextChangedListener(afterTextChanged = this::onAnswerChanged)
 

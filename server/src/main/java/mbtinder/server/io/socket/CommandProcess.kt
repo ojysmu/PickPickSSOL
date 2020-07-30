@@ -178,15 +178,16 @@ object CommandProcess {
 
     private fun findPassword(command: CommandContent): JSONObject {
         val email = command.arguments.getString("email")
-        val passwordQuestion = PasswordQuestion.findQuestion(command.arguments.getInt("password_question_id"))
+        val passwordQuestionId = command.arguments.getInt("password_question_id")
         // TODO: Encrypt
         val passwordAnswer = command.arguments.getString("password_answer")
 
         return UserUtil.getUserByEmail(email)?.let {
-            if (it.passwordQuestion == passwordQuestion && it.passwordAnswer == passwordAnswer) {
-                Connection.makeNegativeResponse(command.uuid, ServerResponse.USER_NOT_FOUND)
-            } else {
+            if (it.passwordQuestion.questionId == passwordQuestionId &&
+                it.passwordAnswer == passwordAnswer) {
                 Connection.makePositiveResponse(command.uuid, JSONObject().apply { put("user_id", it.userId.toString()) })
+            } else {
+                Connection.makeNegativeResponse(command.uuid, ServerResponse.USER_NOT_FOUND)
             }
         } ?: let {
             Connection.makeNegativeResponse(command.uuid, ServerResponse.USER_NOT_FOUND)
@@ -194,8 +195,8 @@ object CommandProcess {
     }
 
     private fun updatePassword(command: CommandContent): JSONObject {
-        // TODO: Encrypt
         val userId = command.arguments.getString("user_id")
+        // TODO: Encrypt
         val password = command.arguments.getString("password")
         val sql = "UPDATE FROM mbtinder.user SET password='$password' WHERE user_id='$userId'"
         MySQLServer.getInstance().addQuery(sql)

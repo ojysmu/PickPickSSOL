@@ -43,6 +43,17 @@
             app:popUpTo="@id/nav_splash"
             app:popUpToInclusive="true"
             app:destination="@id/nav_home" />
+
+        <action
+            android:id="@+id/action_to_find_password"
+            app:destination="@id/nav_find_password" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_find_password"
+        android:name="mbtinder.android.ui.fragment.find_password.FindPasswordFragment"
+        android:label="@string/find_password_title"
+        tools:layout="@layout/fragment_find_password">
     </fragment>
 
     <fragment

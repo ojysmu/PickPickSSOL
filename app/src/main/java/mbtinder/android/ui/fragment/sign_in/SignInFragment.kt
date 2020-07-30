@@ -29,6 +29,10 @@ class SignInFragment : Fragment() {
         sign_in_password.editText!!.setOnFocusChangeListener(this::onFocusChanged)
         sign_in_password.editText!!.addTextChangedListener(afterTextChanged = this::onPasswordChanged)
 
+        sign_in_forgot.setOnClickListener {
+            findNavController().navigate(R.id.action_to_find_password)
+        }
+
         switchable_next.setOnClickListener {
             ViewUtil.switchNextButton(layout_sign_in)
             ThreadUtil.runOnBackground {

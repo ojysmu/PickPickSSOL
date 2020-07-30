@@ -213,7 +213,7 @@
 
         <Button
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            android:id="@+id/sign_up_next"
+            android:id="@+id/switchable_next"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/activity_vertical_margin"
@@ -225,13 +225,13 @@
 
         <ProgressBar
             style="?android:attr/progressBarStyleSmall"
-            android:id="@+id/sign_up_waiting"
+            android:id="@+id/switchable_waiting"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="gone"
-            app:layout_constraintTop_toTopOf="@id/sign_up_next"
-            app:layout_constraintBottom_toBottomOf="@id/sign_up_next"
-            app:layout_constraintStart_toStartOf="@id/sign_up_next"
-            app:layout_constraintEnd_toEndOf="@id/sign_up_next" />
+            app:layout_constraintTop_toTopOf="@id/switchable_next"
+            app:layout_constraintBottom_toBottomOf="@id/switchable_next"
+            app:layout_constraintStart_toStartOf="@id/switchable_next"
+            app:layout_constraintEnd_toEndOf="@id/switchable_next" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>

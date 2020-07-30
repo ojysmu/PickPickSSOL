@@ -77,4 +77,26 @@ object SocketUtil {
 
         return getSingleResult(getServerResult(Command.SIGN_IN, arguments), "user")
     }
+
+    fun findPassword(email: String, passwordQuestionId: Int, passwordAnswer: String): ServerResult<UUID> {
+        val arguments = JSONObject()
+        arguments.put("email", email)
+        arguments.put("password_question_id", passwordQuestionId)
+        arguments.put("password_answer", passwordAnswer)
+
+        val result = getServerResult(Command.FIND_PASSWORD, arguments)
+        return if (result.getBoolean("result")) {
+            ServerResult(true, 0, UUID.fromString(result.getString("user_id")))
+        } else {
+            ServerResult(false, result.getInt("code"))
+        }
+    }
+
+    fun updatePassword(userId: UUID, password: String): ServerResult<Void> {
+        val arguments = JSONObject()
+        arguments.put("user_id", userId.toString())
+        arguments.put("password", password)
+
+        return getVoidResult(getServerResult(Command.UPDATE_PASSWORD, arguments))
+    }
 }

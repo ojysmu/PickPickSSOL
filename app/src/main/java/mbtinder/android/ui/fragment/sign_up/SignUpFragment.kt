@@ -7,20 +7,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import androidx.annotation.IdRes
 import androidx.annotation.StringRes
-import androidx.core.view.children
 import androidx.core.widget.addTextChangedListener
 import androidx.navigation.fragment.findNavController
 import kotlinx.android.synthetic.main.fragment_sign_up.*
 import mbtinder.android.R
 import mbtinder.android.io.SocketUtil
 import mbtinder.android.ui.model.Fragment
-import mbtinder.android.util.Log
 import mbtinder.android.util.ThreadUtil
 import mbtinder.android.util.ViewUtil
 import mbtinder.lib.constant.PasswordQuestion
-import kotlin.reflect.KFunction2
 
 class SignUpFragment : Fragment() {
     private val formStatus = arrayOf(
@@ -62,11 +58,8 @@ class SignUpFragment : Fragment() {
         sign_up_password_answer.editText!!.setOnFocusChangeListener(this::onFocusChanged)
         sign_up_password_answer.editText!!.addTextChangedListener(afterTextChanged = this::onAnswerChanged)
 
-        sign_up_next.setOnClickListener {
-            sign_up_next.visibility = View.INVISIBLE
-            sign_up_waiting.visibility = View.VISIBLE
-            ViewUtil.disableRecursively(layout_sign_up)
-
+        switchable_next.setOnClickListener {
+            ViewUtil.switchNextButton(layout_sign_up)
             ThreadUtil.runOnBackground {
                 val signUpResult = SocketUtil.signUp(
                     ViewUtil.getText(sign_up_email),
@@ -86,9 +79,7 @@ class SignUpFragment : Fragment() {
                 } else {
                     ThreadUtil.runOnUiThread {
                         Toast.makeText(requireContext(), R.string.sign_up_failed, Toast.LENGTH_SHORT).show()
-                        sign_up_next.visibility = View.VISIBLE
-                        sign_up_waiting.visibility = View.INVISIBLE
-                        ViewUtil.enableRecursively(layout_sign_up)
+                        ViewUtil.switchNextButton(layout_sign_up)
                     }
                 }
             }
@@ -100,7 +91,7 @@ class SignUpFragment : Fragment() {
     }
 
     private fun enableNextButton() {
-        sign_up_next.isEnabled = !formStatus.contains(false)
+        switchable_next.isEnabled = !formStatus.contains(false)
     }
 
     private fun onFocusChanged(view: View, hasFocus: Boolean) {

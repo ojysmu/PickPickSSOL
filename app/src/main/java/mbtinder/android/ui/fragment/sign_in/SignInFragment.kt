@@ -29,11 +29,8 @@ class SignInFragment : Fragment() {
         sign_in_password.editText!!.setOnFocusChangeListener(this::onFocusChanged)
         sign_in_password.editText!!.addTextChangedListener(afterTextChanged = this::onPasswordChanged)
 
-        sign_in_next.setOnClickListener {
-            sign_in_next.visibility = View.INVISIBLE
-            sign_in_waiting.visibility = View.VISIBLE
-            ViewUtil.disableRecursively(layout_sign_in)
-
+        switchable_next.setOnClickListener {
+            ViewUtil.switchNextButton(layout_sign_in)
             ThreadUtil.runOnBackground {
                 val email = ViewUtil.getText(sign_in_email)
                 val password = ViewUtil.getText(sign_in_password)
@@ -51,9 +48,7 @@ class SignInFragment : Fragment() {
                 } else {
                     ThreadUtil.runOnUiThread {
                         Toast.makeText(requireContext(), R.string.sign_in_failed, Toast.LENGTH_SHORT).show()
-                        sign_in_next.visibility = View.VISIBLE
-                        sign_in_waiting.visibility = View.INVISIBLE
-                        ViewUtil.enableRecursively(layout_sign_in)
+                        ViewUtil.switchNextButton(layout_sign_in)
                     }
                 }
             }
@@ -65,7 +60,7 @@ class SignInFragment : Fragment() {
     }
 
     private fun enableNextButton() {
-        sign_in_next.isEnabled = !formStatus.contains(false)
+        switchable_next.isEnabled = !formStatus.contains(false)
     }
 
     private fun onFocusChanged(view: View, hasFocus: Boolean) {

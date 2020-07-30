@@ -36,6 +36,8 @@ object CommandProcess {
             Command.GET_USER_IMAGES -> getUserImages(command)
             Command.DELETE_USER_IMAGE -> deleteUserImage(command)
             Command.SIGN_IN -> signIn(command)
+            Command.FIND_PASSWORD -> findPassword(command)
+            Command.UPDATE_PASSWORD -> updatePassword(command)
 
             Command.CREATE_CHAT -> createChat(command)
             Command.DELETE_CHAT -> deleteChat(command)
@@ -56,6 +58,7 @@ object CommandProcess {
     private fun addUser(command: CommandContent): JSONObject {
         val userId = UUID.randomUUID()
         val email = command.arguments.getString("email")
+        // TODO: Encrypt
         val password = command.arguments.getString("password")
         val name = command.arguments.getString("name")
         val age = command.arguments.getInt("age")
@@ -155,6 +158,7 @@ object CommandProcess {
 
     private fun signIn(command: CommandContent): JSONObject {
         val email = command.arguments.getString("email")
+        // TODO: Encrypt
         val password = command.arguments.getString("password")
 
         val sql = "SELECT user_id FROM user WHERE email='$email' AND password='$password'"
@@ -170,6 +174,33 @@ object CommandProcess {
                 JSONObject().apply { put("user", user.toJSONObject()) }
             )
         }
+    }
+
+    private fun findPassword(command: CommandContent): JSONObject {
+        val email = command.arguments.getString("email")
+        val passwordQuestion = PasswordQuestion.findQuestion(command.arguments.getInt("password_question_id"))
+        // TODO: Encrypt
+        val passwordAnswer = command.arguments.getString("password_answer")
+
+        return UserUtil.getUserByEmail(email)?.let {
+            if (it.passwordQuestion == passwordQuestion && it.passwordAnswer == passwordAnswer) {
+                Connection.makeNegativeResponse(command.uuid, ServerResponse.USER_NOT_FOUND)
+            } else {
+                Connection.makePositiveResponse(command.uuid, JSONObject().apply { put("user_id", it.userId.toString()) })
+            }
+        } ?: let {
+            Connection.makeNegativeResponse(command.uuid, ServerResponse.USER_NOT_FOUND)
+        }
+    }
+
+    private fun updatePassword(command: CommandContent): JSONObject {
+        // TODO: Encrypt
+        val userId = command.arguments.getString("user_id")
+        val password = command.arguments.getString("password")
+        val sql = "UPDATE FROM mbtinder.user SET password='$password' WHERE user_id='$userId'"
+        MySQLServer.getInstance().addQuery(sql)
+
+        return Connection.makePositiveResponse(command.uuid)
     }
 
     private fun createChat(command: CommandContent): JSONObject {

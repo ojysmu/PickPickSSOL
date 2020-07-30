@@ -47,6 +47,9 @@ enum class Command {
      */
     SIGN_IN,
 
+    FIND_PASSWORD,
+    UPDATE_PASSWORD,
+
     // Message related commands
     /**
      *

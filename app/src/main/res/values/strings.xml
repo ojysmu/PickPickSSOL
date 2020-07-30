@@ -11,6 +11,7 @@
     <string name="common_prev">이전</string>
     <string name="common_confirm">확인</string>
     <string name="common_cancel">취소</string>
+    <string name="common_submit">제출</string>
     <string name="common_wait">잠시만 기다려주세요.</string>
 
     <string name="socket_on_connection_failed">서버에 연결할 수 없습니다.\n애플리케이션을 종료합니다.</string>
@@ -54,6 +55,14 @@
     <string name="sign_in_password">비밀번호</string>
     <string name="sign_in_password_error">비밀번호를 확인해주세요.</string>
     <string name="sign_in_failed">일치하는 정보가 없습니다.</string>
+
+    <string name="find_password_title">비밀번호 찾기</string>
+    <string name="find_password_email">이메일</string>
+    <string name="find_password_email_error">이메일을 확인해주세요.</string>
+    <string name="find_password_qna">질문과 답변</string>
+    <string name="find_password_answer">답변</string>
+    <string name="find_password_answer_error">답변을 입력해주세요.</string>
+    <string name="find_password_failed">일치하는 정보가 없습니다.</string>
 
     <string name="home_title">홈</string>
     <string name="home_rewind_default">0</string>

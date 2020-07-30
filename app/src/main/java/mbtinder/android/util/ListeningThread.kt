@@ -29,7 +29,6 @@ internal class ListeningThread(dataInputStream: DataInputStream,
             } catch (e: IOException) {
                 stopThread()
                 onDisconnected(e)
-                SocketClient.getInstance().stopThread()
             }
         }
     }

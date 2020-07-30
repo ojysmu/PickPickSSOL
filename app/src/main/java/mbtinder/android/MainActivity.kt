@@ -12,10 +12,13 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import mbtinder.android.io.SocketClient
 import mbtinder.android.ui.fragment.splash.SplashFragment
 import mbtinder.android.ui.model.Activity
+import mbtinder.android.util.DialogFactory
 import mbtinder.android.util.Log
 import mbtinder.android.util.SharedPreferencesUtil
 import mbtinder.android.util.SharedPreferencesUtil.PREF_ACCOUNT
+import mbtinder.android.util.ThreadUtil
 import mbtinder.lib.constant.ServerPath
+import java.io.IOException
 
 class MainActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,15 +39,66 @@ class MainActivity : Activity() {
 
     private fun initializeSocketClient() {
         val socketClient = SocketClient.createInstance(ServerPath.ADDRESS, ServerPath.PORT_SOCKET)
-        socketClient.onConnected = {
-            Log.v("onConnected()")
-        }
-        socketClient.onConnectionFailed = {
-            Log.e("onConnectionFailed", it)
-        }
-        socketClient.onDisconnected = {
-            Log.e("onDisconnected", it)
-        }
+        socketClient.onConnected = this::onConnected
+        socketClient.onConnectionFailed = this::onConnectionFailed
+        socketClient.onDisconnected = this::onDisconnected
         socketClient.start()
+    }
+
+    private fun onConnected() {
+        Log.v("onConnected()")
+    }
+
+    private fun onConnectionFailed(e: IOException) {
+        Log.e("onConnectionFailed", e)
+
+        SocketClient.releaseInstance()
+        runOnUiThread {
+            DialogFactory.getContentedDialog(this, R.string.socket_on_connection_failed, this::finish).show()
+        }
+    }
+
+    private fun onDisconnected(e: IOException) {
+        Log.e("onDisconnected", e)
+
+        SocketClient.releaseInstance()
+        ThreadUtil.runOnBackground {
+            val result = retryConnection(0)
+            if (result) {
+                SocketClient.getInstance().onConnectionFailed = this::onConnectionFailed
+                SocketClient.getInstance().onDisconnected = this::onDisconnected
+            } else {
+                runOnUiThread {
+                    DialogFactory.getContentedDialog(this, R.string.socket_on_connection_failed, this::finish).show()
+                }
+            }
+        }
+    }
+
+    private fun retryConnection(depth: Int): Boolean {
+        Log.v("retryConnection: depth=$depth")
+
+        if (depth == SocketClient.CONNECTION_RETRY_MAX) {
+            return false
+        }
+
+        var result: Boolean? = null
+        SocketClient.createInstance(ServerPath.ADDRESS, ServerPath.PORT_SOCKET).apply {
+            onConnected = {
+                Log.v("retryConnection: onConnected depth=$depth")
+                result = true
+            }
+            onConnectionFailed = {
+                Log.v("retryConnection: onConnectionFailed depth=$depth")
+                SocketClient.releaseInstance()
+                result = retryConnection(depth + 1)
+            }
+        }.start()
+
+        while (result == null) {
+            Thread.sleep(500)
+        }
+
+        return result!!
     }
 }

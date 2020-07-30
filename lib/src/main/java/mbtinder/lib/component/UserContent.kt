@@ -15,11 +15,14 @@ class UserContent: JSONParsable, IDContent, Comparable<UserContent> {
     lateinit var description: String
     var lastLocationLng: Double = 0.0
     var lastLocationLat: Double = 0.0
+    lateinit var passwordQuestion: String
+    lateinit var passwordAnswer: String
 
     constructor(jsonObject: JSONObject): super(jsonObject)
 
     constructor(userId: UUID, email: String, password: String, name: String, birth: Date,
-                gender: Int, description: String, lastLocationLng: Double, lastLocationLat: Double) {
+                gender: Int, description: String, lastLocationLng: Double, lastLocationLat: Double,
+                passwordQuestion: String, passwordAnswer: String) {
         this.userId = userId
         this.email = email
         this.password = password
@@ -29,16 +32,26 @@ class UserContent: JSONParsable, IDContent, Comparable<UserContent> {
         this.description = description
         this.lastLocationLng = lastLocationLng
         this.lastLocationLat = lastLocationLat
+        this.passwordQuestion = passwordQuestion
+        this.passwordAnswer = passwordAnswer
 
         updateJSONObject()
     }
 
     fun getInsertSql() = "INSERT INTO mbtinder.user (" +
-            "user_id, email, password, name, birth, gender, description, last_location_lng, last_location_lat" +
+            "user_id, email, password, name, birth, gender, description, last_location_lng, " +
+            "last_location_lat, password_question, password_answer" +
             ") VALUES (" +
-            "'$userId', '$email', '$password', '$name', '$birth', $gender, '$description', $lastLocationLng, $lastLocationLng)"
+            "'$userId', '$email', '$password', '$name', '$birth', $gender, '$description', $lastLocationLng, " +
+            "$lastLocationLng, '$passwordQuestion', '$passwordAnswer')"
 
-    fun getUpdateSql() = "UPDATE mbtinder.user SET password='$password', name='$name', description='$description' WHERE user_id='$userId'"
+    fun getUpdateSql() = "UPDATE mbtinder.user SET " +
+            "password='$password', " +
+            "name='$name', " +
+            "description='$description', " +
+            "password_question='$passwordQuestion', " +
+            "password_answer='$passwordAnswer' " +
+            "WHERE user_id='$userId'"
 
     override fun getUUID() = userId
 

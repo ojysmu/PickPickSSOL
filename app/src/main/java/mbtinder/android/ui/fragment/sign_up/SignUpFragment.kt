@@ -65,6 +65,18 @@ class SignUpFragment : Fragment() {
             sign_up_next.visibility = View.INVISIBLE
             sign_up_waiting.visibility = View.VISIBLE
             ViewUtil.disableRecursively(layout_sign_up)
+
+            ThreadUtil.runOnBackground {
+                SocketUtil.signUp(
+                    ViewUtil.getText(sign_up_email),
+                    ViewUtil.getText(sign_up_password),
+                    ViewUtil.getText(sign_up_name),
+                    ViewUtil.getText(sign_up_age).toInt(),
+                    gender,
+                    ViewUtil.getText(sign_up_password_question),
+                    ViewUtil.getText(sign_up_password_answer)
+                )
+            }
         }
     }
 

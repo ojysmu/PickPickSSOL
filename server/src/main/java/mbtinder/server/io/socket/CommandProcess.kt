@@ -57,6 +57,8 @@ object CommandProcess {
         val name = command.arguments.getString("name")
         val birth = Date.valueOf(command.arguments.getString("birth"))
         val gender = command.arguments.getInt("gender")
+        val passwordQuestion = command.arguments.getString("password_question")
+        val passwordAnswer = command.arguments.getString("password_answer")
         val user = UserContent(
             userId = userId,
             email = email,
@@ -66,7 +68,9 @@ object CommandProcess {
             gender = gender,
             description = "",
             lastLocationLng = -1.0,
-            lastLocationLat = -1.0
+            lastLocationLat = -1.0,
+            passwordQuestion = passwordQuestion,
+            passwordAnswer = passwordAnswer
         )
 
         MySQLServer.getInstance().addQuery(user.getInsertSql())

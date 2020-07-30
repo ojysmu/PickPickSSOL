@@ -84,11 +84,9 @@ class SQLiteConnection private constructor(val userId: UUID): CloseableThread(),
     }
 
     fun getResult(queryId: UUID): QueryResult {
-        println("getResult(): $queryId")
         while (!results.contains(queryId)) {
             sleep()
         }
-        println("getResult(): Found")
         return results.remove(queryId)
     }
 

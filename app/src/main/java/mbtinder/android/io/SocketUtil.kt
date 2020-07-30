@@ -50,13 +50,18 @@ object SocketUtil {
         return getVoidResult(getServerResult(Command.CHECK_EMAIL_DUPLICATED, arguments))
     }
 
-    fun signUp(email: String, password: String, name: String, age: Int, gender: Int): ServerResult<Void> {
+    /**
+     * @see Command.ADD_USER
+     */
+    fun signUp(email: String, password: String, name: String, age: Int, gender: Int, passwordQuestion: String, passwordAnswer: String): ServerResult<Void> {
         val arguments = JSONObject()
         arguments.put("email", email)
         arguments.put("password", password)
         arguments.put("name", name)
         arguments.put("age", age)
         arguments.put("gender", gender)
+        arguments.put("password_question", passwordQuestion)
+        arguments.put("password_answer", passwordAnswer)
 
         return getVoidResult(getServerResult(Command.ADD_USER, arguments))
     }

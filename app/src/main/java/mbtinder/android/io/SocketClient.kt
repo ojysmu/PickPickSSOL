@@ -15,6 +15,8 @@ import java.util.*
 
 class SocketClient(private val address: String, private val port: Int): CloseableThread() {
     companion object {
+        const val CONNECTION_RETRY_MAX = 3
+
         private var instance: SocketClient? = null
 
         fun createInstance(address: String, port: Int): SocketClient {
@@ -33,6 +35,10 @@ class SocketClient(private val address: String, private val port: Int): Closeabl
             } else {
                 throw RuntimeException("SocketClient is not initialized")
             }
+        }
+
+        fun releaseInstance() {
+            instance = null
         }
     }
 
@@ -56,13 +62,13 @@ class SocketClient(private val address: String, private val port: Int): Closeabl
                 dataOutputStream = DataOutputStream(socket.getOutputStream())
 
                 onConnected?.let { it() }
+
+                listeningThread = ListeningThread(dataInputStream, onDisconnected ?: {})
+                listeningThread.start()
             } catch (e: IOException) {
                 stopThread()
                 onConnectionFailed?.let { it(e) }
             }
-
-            listeningThread = ListeningThread(dataInputStream, onDisconnected ?: {})
-            listeningThread.start()
         }
 
         loop = {
@@ -92,6 +98,7 @@ class SocketClient(private val address: String, private val port: Int): Closeabl
         dataInputStream.close()
         dataOutputStream.close()
         socket.close()
+        instance = null
     }
 
     fun addCommand(commandContent: CommandContent) = synchronized(commandPool) {

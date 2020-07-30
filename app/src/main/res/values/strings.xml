@@ -10,6 +10,11 @@
     <string name="common_next">다음</string>
     <string name="common_prev">이전</string>
     <string name="common_confirm">확인</string>
+    <string name="common_cancel">취소</string>
+    <string name="common_wait">잠시만 기다려주세요.</string>
+
+    <string name="socket_on_connection_failed">서버에 연결할 수 없습니다.\n애플리케이션을 종료합니다.</string>
+    <string name="socket_on_disconnected">서버에 연결할 수 없습니다.\n애플리케이션을 종료합니다.</string>
 
     <string name="splash_title">Splash</string>
     <string name="splash_content">나랑\n잘맞는\nMBTI\n친구찾기</string>
@@ -29,11 +34,12 @@
     <string name="sign_up_password_error">비밀번호를 확인해주세요. 8자 이상, 16자 이하여야 합니다.</string>
     <string name="sign_up_password_repeat">비밀번호 재입력</string>
     <string name="sign_up_password_repeat_error">비밀번호가 일치하지 않습니다.</string>
-    <string name="sign_up_name">이름 (10자 이내)</string>
     <string name="sign_up_gender">성별</string>
     <string name="sign_up_gender_male">남성</string>
     <string name="sign_up_gender_female">여성</string>
     <string name="sign_up_age">나이</string>
+    <string name="sign_up_name">이름</string>
+    <string name="sign_up_name_hint">이름 (10자 이내)</string>
     <string name="sign_up_password_qna_title">비밀번호 찾기 질문 및 답변</string>
     <string name="sign_up_password_question">질문</string>
     <string name="sign_up_password_answer">답변</string>

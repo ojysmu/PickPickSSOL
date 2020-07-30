@@ -135,11 +135,9 @@ class MySQLServer private constructor(url: String, database: String, id: String,
      * @return 실행한 SQL의 결과
      */
     fun getResult(queryId: UUID): QueryResult {
-        println("getResult(): $queryId")
         while (!results.contains(queryId)) {
             sleep()
         }
-        println("getResult(): Found")
         return results.remove(queryId)
     }
 }

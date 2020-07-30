@@ -30,18 +30,28 @@ object UserUtil {
         row.getUUID("user_id"), row.getString("email"), row.getString("password"),
         row.getString("nickname"), row.getDate("birth"), row.getInt("gender"),
         row.getString("description"), row.getDouble("last_location_lng"),
-        row.getDouble("last_location_lat")
+        row.getDouble("last_location_lat"), row.getString("password_question"),
+        row.getString("password_answer")
     )
 
-    fun getUser(userId: UUID): UserContent? = synchronized(users) {
+    fun getUser(userId: UUID, withPassword: Boolean = false): UserContent? = synchronized(users) {
         ensureUpdate()
 
         val index = users.binarySearch { it.userId.compareTo(userId) }
         return if (index >= 0) {
+            if (!withPassword) {
+                users[index].password = ""
+                users[index].passwordAnswer = ""
+            }
             users[index]
         } else {
             updateUsers()
-            return users.find { it.userId == userId }
+            val found = users.find { it.userId == userId }
+            if (!withPassword) {
+                found?.password = ""
+                found?.passwordAnswer = ""
+            }
+            return found
         }
     }
 

@@ -2,6 +2,7 @@ package mbtinder.android.ui.model
 
 import android.content.Context
 import android.os.Bundle
+import android.text.Editable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,23 +10,24 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
+import com.google.android.material.textfield.TextInputLayout
 
-abstract class Fragment : Fragment() {
+abstract class Fragment : Fragment(), View.OnFocusChangeListener {
+    private val focusCount = HashMap<View, Int>()
+    private val focusEvent = HashMap<View, () -> Unit>()
+
     protected lateinit var rootView: View
 
-    protected fun hideIme() {
-        rootView.findFocus()?.let {
-            val editText = it as EditText
-            val inputMethodManager = editText.context.getSystemService(Context.INPUT_METHOD_SERVICE)
-                    as InputMethodManager
-            inputMethodManager.hideSoftInputFromWindow(editText.windowToken, 0)
-        }
+    protected fun inflateView(@LayoutRes layout: Int, inflater: LayoutInflater, container: ViewGroup?): View? {
+        rootView = inflater.inflate(layout, container, false)
+        return rootView
     }
 
-    protected open fun <T : View> findViewById(@IdRes id: Int): T {
-        return rootView.findViewById(id)
-    }
+    protected open fun <T : View> findViewById(@IdRes id: Int): T = rootView.findViewById(id)
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) = initializeView()
 
     override fun onStop() {
         super.onStop()
@@ -36,18 +38,46 @@ abstract class Fragment : Fragment() {
         }
     }
 
-    protected fun inflateView(@LayoutRes layout: Int, inflater: LayoutInflater, container: ViewGroup?): View? {
-        rootView = inflater.inflate(layout, container, false)
-        return rootView
+    protected fun hideIme() {
+        rootView.findFocus()?.let {
+            val editText = it as EditText
+            val inputMethodManager = editText.context.getSystemService(Context.INPUT_METHOD_SERVICE)
+                    as InputMethodManager
+            inputMethodManager.hideSoftInputFromWindow(editText.windowToken, 0)
+        }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        initializeView()
+    override fun onFocusChange(v: View, hasFocus: Boolean) {
+        if (hasFocus) {
+            focusCount[v] = focusCount.getOrDefault(v, 0) + 1
+        } else {
+            focusEvent[v]?.invoke()
+        }
+    }
+
+    protected fun addFocusEvent(v: View, event: () -> Unit) {
+        focusEvent[if (v is TextInputLayout) {
+            v.editText!!
+        } else {
+            v
+        }] = event
+    }
+
+    protected fun getFocusCount(v: View): Int = focusCount.getOrDefault(if (v is TextInputLayout) {
+        v.editText!!
+    } else {
+        v
+    }, 0)
+
+    protected fun initializeFocusableEditText(textInputLayout: TextInputLayout, afterTextChanged: (Editable?) -> Unit, leaveEvent: (() -> Unit)? = null) {
+        textInputLayout.editText!!.onFocusChangeListener = this
+        textInputLayout.editText!!.addTextChangedListener(afterTextChanged = afterTextChanged)
+        if (leaveEvent != null) {
+            addFocusEvent(textInputLayout, leaveEvent)
+        }
     }
 
     protected abstract fun initializeView()
 
-    protected fun finish() {
-        requireActivity().finish()
-    }
+    protected fun finish() = requireActivity().finish()
 }

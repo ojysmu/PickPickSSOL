@@ -34,7 +34,7 @@
     <string name="sign_up_email_duplicated">이미 존재하는 이메일입니다.</string>
     <string name="sign_up_password">비밀번호 (8~16자)</string>
     <string name="sign_up_password_error">비밀번호를 확인해주세요. 8자 이상, 16자 이하여야 합니다.</string>
-    <string name="sign_up_password_repeat">비밀번호 재입력</string>
+    <string name="sign_up_password_repeat">비밀번호 확인</string>
     <string name="sign_up_password_repeat_error">비밀번호가 일치하지 않습니다.</string>
     <string name="sign_up_gender">성별</string>
     <string name="sign_up_gender_male">남성</string>
@@ -63,6 +63,13 @@
     <string name="find_password_answer">답변</string>
     <string name="find_password_answer_error">답변을 입력해주세요.</string>
     <string name="find_password_failed">일치하는 정보가 없습니다.</string>
+
+    <string name="update_password_title">새로운 비밀번호</string>
+    <string name="update_password_password">새 비밀번호 (8~16자)</string>
+    <string name="update_password_password_error">비밀번호를 확인해주세요.</string>
+    <string name="update_password_password_repeat">비밀번호 확인</string>
+    <string name="update_password_password_repeat_error">비밀번호가 일치하지 않습니다.</string>
+    <string name="update_password_succeed">비밀번호가 재설정되었습니다. 변경된 비밀번호로 로그인해주세요.</string>
 
     <string name="home_title">홈</string>
     <string name="home_rewind_default">0</string>

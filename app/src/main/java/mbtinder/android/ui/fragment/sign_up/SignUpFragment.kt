@@ -6,9 +6,10 @@ import android.util.Patterns
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.ArrayAdapter
+import android.widget.Spinner
+import android.widget.Toast
 import androidx.annotation.StringRes
-import androidx.core.widget.addTextChangedListener
 import androidx.navigation.fragment.findNavController
 import kotlinx.android.synthetic.main.fragment_sign_up.*
 import mbtinder.android.R
@@ -29,34 +30,20 @@ class SignUpFragment : Fragment() {
         false  // 7: 찾기 답변
     )
 
-    private val focusCount = HashMap<View, Int>()
-
     private var gender: Int = -1
 
     override fun initializeView() {
         val passwordQuestionSelector = sign_up_password_question_selector.findViewById<Spinner>(R.id.spinner)
 
-        sign_up_email.editText!!.setOnFocusChangeListener(this::onFocusChanged)
-        sign_up_email.editText!!.addTextChangedListener(afterTextChanged = this::onEmailChanged)
-
-        sign_up_password.editText!!.setOnFocusChangeListener(this::onFocusChanged)
-        sign_up_password.editText!!.addTextChangedListener(afterTextChanged = this::onPasswordChanged)
-
-        sign_up_password_repeat.editText!!.setOnFocusChangeListener(this::onFocusChanged)
-        sign_up_password_repeat.editText!!.addTextChangedListener(afterTextChanged = this::onPasswordRepeatChanged)
+        initializeFocusableEditText(sign_up_email, this::onEmailChanged, this::onLeaveEmail)
+        initializeFocusableEditText(sign_up_password, this::onPasswordChanged, this::onLeavePassword)
+        initializeFocusableEditText(sign_up_password_repeat, this::onPasswordRepeatChanged, this::onLeavePasswordRepeat)
+        initializeFocusableEditText(sign_up_age, this::onAgeChanged)
+        initializeFocusableEditText(sign_up_name, this::onNameChanged)
+        initializeFocusableEditText(sign_up_password_answer, this::onAnswerChanged)
 
         sign_up_gender_selector.addOnButtonCheckedListener(this::onGenderSelected)
-
-        sign_up_age.editText!!.setOnFocusChangeListener(this::onFocusChanged)
-        sign_up_age.editText!!.addTextChangedListener(afterTextChanged = this::onAgeChanged)
-
-        sign_up_name.editText!!.setOnFocusChangeListener(this::onFocusChanged)
-        sign_up_name.editText!!.addTextChangedListener(afterTextChanged = this::onNameChanged)
-
         passwordQuestionSelector.adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, PasswordQuestion.values().map { it.question })
-
-        sign_up_password_answer.editText!!.setOnFocusChangeListener(this::onFocusChanged)
-        sign_up_password_answer.editText!!.addTextChangedListener(afterTextChanged = this::onAnswerChanged)
 
         switchable_next.setOnClickListener {
             ViewUtil.switchNextButton(layout_sign_up)
@@ -94,24 +81,12 @@ class SignUpFragment : Fragment() {
         switchable_next.isEnabled = !formStatus.contains(false)
     }
 
-    private fun onFocusChanged(view: View, hasFocus: Boolean) {
-        if (hasFocus) {
-            focusCount[view] = focusCount.getOrDefault(view, 0) + 1
-        } else {
-            when (view) {
-                sign_up_email.editText!! -> onLeaveEmail()
-                sign_up_password.editText!! -> onLeavePassword()
-                sign_up_password_repeat.editText!! -> onLeavePasswordRepeat()
-            }
-        }
-    }
-
     private fun onEmailChanged(editable: Editable?) {
         editable?.let {
             if (Patterns.EMAIL_ADDRESS.matcher(it).matches()) {
                 formStatus[0] = true
                 sign_up_email.isErrorEnabled = false
-            } else if (focusCount[sign_up_email.editText!!] != 1) {
+            } else if (getFocusCount(sign_up_email) != 1) {
                 onEmailIssued(R.string.sign_up_email_error)
             }
             enableNextButton()
@@ -143,7 +118,7 @@ class SignUpFragment : Fragment() {
             if (it.length in 8..16) {
                 formStatus[1] = true
                 sign_up_password.isErrorEnabled = false
-            } else if (focusCount[sign_up_password.editText!!] != 1) {
+            } else if (getFocusCount(sign_up_password) != 1) {
                 onPasswordIssued()
             }
             onPasswordRepeatChanged(it)
@@ -163,12 +138,12 @@ class SignUpFragment : Fragment() {
     }
 
     private fun onPasswordRepeatChanged(editable: Editable?) {
-        val focusCount = focusCount[sign_up_password_repeat.editText!!]
+        val focusCount = getFocusCount(sign_up_password_repeat)
 
         if (ViewUtil.hasSameText(sign_up_password, sign_up_password_repeat)) {
             formStatus[2] = true
             sign_up_password_repeat.isErrorEnabled = false
-        } else if (focusCount != null && focusCount != 1) {
+        } else if (focusCount > 1) {
             onPasswordRepeatIssued()
         }
         enableNextButton()

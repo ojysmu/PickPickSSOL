@@ -97,6 +97,7 @@ class MainActivity : Activity() {
             onConnectionFailed = {
                 Log.v("retryConnection: onConnectionFailed depth=$depth")
                 SocketClient.releaseInstance()
+                Thread.sleep(1000)
                 result = retryConnection(depth + 1)
             }
         }.start()

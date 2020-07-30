@@ -161,7 +161,7 @@ object CommandProcess {
         // TODO: Encrypt
         val password = command.arguments.getString("password")
 
-        val sql = "SELECT user_id FROM user WHERE email='$email' AND password='$password'"
+        val sql = "SELECT `user_id` FROM `mbtinder`.`user` WHERE `email`='$email' AND `password`='$password'"
         val queryId = MySQLServer.getInstance().addQuery(sql)
         val queryResult = MySQLServer.getInstance().getResult(queryId)
 
@@ -198,7 +198,7 @@ object CommandProcess {
         val userId = command.arguments.getString("user_id")
         // TODO: Encrypt
         val password = command.arguments.getString("password")
-        val sql = "UPDATE FROM mbtinder.user SET password='$password' WHERE user_id='$userId'"
+        val sql = "UPDATE mbtinder.user SET `password`='$password' WHERE `user_id`='$userId'"
         MySQLServer.getInstance().addQuery(sql)
 
         return Connection.makePositiveResponse(command.uuid)

@@ -7,7 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.core.widget.addTextChangedListener
 import androidx.navigation.fragment.findNavController
 import kotlinx.android.synthetic.main.fragment_sign_in.*
 import mbtinder.android.R
@@ -20,14 +19,10 @@ import mbtinder.android.util.ViewUtil
 
 class SignInFragment : Fragment() {
     private val formStatus = arrayOf(false, false)
-    private val focusCount = HashMap<View, Int>()
 
     override fun initializeView() {
-        sign_in_email.editText!!.setOnFocusChangeListener(this::onFocusChanged)
-        sign_in_email.editText!!.addTextChangedListener(afterTextChanged = this::onEmailChanged)
-
-        sign_in_password.editText!!.setOnFocusChangeListener(this::onFocusChanged)
-        sign_in_password.editText!!.addTextChangedListener(afterTextChanged = this::onPasswordChanged)
+        initializeFocusableEditText(sign_in_email, this::onEmailChanged, this::onLeaveEmail)
+        initializeFocusableEditText(sign_in_password, this::onPasswordChanged, this::onLeavePassword)
 
         sign_in_forgot.setOnClickListener {
             findNavController().navigate(R.id.action_to_find_password)
@@ -67,23 +62,12 @@ class SignInFragment : Fragment() {
         switchable_next.isEnabled = !formStatus.contains(false)
     }
 
-    private fun onFocusChanged(view: View, hasFocus: Boolean) {
-        if (hasFocus) {
-            focusCount[view] = focusCount.getOrDefault(view, 0) + 1
-        } else {
-            when (view) {
-                sign_in_email -> onLeaveEmail()
-                sign_in_password -> onLeavePassword()
-            }
-        }
-    }
-
     private fun onEmailChanged(editable: Editable?) {
         editable?.let {
             if (Patterns.EMAIL_ADDRESS.matcher(it).matches()) {
                 formStatus[0] = true
                 sign_in_email.isErrorEnabled = false
-            } else if (focusCount[sign_in_email.editText!!] != 1) {
+            } else if (getFocusCount(sign_in_email) != 1) {
                 onEmailIssued()
             }
 
@@ -108,7 +92,7 @@ class SignInFragment : Fragment() {
             if (it.length in 8..16) {
                 formStatus[1] = true
                 sign_in_password.isErrorEnabled = false
-            } else if (focusCount[sign_in_password.editText!!] != 1) {
+            } else if (getFocusCount(sign_in_password) != 1) {
                 onPasswordIssued()
             }
 

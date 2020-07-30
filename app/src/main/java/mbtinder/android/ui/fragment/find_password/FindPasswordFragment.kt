@@ -9,7 +9,7 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Spinner
 import android.widget.Toast
-import androidx.core.widget.addTextChangedListener
+import androidx.navigation.fragment.findNavController
 import kotlinx.android.synthetic.main.fragment_find_password.*
 import mbtinder.android.R
 import mbtinder.android.io.SocketUtil
@@ -19,19 +19,15 @@ import mbtinder.android.util.ViewUtil
 import mbtinder.lib.constant.PasswordQuestion
 
 class FindPasswordFragment : ProgressFragment() {
-    private val focusCount = HashMap<View, Int>()
-
     override fun initializeView() {
         super.initializeView()
 
         val questionSelector = find_password_question_selector.findViewById<Spinner>(R.id.spinner)
 
-        find_password_email.editText!!.setOnFocusChangeListener(this::onFocusChanged)
-        find_password_email.editText!!.addTextChangedListener(afterTextChanged = this::onEmailChanged)
+        initializeFocusableEditText(find_password_email, this::onEmailChanged, this::onLeaveEmail)
+        initializeFocusableEditText(find_password_answer, this::onAnswerChanged)
 
         questionSelector.adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, PasswordQuestion.values().map { it.question })
-
-        find_password_answer.editText!!.addTextChangedListener(afterTextChanged = this::onAnswerChanged)
 
         switchable_next.setOnClickListener {
             switchWaitingStatus()
@@ -43,7 +39,8 @@ class FindPasswordFragment : ProgressFragment() {
                 val findResult = SocketUtil.findPassword(email, questionId, answer)
 
                 if (findResult.isSucceed) {
-
+                    val bundle = Bundle().apply { putString("user_id", findResult.result!!.toString()) }
+                    findNavController().navigate(R.id.action_to_update_password, bundle)
                 } else {
                     ThreadUtil.runOnUiThread {
                         switchWaitingStatus()
@@ -58,22 +55,12 @@ class FindPasswordFragment : ProgressFragment() {
         return inflateView(R.layout.fragment_find_password, inflater, container!!)
     }
 
-    private fun onFocusChanged(view: View, hasFocus: Boolean) {
-        if (hasFocus) {
-            focusCount[view] = focusCount.getOrDefault(view, 0) + 1
-        } else {
-            when (view) {
-                find_password_email.editText!! -> onLeaveEmail()
-            }
-        }
-    }
-
     private fun onEmailChanged(editable: Editable?) {
         editable?.let {
             if (Patterns.EMAIL_ADDRESS.matcher(it).matches()) {
                 setFormStatus(find_password_email, true)
                 find_password_email.isErrorEnabled = false
-            } else if (focusCount[find_password_email.editText!!] != 1) {
+            } else if (getFocusCount(find_password_email) != 1) {
                 onEmailIssued()
             }
             enableNextButton()

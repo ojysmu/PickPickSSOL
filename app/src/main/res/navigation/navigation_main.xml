@@ -54,6 +54,19 @@
         android:name="mbtinder.android.ui.fragment.find_password.FindPasswordFragment"
         android:label="@string/find_password_title"
         tools:layout="@layout/fragment_find_password">
+
+        <action
+            android:id="@+id/action_to_update_password"
+            app:popUpTo="@id/nav_find_password"
+            app:popUpToInclusive="true"
+            app:destination="@id/nav_update_password" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_update_password"
+        android:name="mbtinder.android.ui.fragment.update_password.UpdatePasswordFragment"
+        android:label="@string/update_password_title"
+        tools:layout="@layout/fragment_update_password">
     </fragment>
 
     <fragment

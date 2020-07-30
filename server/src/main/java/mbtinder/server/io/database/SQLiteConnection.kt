@@ -15,7 +15,7 @@ class SQLiteConnection private constructor(val userId: UUID): CloseableThread(),
     companion object {
         const val SELECT_MESSAGE_LIMIT = 20
 
-        val dbHeader = "jdbc:sqlite:${LocalFile.fileRoot}/user"
+        val dbHeader = "jdbc:sqlite:${LocalFile.userRoot}"
 
         private val connections = IDList<SQLiteConnection>()
 
@@ -45,7 +45,7 @@ class SQLiteConnection private constructor(val userId: UUID): CloseableThread(),
     private val results = IDList<QueryResult>()
 
     init {
-        val connection = DriverManager.getConnection("$dbHeader/tables.db")
+        val connection = DriverManager.getConnection("$dbHeader/$userId/tables.db")
         statement = connection.createStatement()
 
         loop = {

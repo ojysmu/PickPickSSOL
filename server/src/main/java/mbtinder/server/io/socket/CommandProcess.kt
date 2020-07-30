@@ -4,6 +4,7 @@ import mbtinder.lib.component.ChatContent
 import mbtinder.lib.component.UserContent
 import mbtinder.lib.component.MessageContent
 import mbtinder.lib.component.UserImageContent
+import mbtinder.lib.constant.PasswordQuestion
 import mbtinder.lib.constant.ServerPath
 import mbtinder.lib.constant.ServerResponse
 import mbtinder.lib.io.component.CommandContent
@@ -59,7 +60,7 @@ object CommandProcess {
         val name = command.arguments.getString("name")
         val age = command.arguments.getInt("age")
         val gender = command.arguments.getInt("gender")
-        val passwordQuestion = command.arguments.getString("password_question")
+        val passwordQuestion = command.arguments.getInt("password_question")
         val passwordAnswer = command.arguments.getString("password_answer")
         val user = UserContent(
             userId = userId,
@@ -71,7 +72,7 @@ object CommandProcess {
             description = "",
             lastLocationLng = -1.0,
             lastLocationLat = -1.0,
-            passwordQuestion = passwordQuestion,
+            passwordQuestion = PasswordQuestion.findQuestion(passwordQuestion)!!,
             passwordAnswer = passwordAnswer
         )
 

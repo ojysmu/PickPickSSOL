@@ -4,19 +4,15 @@ import java.util.*
 
 class CardStackContent: IDContent, ImageComponent {
     lateinit var userId: UUID
-    lateinit var name: String
-    var age = 0
-    lateinit var content: String
+    lateinit var contents: List<String>
 
     private var image: ByteArray? = null
     private lateinit var imageName: String
     private lateinit var imageUrl: String
 
-    constructor(userId: UUID, name: String, age: Int, content: String, imageName: String, imageUrl: String) {
+    constructor(userId: UUID, contents: List<String>, imageName: String, imageUrl: String) {
         this.userId = userId
-        this.name = name
-        this.age = age
-        this.content = content
+        this.contents = contents
         this.imageName = imageName
         this.imageUrl = imageUrl
     }

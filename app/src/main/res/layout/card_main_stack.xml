@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/card_home_store"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -20,37 +21,71 @@
             android:layout_height="match_parent"
             android:scaleType="centerCrop" />
 
-        <TextView
-            android:id="@+id/card_main_stack_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_main_stack_nope"
+            android:layout_width="@dimen/main_pick_width"
+            android:layout_height="@dimen/main_pick_height"
             android:layout_marginBottom="@dimen/card_vertical_margin"
             android:layout_marginStart="@dimen/card_horizontal_margin"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/card_main_stack_content"
-            android:textSize="@dimen/text_main_name"
-            android:textColor="@android:color/white"
-            android:textStyle="bold"/>
+            app:layout_constraintEnd_toEndOf="parent"
+            app:cardBackgroundColor="@android:color/transparent"
+            app:strokeWidth="4dp"
+            app:strokeColor="@android:color/black"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="0dp">
 
-        <TextView
-            android:id="@+id/card_main_stack_age"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/card_horizontal_margin"
-            app:layout_constraintStart_toEndOf="@id/card_main_stack_name"
-            app:layout_constraintBottom_toBottomOf="@id/card_main_stack_name"
-            android:textSize="@dimen/text_main_age"
-            android:textColor="@android:color/white"/>
+            <TextView
+                android:id="@+id/card_main_stack_nope_content"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginVertical="@dimen/card_vertical_margin"
+                android:layout_marginHorizontal="@dimen/card_horizontal_margin"
+                android:text="@string/home_nope"
+                android:textSize="@dimen/text_main_pick"
+                android:textColor="@android:color/black"
+                android:textStyle="bold" />
+        </com.google.android.material.card.MaterialCardView>
 
-        <TextView
-            android:id="@+id/card_main_stack_content"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_main_stack_pick"
+            android:layout_width="@dimen/main_pick_width"
+            android:layout_height="@dimen/main_pick_height"
             android:layout_marginBottom="@dimen/card_vertical_margin"
             android:layout_marginStart="@dimen/card_horizontal_margin"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:cardBackgroundColor="@android:color/transparent"
+            app:strokeWidth="4dp"
+            app:strokeColor="@color/colorPrimary"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="0dp">
+
+            <TextView
+                android:id="@+id/card_main_stack_pick_content"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginVertical="@dimen/card_vertical_margin"
+                android:layout_marginHorizontal="@dimen/card_horizontal_margin"
+                android:text="@string/home_pick"
+                android:textSize="@dimen/text_main_pick"
+                android:textColor="@color/colorPrimary"
+                android:textStyle="bold" />
+        </com.google.android.material.card.MaterialCardView>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/card_main_stack_recycler_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:textSize="@dimen/text_main_content"
-            android:textColor="@android:color/white"/>
+            tools:listitem="@layout/card_main_stack_content"
+            tools:itemCount="5" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>

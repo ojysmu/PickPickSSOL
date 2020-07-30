@@ -6,60 +6,67 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.navigation.NavController
-import androidx.navigation.findNavController
-import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.android.material.navigation.NavigationView
 import kotlinx.android.synthetic.main.fragment_splash.*
 import mbtinder.android.R
+import mbtinder.android.component.StaticComponent
 import mbtinder.android.io.SocketUtil
-import mbtinder.android.ui.fragment.home.HomeFragment
-import mbtinder.android.ui.fragment.sign_up.SignUpFragment
 import mbtinder.android.ui.model.Fragment
+import mbtinder.android.util.Log
 import mbtinder.android.util.SharedPreferencesUtil
 import mbtinder.android.util.ThreadUtil
 
 class SplashFragment : Fragment() {
     override fun initializeView() {
-        requireActivity().window.statusBarColor = requireContext().getColor(R.color.colorAccent)
+        requireActivity().window.statusBarColor = requireContext().getColor(android.R.color.white)
         requireActivity().findViewById<BottomNavigationView>(R.id.nav_view).visibility = View.GONE
 
         ThreadUtil.runOnBackground {
             if (hasAccountInfo()) {
-                ThreadUtil.runOnBackground {
-                    val (email, password) = getAccountInfo()
-                    val signInResult = SocketUtil.signIn(email, password)
-                    if (signInResult.isSucceed) {
-                        findNavController().navigate(R.id.action_to_home)
-                    } else {
-                        removeAccountInfo()
-                        ThreadUtil.runOnUiThread {
-                            Toast.makeText(requireContext(), R.string.splash_failed_to_sign_in, Toast.LENGTH_SHORT).show()
-                        }
+                val (email, password) = getAccountInfo()
+                val signInResult = SocketUtil.signIn(email, password)
+                if (signInResult.isSucceed) {
+                    StaticComponent.user = signInResult.result!!
+                    findNavController().navigate(R.id.action_to_home)
+                } else {
+                    ThreadUtil.runOnUiThread {
+                        Toast.makeText(requireContext(), R.string.splash_failed_to_sign_in, Toast.LENGTH_SHORT).show()
                     }
+                    removeAccountInfo()
+                    loadAnimation()
                 }
             } else {
-                Thread.sleep(1000)
-
-                ThreadUtil.runOnUiThread {
-                    ObjectAnimator.ofFloat(splash_logo, "translationY", -1000f).apply {
-                        duration = 500
-                        start()
-                    }
-
-                    ThreadUtil.runOnBackground {
-                        Thread.sleep(500)
-                        ThreadUtil.runOnUiThread(this::initializeSignUp)
-                    }
-                }
+                loadAnimation()
             }
         }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflateView(R.layout.fragment_splash, inflater, container)
+    }
+
+    private fun loadAnimation() {
+        Thread.sleep(1000)
+        val animationDuration = if (isAnimated) {
+            0L
+        } else {
+            500L
+        }
+
+        ThreadUtil.runOnUiThread {
+            ObjectAnimator.ofFloat(splash_logo, "translationY", -1000f).apply {
+                duration = animationDuration
+                Log.v("duration=$duration")
+            }.start()
+
+            ThreadUtil.runOnBackground {
+                Thread.sleep(animationDuration)
+                isAnimated = true
+                Log.v("true")
+                ThreadUtil.runOnUiThread(this::initializeSignUp)
+            }
+        }
     }
 
     private fun hasAccountInfo() =
@@ -92,5 +99,9 @@ class SplashFragment : Fragment() {
 
     private fun initializeHome() {
 
+    }
+
+    companion object {
+        private var isAnimated = false
     }
 }

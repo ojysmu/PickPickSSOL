@@ -37,6 +37,9 @@
     <dimen name="text_main_age">18sp</dimen>
     <dimen name="text_main_content">16sp</dimen>
 
+    <dimen name="text_main_pick">48sp</dimen>
+    <dimen name="main_pick_width">180dp</dimen>
+    <dimen name="main_pick_height">90dp</dimen>
 
     <dimen name="single_line_content_height">40dp</dimen>
 </resources>

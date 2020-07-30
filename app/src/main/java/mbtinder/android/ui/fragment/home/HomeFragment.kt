@@ -4,10 +4,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.AccelerateInterpolator
-import android.view.animation.DecelerateInterpolator
 import android.view.animation.LinearInterpolator
 import androidx.recyclerview.widget.DefaultItemAnimator
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.yuyakaido.android.cardstackview.*
 import kotlinx.android.synthetic.main.fragment_home.*
 import mbtinder.android.R
@@ -17,14 +16,18 @@ import mbtinder.lib.component.CardStackContent
 import java.util.*
 
 class HomeFragment : Fragment() {
-    private val cardStackLayoutManager by lazy { CardStackLayoutManager(requireContext()) }
+    private val sampleContents = arrayListOf<CardStackContent>()
+
+    private val cardStackLayoutManager by lazy { CardStackLayoutManager(requireContext(), cardStackListener) }
+    private val cardStackAdapter by lazy { CardStackAdapter(sampleContents) }
 
     override fun initializeView() {
-        val contents = arrayListOf<CardStackContent>()
+        requireActivity().findViewById<BottomNavigationView>(R.id.nav_view).visibility = View.VISIBLE
+
         for (i in 0 until 10) {
-            val content = CardStackContent(UUID.randomUUID(), "이름$i", Random().nextInt(20) + 20, "내용 라인1\n내용 라인2\n내용 라인3", "name", "url")
+            val content = CardStackContent(UUID.randomUUID(), listOf("내용1", "내용2"), "name", "url")
             content.setImage(ImageUtil.drawableToByteArray(requireContext().getDrawable(R.drawable.image)!!))
-            contents.add(content)
+            sampleContents.add(content)
         }
 
         cardStackLayoutManager.setStackFrom(StackFrom.None)
@@ -35,21 +38,67 @@ class HomeFragment : Fragment() {
         cardStackLayoutManager.setMaxDegree(20.0f)
         cardStackLayoutManager.setDirections(Direction.HORIZONTAL)
         cardStackLayoutManager.setCanScrollHorizontal(true)
-        cardStackLayoutManager.setCanScrollVertical(true)
+        cardStackLayoutManager.setCanScrollVertical(false)
         cardStackLayoutManager.setSwipeableMethod(SwipeableMethod.AutomaticAndManual)
         cardStackLayoutManager.setOverlayInterpolator(LinearInterpolator())
 
-        main_card_stack_view.layoutManager = cardStackLayoutManager
-        main_card_stack_view.adapter =
-            CardStackAdapter(contents)
-        main_card_stack_view.itemAnimator.apply {
+        home_card_stack_view.layoutManager = cardStackLayoutManager
+        home_card_stack_view.adapter = cardStackAdapter
+        home_card_stack_view.itemAnimator.apply {
             if (this is DefaultItemAnimator) {
                 supportsChangeAnimations = false
             }
+        }
+
+        home_rewind.setOnClickListener {
+            home_card_stack_view.rewind()
         }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflateView(R.layout.fragment_home, inflater, container)
+    }
+
+    private val cardStackListener = object : CardStackListener {
+        private var currentPosition = 0
+
+        override fun onCardDisappeared(view: View?, position: Int) {
+            val holder = cardStackAdapter.holders[currentPosition]
+            holder.setNopeTransparency(0.0f)
+            holder.setPickTransparency(0.0f)
+        }
+
+        override fun onCardDragging(direction: Direction?, ratio: Float) {
+            val holder = cardStackAdapter.holders[currentPosition]
+            if (ratio == 0.0f) {
+                holder.setNopeTransparency(0.0f)
+                holder.setPickTransparency(0.0f)
+            }
+            if (direction == Direction.Left) {
+                holder.setNopeTransparency(ratio)
+            } else {
+                holder.setPickTransparency(ratio)
+            }
+        }
+
+        override fun onCardSwiped(direction: Direction?) {
+
+        }
+
+        override fun onCardCanceled() {
+            val holder = cardStackAdapter.holders[currentPosition]
+            holder.setNopeTransparency(0.0f)
+            holder.setPickTransparency(0.0f)
+        }
+
+        override fun onCardAppeared(view: View?, position: Int) {
+            currentPosition = position
+        }
+
+        override fun onCardRewound() {
+            val holder = cardStackAdapter.holders[currentPosition]
+            holder.setNopeTransparency(0.0f)
+            holder.setPickTransparency(0.0f)
+        }
     }
 }

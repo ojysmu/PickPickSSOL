@@ -55,7 +55,7 @@ object CommandProcess {
         val email = command.arguments.getString("email")
         val password = command.arguments.getString("password")
         val name = command.arguments.getString("name")
-        val birth = Date.valueOf(command.arguments.getString("birth"))
+        val age = command.arguments.getInt("age")
         val gender = command.arguments.getInt("gender")
         val passwordQuestion = command.arguments.getString("password_question")
         val passwordAnswer = command.arguments.getString("password_answer")
@@ -64,7 +64,7 @@ object CommandProcess {
             email = email,
             password = password,
             name = name,
-            birth = birth,
+            age = age,
             gender = gender,
             description = "",
             lastLocationLng = -1.0,

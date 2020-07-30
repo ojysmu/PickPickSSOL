@@ -91,8 +91,6 @@ abstract class JSONParsable: JSONContent {
                     }
 
                     break
-                } else {
-                    println("key=$key, formatted=$formatted, toUnderscore=${toUnderscore(key)}")
                 }
             }
         }

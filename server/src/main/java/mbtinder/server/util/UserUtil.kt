@@ -26,7 +26,7 @@ object UserUtil {
 
     private fun ensureUpdate() {
         if (lastUpdate < System.currentTimeMillis() - UPDATE_DURATION) {
-            updateUsers()
+            users = updateUsers()
         }
     }
 
@@ -49,7 +49,7 @@ object UserUtil {
             }
             users[index]
         } else {
-            updateUsers()
+            users = updateUsers()
             val found = users.find { it.userId == userId }
             if (!withPassword) {
                 found?.password = ""
@@ -66,7 +66,7 @@ object UserUtil {
         return if (found != null) {
             found
         } else {
-            updateUsers()
+            users = updateUsers()
             return users.find { it.email == email }
         }
     }

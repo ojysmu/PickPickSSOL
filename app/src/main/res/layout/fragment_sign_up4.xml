@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.fragment.sign_up.SignUp4Fragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            style="@style/FragmentContent.Title"
+            android:id="@+id/sign_up4_title"
+            android:text="@string/sign_up4_title"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <Button
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/activity_horizontal_margin"
+            android:text="@string/sign_up4_go_test"
+            android:textSize="@dimen/text_fragment_medium"
+            app:layout_constraintBaseline_toBaselineOf="@id/sign_up4_title"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <TextView
+            style="@style/FragmentContent.Medium"
+            android:id="@+id/sign_up4_mbti_title"
+            android:text="@string/sign_up4_mbti_title"
+            app:layout_constraintTop_toBottomOf="@id/sign_up4_title"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/sign_up4_mbti_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/card_vertical_margin"
+            android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
+            app:layout_constraintTop_toBottomOf="@id/sign_up4_mbti_title"
+            tools:listitem="@layout/card_sign_up4_mbti"
+            tools:itemCount="2" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/sign_up4_questions_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
+            app:layout_constraintTop_toBottomOf="@id/sign_up4_mbti_recycler_view"
+            tools:listitem="@layout/card_sign_up4_questions"
+            tools:itemCount="3" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.core.widget.NestedScrollView>

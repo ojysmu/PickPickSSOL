@@ -15,6 +15,7 @@ import mbtinder.server.constant.LocalFile
 import mbtinder.server.io.database.MySQLServer
 import mbtinder.server.io.database.SQLiteConnection
 import mbtinder.server.util.MessageUtil
+import mbtinder.server.util.SignUpQuestionUtil
 import mbtinder.server.util.UserUtil
 import org.json.JSONArray
 import org.json.JSONObject
@@ -36,6 +37,7 @@ object CommandProcess {
             Command.SIGN_IN -> signIn(command)
             Command.FIND_PASSWORD -> findPassword(command)
             Command.UPDATE_PASSWORD -> updatePassword(command)
+            Command.GET_SIGN_UP_QUESTIONS -> getSignUpQuestion(command)
 
             Command.CREATE_CHAT -> createChat(command)
             Command.DELETE_CHAT -> deleteChat(command)
@@ -152,6 +154,12 @@ object CommandProcess {
         }
 
         return Connection.makeNegativeResponse(command.uuid, ServerResponse.IMAGE_ID_NOT_FOUND)
+    }
+
+    private fun getSignUpQuestion(command: CommandContent): JSONObject {
+        val questions = SignUpQuestionUtil.getQuestions().toJSONList()
+
+        return Connection.makePositiveResponse(command.uuid, JSONObject()).apply { put("questions", questions.toJSONArray()) }
     }
 
     private fun signIn(command: CommandContent): JSONObject {

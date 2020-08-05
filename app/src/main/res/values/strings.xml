@@ -14,6 +14,39 @@
     <string name="common_submit">제출</string>
     <string name="common_wait">잠시만 기다려주세요.</string>
 
+    <string name="common_mbti_intj_title">INJT</string>
+    <string name="common_mbti_intj_content">용의주도한 전략가</string>
+    <string name="common_mbti_intp_title">INTP</string>
+    <string name="common_mbti_intp_content">논리적인 사색가</string>
+    <string name="common_mbti_infj_title">INFJ</string>
+    <string name="common_mbti_infj_content">선의의 옹호자</string>
+    <string name="common_mbti_infp_title">INFP</string>
+    <string name="common_mbti_infp_content">열정적인 중재자</string>
+    <string name="common_mbti_istj_title">ISTJ</string>
+    <string name="common_mbti_istj_content">청렴결백한 논리주의자</string>
+    <string name="common_mbti_isfj_title">ISFJ</string>
+    <string name="common_mbti_isfj_content">용감한 수호자</string>
+    <string name="common_mbti_istp_title">ISTP</string>
+    <string name="common_mbti_istp_content">만능 재주꾼</string>
+    <string name="common_mbti_isfp_title">ISFP</string>
+    <string name="common_mbti_isfp_content">호기심 많은 예술가</string>
+    <string name="common_mbti_entj_title">ENJT</string>
+    <string name="common_mbti_entj_content">대담한 통솔자</string>
+    <string name="common_mbti_entp_title">ENTP</string>
+    <string name="common_mbti_entp_content">뜨거운 논쟁을 즐기는 변론가</string>
+    <string name="common_mbti_enfj_title">ENFJ</string>
+    <string name="common_mbti_enfj_content">정의로운 사회운동가</string>
+    <string name="common_mbti_enfp_title">ENFP</string>
+    <string name="common_mbti_enfp_content">재기발랄한 활동가</string>
+    <string name="common_mbti_estj_title">ESTJ</string>
+    <string name="common_mbti_estj_content">엄격한 관리자</string>
+    <string name="common_mbti_esfj_title">ESFJ</string>
+    <string name="common_mbti_esfj_content">사교적인 외교관</string>
+    <string name="common_mbti_estp_title">ESTP</string>
+    <string name="common_mbti_estp_content">모험을 즐기는 사업가</string>
+    <string name="common_mbti_esfp_title">ESFP</string>
+    <string name="common_mbti_esfp_content">자유로운 영혼의 연예인</string>
+
     <string name="socket_on_connection_failed">서버에 연결할 수 없습니다.\n애플리케이션을 종료합니다.</string>
     <string name="socket_on_disconnected">서버에 연결할 수 없습니다.\n애플리케이션을 종료합니다.</string>
 
@@ -47,7 +80,7 @@
     <string name="sign_up_password_answer">답변</string>
     <string name="sign_up_succeed">회원가입을 축하드립니다. 가입하신 정보로 로그인해주세요.</string>
     <string name="sign_up_failed">회원가입을 실패했습니다. 잠시 후 다시 시도해주세요.</string>
-    
+
     <string name="sign_up1_title">회원가입</string>
     <string name="sign_up1_email">이메일</string>
     <string name="sign_up1_email_error">이메일을 확인해주세요.</string>
@@ -56,6 +89,26 @@
     <string name="sign_up1_password_error">비밀번호를 확인해주세요. 8자 이상, 16자 이하여야 합니다.</string>
     <string name="sign_up1_password_repeat">비밀번호 확인</string>
     <string name="sign_up1_password_repeat_error">비밀번호가 일치하지 않습니다.</string>
+
+    <string name="sign_up2_title">비밀번호 찾기 질문 및 답변</string>
+    <string name="sign_up2_answer">답변</string>
+    <string name="sign_up2_answer_error">답변을 입력해주세요.</string>
+
+    <string name="sign_up3_title">정보</string>
+    <string name="sign_up3_name_title">이름</string>
+    <string name="sign_up3_name">이름 (10자 이내)</string>
+    <string name="sign_up3_name_error">이름을 입력해주세요.</string>
+    <string name="sign_up3_gender_title">성별</string>
+    <string name="sign_up3_gender_male">남성</string>
+    <string name="sign_up3_gender_female">여성</string>
+    <string name="sign_up3_age_title">나이</string>
+    <string name="sign_up3_age">나이</string>
+    <string name="sign_up3_age_error">나이을 입력해주세요.</string>
+
+    <string name="sign_up4_title">나는</string>
+    <string name="sign_up4_go_test">MBTI 검사하기</string>
+    <string name="sign_up4_mbti_title">MBTI</string>
+
 
     <string name="sign_in_title">로그인</string>
     <string name="sign_in_forgot">잊어버리셨다면</string>

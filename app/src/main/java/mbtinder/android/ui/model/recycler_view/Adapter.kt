@@ -1,4 +1,4 @@
-package mbtinder.android.ui.model
+package mbtinder.android.ui.model.recycler_view
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -9,14 +9,14 @@ import androidx.recyclerview.widget.RecyclerView
 
 abstract class Adapter<T>(@LayoutRes private val rootView: Int,
                           private var contents: MutableList<T>,
-                          private val clazz: Class<out RecyclerView.ViewHolder>): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+                          private val clazz: Class<out AdaptableViewHolder<T>>): RecyclerView.Adapter<AdaptableViewHolder<T>>() {
     protected lateinit var context: Context
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AdaptableViewHolder<T> {
         context = parent.context
         val view = LayoutInflater.from(context).inflate(rootView, parent, false)
 
-        return clazz.getDeclaredConstructor(View::class.java).newInstance(view) as RecyclerView.ViewHolder
+        return clazz.getDeclaredConstructor(View::class.java).newInstance(view) as AdaptableViewHolder<T>
     }
 
     override fun getItemCount(): Int {

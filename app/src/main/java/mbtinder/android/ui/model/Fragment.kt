@@ -10,9 +10,11 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
+import androidx.annotation.StringRes
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import com.google.android.material.textfield.TextInputLayout
+import mbtinder.android.util.FormStateChecker
 import mbtinder.android.util.ViewUtil
 
 abstract class Fragment(@LayoutRes private val layout: Int) : Fragment(), View.OnFocusChangeListener {
@@ -71,6 +73,12 @@ abstract class Fragment(@LayoutRes private val layout: Int) : Fragment(), View.O
         if (leaveEvent != null) {
             addFocusEvent(textInputLayout, leaveEvent)
         }
+    }
+
+    protected fun onInputIssued(input: TextInputLayout, @StringRes message: Int, formStateChecker: FormStateChecker?) {
+        input.isErrorEnabled = true
+        input.error = getString(message)
+        formStateChecker?.setState(input, false)
     }
 
     protected abstract fun initializeView()

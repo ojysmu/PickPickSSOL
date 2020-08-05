@@ -1,9 +1,6 @@
 package mbtinder.android.ui.fragment.home
 
-import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.view.animation.LinearInterpolator
 import androidx.recyclerview.widget.DefaultItemAnimator
 import com.google.android.material.bottomnavigation.BottomNavigationView

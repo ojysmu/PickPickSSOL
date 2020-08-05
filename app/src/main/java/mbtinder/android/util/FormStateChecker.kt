@@ -9,10 +9,10 @@ class FormStateChecker {
         formStatus[ViewUtil.filterEditText(it)] = false
     }
 
-    fun getState(view: View): Boolean = formStatus.getOrDefault(view, false)
+    fun getState(view: View): Boolean = formStatus.getOrDefault(ViewUtil.filterEditText(view), false)
 
     fun setState(view: View, state: Boolean) {
-        formStatus[view] = state
+        formStatus[ViewUtil.filterEditText(view)] = state
     }
 
     fun hasFalse() = formStatus.containsValue(false)

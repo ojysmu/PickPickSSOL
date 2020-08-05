@@ -1,6 +1,8 @@
 package mbtinder.lib.util
 
+import mbtinder.lib.component.IDContent
 import mbtinder.lib.component.json.JSONContent
+import mbtinder.lib.component.json.JSONParsable
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -36,20 +38,10 @@ class JSONList<T: JSONContent>() : ArrayList<T>() {
     fun updateJSONObject() = forEach { it.updateJSONObject() }
 }
 
-fun <T: JSONContent> jsonListOf(vararg elements: T): JSONList<T> {
-    return if (elements.isEmpty()) {
-        JSONList()
-    } else {
-        JSONList<T>().apply { addAll(elements) }
-    }
-}
+fun <T: JSONContent> jsonListOf(vararg elements: T) = JSONList<T>().apply { addAll(elements) }
 
-fun <T: JSONContent> Collection<T>.toJSONList(): JSONList<T> {
-    return JSONList(this)
-}
+fun <T: JSONContent> Collection<T>.toJSONList() = JSONList(this)
 
-inline fun <reified T: JSONContent> JSONArray.toJSONList(): JSONList<T> {
-    return JSONList(this, T::class.java)
-}
+inline fun <reified T: JSONContent> JSONArray.toJSONList() = JSONList(this, T::class.java)
 
 fun toJSONArray() = JSONArray().apply { forEach { put(it) } }

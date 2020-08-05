@@ -29,8 +29,44 @@
     <fragment
         android:id="@+id/nav_sign_up1"
         android:name="mbtinder.android.ui.fragment.sign_up.SignUp1Fragment"
-        android:label="@string/sign_up_title"
-        tools:layout="@layout/fragment_sign_up1" />
+        android:label="@string/sign_up1_title"
+        tools:layout="@layout/fragment_sign_up1">
+
+        <action
+            android:id="@+id/action_to_sign_up2"
+            app:destination="@id/nav_sign_up2" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_sign_up2"
+        android:name="mbtinder.android.ui.fragment.sign_up.SignUp2Fragment"
+        android:label="@string/sign_up2_title"
+        tools:layout="@layout/fragment_sign_up2">
+
+        <action
+            android:id="@+id/action_to_sign_up3"
+            app:destination="@id/nav_sign_up3" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_sign_up3"
+        android:name="mbtinder.android.ui.fragment.sign_up.SignUp3Fragment"
+        android:label="@string/sign_up3_title"
+        tools:layout="@layout/fragment_sign_up3">
+
+        <action
+            android:id="@+id/action_to_sign_up4"
+            app:destination="@id/nav_sign_up4" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_sign_up4"
+        android:name="mbtinder.android.ui.fragment.sign_up.SignUp4Fragment"
+        android:label="@string/sign_up4_title"
+        tools:layout="@layout/fragment_sign_up4">
+
+
+    </fragment>
 
     <fragment
         android:id="@+id/nav_sign_in"

@@ -1,8 +1,9 @@
 package mbtinder.android.ui.fragment.sign_up
 
+import android.os.Bundle
 import android.text.Editable
 import android.util.Patterns
-import androidx.annotation.StringRes
+import androidx.navigation.fragment.findNavController
 import kotlinx.android.synthetic.main.fragment_sign_up1.*
 import mbtinder.android.R
 import mbtinder.android.io.SocketUtil
@@ -20,6 +21,14 @@ class SignUp1Fragment : Fragment(R.layout.fragment_sign_up1) {
         initializeFocusableEditText(sign_up1_email, this::onEmailChanged, this::onLeaveEmail)
         initializeFocusableEditText(sign_up1_password, this::onPasswordChanged, this::onLeavePassword)
         initializeFocusableEditText(sign_up1_password_repeat, this::onPasswordRepeatChanged, this::onLeavePasswordRepeat)
+
+        sign_up1_next.setOnClickListener {
+            val arguments = Bundle()
+            arguments.putString("email", ViewUtil.getText(sign_up1_email))
+            arguments.putString("password", ViewUtil.getText(sign_up1_password))
+
+            findNavController().navigate(R.id.action_to_sign_up2, arguments)
+        }
     }
 
     private fun enableNextButton() {
@@ -32,7 +41,7 @@ class SignUp1Fragment : Fragment(R.layout.fragment_sign_up1) {
                 formStateChecker.setState(sign_up1_email, true)
                 sign_up1_email.isErrorEnabled = false
             } else if (getFocusCount(sign_up1_email) != 1) {
-                onEmailIssued(R.string.sign_up_email_error)
+                onInputIssued(sign_up1_email, R.string.sign_up1_email_error, formStateChecker)
             }
             enableNextButton()
         }
@@ -42,20 +51,16 @@ class SignUp1Fragment : Fragment(R.layout.fragment_sign_up1) {
         val email = ViewUtil.getText(sign_up1_email)
 
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            onEmailIssued(R.string.sign_up_email_error)
+            onInputIssued(sign_up1_email, R.string.sign_up1_email_error, formStateChecker)
         } else {
             ThreadUtil.runOnBackground {
                 if (!SocketUtil.checkEmailDuplicated(email).isSucceed) {
-                    ThreadUtil.runOnUiThread { onEmailIssued(R.string.sign_up_email_duplicated) }
+                    ThreadUtil.runOnUiThread {
+                        onInputIssued(sign_up1_email, R.string.sign_up1_email_duplicated, formStateChecker)
+                    }
                 }
             }
         }
-    }
-
-    private fun onEmailIssued(@StringRes error: Int) {
-        formStateChecker.setState(sign_up1_email, false)
-        sign_up1_email.isErrorEnabled = true
-        sign_up1_email.error = getString(error)
     }
 
     private fun onPasswordChanged(editable: Editable?) {
@@ -64,22 +69,16 @@ class SignUp1Fragment : Fragment(R.layout.fragment_sign_up1) {
                 formStateChecker.setState(sign_up1_password, true)
                 sign_up1_password.isErrorEnabled = false
             } else if (getFocusCount(sign_up1_password) != 1) {
-                onPasswordIssued()
+                onInputIssued(sign_up1_password, R.string.sign_up1_password_error, formStateChecker)
             }
-            onPasswordRepeatChanged(it)
+            onPasswordRepeatChanged(null)
         }
     }
 
     private fun onLeavePassword() {
         if (ViewUtil.getText(sign_up1_password).length !in 8..16) {
-            onPasswordIssued()
+            onInputIssued(sign_up1_password, R.string.sign_up1_password_error, formStateChecker)
         }
-    }
-
-    private fun onPasswordIssued() {
-        formStateChecker.setState(sign_up1_password, false)
-        sign_up1_password.isErrorEnabled = true
-        sign_up1_password.error = getString(R.string.sign_up_password_error)
     }
 
     private fun onPasswordRepeatChanged(editable: Editable?) {
@@ -89,20 +88,14 @@ class SignUp1Fragment : Fragment(R.layout.fragment_sign_up1) {
             formStateChecker.setState(sign_up1_password_repeat, true)
             sign_up1_password_repeat.isErrorEnabled = false
         } else if (focusCount > 1) {
-            onPasswordRepeatIssued()
+            onInputIssued(sign_up1_password_repeat, R.string.sign_up1_password_repeat_error, formStateChecker)
         }
         enableNextButton()
     }
 
     private fun onLeavePasswordRepeat() {
         if (!ViewUtil.hasSameText(sign_up1_password, sign_up1_password_repeat)) {
-            onPasswordRepeatIssued()
+            onInputIssued(sign_up1_password_repeat, R.string.sign_up1_password_repeat_error, formStateChecker)
         }
-    }
-
-    private fun onPasswordRepeatIssued() {
-        formStateChecker.setState(sign_up1_password_repeat, false)
-        sign_up1_password_repeat.isErrorEnabled = true
-        sign_up1_password_repeat.error = getString(R.string.sign_up_password_repeat_error)
     }
 }

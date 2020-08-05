@@ -40,6 +40,8 @@ enum class Command {
 
     DELETE_USER_IMAGE,
 
+    GET_SIGN_UP_QUESTIONS,
+
     /**
      * Client command.
      * Sign in with email, password.

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".ui.fragment.sign_up.SignUp2Fragment">
+
+    <TextView
+        style="@style/FragmentContent.Title"
+        android:id="@+id/sign_up2_title"
+        android:text="@string/sign_up2_title"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <include
+        layout="@layout/view_spinner"
+        android:id="@+id/sign_up2_question_selector"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/single_line_content_height"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
+        app:layout_constraintTop_toBottomOf="@id/sign_up2_title" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:id="@+id/sign_up2_password_answer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="@dimen/card_vertical_margin"
+        app:layout_constraintTop_toBottomOf="@id/sign_up2_question_selector"
+        android:hint="@string/sign_up_password_answer">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:maxLines="1"
+            android:maxLength="40"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <Button
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:id="@+id/sign_up2_next"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:layout_marginEnd="@dimen/activity_horizontal_margin"
+        android:enabled="false"
+        app:layout_constraintTop_toBottomOf="@id/sign_up2_password_answer"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:text="@string/common_next" />
+</androidx.constraintlayout.widget.ConstraintLayout>

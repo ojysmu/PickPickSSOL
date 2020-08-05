@@ -56,6 +56,8 @@
 
         <action
             android:id="@+id/action_to_sign_up4"
+            app:popUpTo="@id/nav_sign_up3"
+            app:popUpToInclusive="true"
             app:destination="@id/nav_sign_up4" />
     </fragment>
 
@@ -65,7 +67,11 @@
         android:label="@string/sign_up4_title"
         tools:layout="@layout/fragment_sign_up4">
 
-
+        <action
+            android:id="@+id/action_to_home"
+            app:popUpTo="@id/nav_sign_up4"
+            app:popUpToInclusive="true"
+            app:destination="@id/nav_home" />
     </fragment>
 
     <fragment

@@ -35,14 +35,18 @@ class MBTIViewHolder(itemView: View) : AdaptableViewHolder<MBTIContent>(itemView
     }
 
     private fun check() {
-        checkImageView.visibility = View.VISIBLE
         cardView.strokeColor = itemView.context.getColor(R.color.colorPrimary)
+        titleTextView.setTextColor(itemView.context.getColor(R.color.colorPrimary))
+        contentTextView.setTextColor(itemView.context.getColor(R.color.colorPrimary))
+        checkImageView.visibility = View.VISIBLE
         content.isChecked = true
     }
 
     fun uncheck() {
-        checkImageView.visibility = View.GONE
         cardView.strokeColor = itemView.context.getColor(android.R.color.transparent)
+        titleTextView.setTextColor(itemView.context.getColor(android.R.color.black))
+        contentTextView.setTextColor(itemView.context.getColor(android.R.color.black))
+        checkImageView.visibility = View.GONE
         content.isChecked = false
     }
 }

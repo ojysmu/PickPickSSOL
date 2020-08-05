@@ -14,10 +14,7 @@ object CommandProcess {
         val arguments = JSONObject().apply { put("email", email) }
 
         return SocketUtil.getVoidResult(
-            SocketUtil.getServerResult(
-                Command.CHECK_EMAIL_DUPLICATED,
-                arguments
-            )
+            SocketUtil.getServerResult(Command.CHECK_EMAIL_DUPLICATED, arguments)
         )
     }
 
@@ -34,7 +31,9 @@ object CommandProcess {
         arguments.put("password_question_id", passwordQuestionId)
         arguments.put("password_answer", passwordAnswer)
 
-        return SocketUtil.getVoidResult(SocketUtil.getServerResult(Command.ADD_USER, arguments))
+        return SocketUtil.getVoidResult(
+            SocketUtil.getServerResult(Command.ADD_USER, arguments)
+        )
     }
 
     fun signIn(email: String, password: String): ServerResult<UserContent> {
@@ -68,10 +67,7 @@ object CommandProcess {
         arguments.put("password", password)
 
         return SocketUtil.getVoidResult(
-            SocketUtil.getServerResult(
-                Command.UPDATE_PASSWORD,
-                arguments
-            )
+            SocketUtil.getServerResult(Command.UPDATE_PASSWORD, arguments)
         )
     }
 
@@ -80,12 +76,24 @@ object CommandProcess {
     )
 
     fun setSignUpQuestions(userId: UUID, signUpQuestions: JSONList<SignUpQuestionContent>): ServerResult<Void> {
+        val forms: JSONList<SignUpQuestionContent.ConnectionForm> = signUpQuestions.mapTo(JSONList()) {
+            it.toConnectionForm()
+        }
+
         val arguments = JSONObject()
         arguments.put("user_id", userId.toString())
-        arguments.put("sign_up_questions", signUpQuestions.toJSONArray())
+        arguments.put("sign_up_questions", forms.toJSONArray())
 
         val result = SocketUtil.getServerResult(Command.SET_SIGN_UP_QUESTIONS, arguments)
+        return SocketUtil.getVoidResult(result)
+    }
 
+    fun setMBTI(userId: UUID, mbti: String): ServerResult<Void> {
+        val arguments = JSONObject()
+        arguments.put("user_id", userId.toString())
+        arguments.put("mbti", mbti)
+
+        val result = SocketUtil.getServerResult(Command.SET_MBTI, arguments)
         return SocketUtil.getVoidResult(result)
     }
 }

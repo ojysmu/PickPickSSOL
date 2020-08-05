@@ -2,6 +2,7 @@ package mbtinder.android.ui.fragment.sign_up
 
 import android.content.Intent
 import android.widget.Toast
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -23,10 +24,11 @@ class SignUp4Fragment : Fragment(R.layout.fragment_sign_up4) {
         val mbtis = ArrayList<MBTIContent>().apply {
             (0 until 16).forEach { add(MBTIContent(mbtiTitles[it], mbtiContents[it])) }
         }
+        val mbtiAdapter = MBTIAdapter(mbtis)
 
         sign_up4_mbti_recycler_view.layoutManager = GridLayoutManager(requireContext(), 2, HORIZONTAL, false)
         sign_up4_mbti_recycler_view.itemAnimator = DefaultItemAnimator()
-        sign_up4_mbti_recycler_view.adapter = MBTIAdapter(mbtis)
+        sign_up4_mbti_recycler_view.adapter = mbtiAdapter
 
         val signUpQuestions = CommandProcess.getSignUpQuestion().result!!
         val signUpQuestionAdapter = SignUpQuestionAdapter(signUpQuestions)
@@ -52,13 +54,18 @@ class SignUp4Fragment : Fragment(R.layout.fragment_sign_up4) {
             ThreadUtil.runOnBackground {
                 (0 until signUpQuestions.size).forEach { signUpQuestions[it].selected = positions[it] }
 
-                val setResult = CommandProcess.setSignUpQuestions(
+                val setMBTIResult = CommandProcess.setMBTI(
+                    userId = StaticComponent.user.userId,
+                    mbti = mbtiAdapter.getCheckedIndex().title
+                )
+
+                val setQuestionResult = CommandProcess.setSignUpQuestions(
                     userId = StaticComponent.user.userId,
                     signUpQuestions = signUpQuestions
                 )
 
-                if (setResult.isSucceed) {
-
+                if (setMBTIResult.isSucceed && setQuestionResult.isSucceed) {
+                    findNavController().navigate(R.id.action_to_home)
                 } else {
                     ThreadUtil.runOnUiThread {
                         ViewUtil.switchNextButton(layout_sign_up4)

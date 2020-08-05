@@ -7,6 +7,7 @@ import mbtinder.lib.io.component.CommandContent
 import mbtinder.lib.io.constant.Command
 import mbtinder.lib.util.JSONList
 import mbtinder.lib.util.saveJSONArray
+import mbtinder.lib.util.saveJSONObject
 import mbtinder.lib.util.toJSONList
 import mbtinder.server.constant.LocalFile
 import mbtinder.server.io.database.MySQLServer
@@ -36,6 +37,7 @@ object CommandProcess {
             Command.UPDATE_PASSWORD -> updatePassword(command)
             Command.GET_SIGN_UP_QUESTIONS -> getSignUpQuestion(command)
             Command.SET_SIGN_UP_QUESTIONS -> setSignUpQuestion(command)
+            Command.SET_MBTI -> setMBTI(command)
 
             Command.CREATE_CHAT -> createChat(command)
             Command.DELETE_CHAT -> deleteChat(command)
@@ -164,6 +166,14 @@ object CommandProcess {
         val userId = command.arguments.getString("user_id")
         val signUpQuestions = command.arguments.getJSONArray("sign_up_questions")
         signUpQuestions.saveJSONArray(LocalFile.getUserSignUpQuestionPath(userId))
+
+        return Connection.makePositiveResponse(command.uuid)
+    }
+
+    private fun setMBTI(command: CommandContent): JSONObject {
+        val userId = command.arguments.getString("user_id")
+        val mbti = command.arguments.getString("mbti")
+        JSONObject().apply { put("value", mbti) }.saveJSONObject(LocalFile.getUserMBTIPath(userId))
 
         return Connection.makePositiveResponse(command.uuid)
     }

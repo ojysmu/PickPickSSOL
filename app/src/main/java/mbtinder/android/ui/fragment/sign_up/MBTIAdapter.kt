@@ -1,8 +1,5 @@
 package mbtinder.android.ui.fragment.sign_up
 
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import mbtinder.android.R
 import mbtinder.android.ui.model.recycler_view.AdaptableViewHolder
 import mbtinder.android.ui.model.recycler_view.Adapter

@@ -104,11 +104,14 @@
     <string name="sign_up3_age_title">나이</string>
     <string name="sign_up3_age">나이</string>
     <string name="sign_up3_age_error">나이을 입력해주세요.</string>
+    <string name="sign_up3_sign_up_failed">회원가입을 실패했습니다. 잠시 후 다시 시도해주세요.</string>
+    <string name="sign_up3_sign_in_failed">로그인을 실패했습니다. 잠시 후 다시 시도해주세요.</string>
 
     <string name="sign_up4_title">나는</string>
     <string name="sign_up4_go_test">MBTI 검사하기</string>
     <string name="sign_up4_mbti_title">MBTI</string>
-
+    <string name="sign_up4_empty_question">답변이 선택되지 않은 질문이 있습니다.</string>
+    <string name="sign_up4_failed">취향 설정을 실패했습니다. 잠시 후 다시 시도해주세요.</string>
 
     <string name="sign_in_title">로그인</string>
     <string name="sign_in_forgot">잊어버리셨다면</string>

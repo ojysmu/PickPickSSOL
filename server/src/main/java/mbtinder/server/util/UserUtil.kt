@@ -12,12 +12,16 @@ object UserUtil {
     private var lastUpdate: Long = 0
 
     private fun updateUsers(): List<UserContent> {
+        println("UserUtil.updateUsers() START")
+
         val sql = "SELECT * FROM mbtinder.user"
         val queryId = MySQLServer.getInstance().addQuery(sql)
         val queryResult = MySQLServer.getInstance().getResult(queryId)
 
         lastUpdate = System.currentTimeMillis()
-        return queryResult.content.map { buildUser(it) }.sorted()
+        val result = queryResult.content.map { buildUser(it) }.sorted()
+        println("UserUtil.updateUsers() END: result=$result")
+        return result
     }
 
     private fun ensureUpdate() {

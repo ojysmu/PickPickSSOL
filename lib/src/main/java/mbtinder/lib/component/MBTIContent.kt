@@ -6,6 +6,7 @@ import org.json.JSONObject
 class MBTIContent: JSONParsable {
     lateinit var title: String
     lateinit var content: String
+    var isChecked = false
 
     constructor(jsonObject: JSONObject): super(jsonObject)
 

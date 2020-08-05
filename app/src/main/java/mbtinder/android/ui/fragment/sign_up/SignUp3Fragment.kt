@@ -1,10 +1,12 @@
 package mbtinder.android.ui.fragment.sign_up
 
 import android.text.Editable
+import android.widget.Toast
 import androidx.navigation.fragment.findNavController
 import kotlinx.android.synthetic.main.fragment_sign_up3.*
 import mbtinder.android.R
-import mbtinder.android.io.SocketUtil
+import mbtinder.android.component.StaticComponent
+import mbtinder.android.io.CommandProcess
 import mbtinder.android.ui.model.Fragment
 import mbtinder.android.util.FormStateChecker
 import mbtinder.android.util.ThreadUtil
@@ -34,28 +36,10 @@ class SignUp3Fragment : Fragment(R.layout.fragment_sign_up3) {
         }
 
         switchable_next.setOnClickListener {
-            findNavController().navigate(R.id.action_to_sign_up4)
-//            ViewUtil.switchNextButton(layout_sign_up3)
-//
-//            ThreadUtil.runOnBackground {
-//                val signUpResult = SocketUtil.signUp(
-//                    requireArguments().getString("email")!!,
-//                    requireArguments().getString("password")!!,
-//                    ViewUtil.getText(sign_up3_name),
-//                    ViewUtil.getText(sign_up3_age).toInt(),
-//                    gender,
-//                    requireArguments().getInt("password_question_id"),
-//                    requireArguments().getString("password_answer")!!
-//                )
-//
-//                if (signUpResult.isSucceed) {
-//
-//                } else {
-//                    ThreadUtil.runOnUiThread {
-//                        ViewUtil.switchNextButton(layout_sign_up3)
-//                    }
-//                }
-//            }
+            ViewUtil.switchNextButton(layout_sign_up3)
+            ThreadUtil.runOnBackground {
+                signUp()
+            }
         }
     }
 
@@ -84,6 +68,43 @@ class SignUp3Fragment : Fragment(R.layout.fragment_sign_up3) {
                 onInputIssued(sign_up3_age, R.string.sign_up3_age_error, formStateChecker)
             }
             enableNextButton()
+        }
+    }
+
+    private fun signUp() {
+        val signUpResult = CommandProcess.signUp(
+            requireArguments().getString("email")!!,
+            requireArguments().getString("password")!!,
+            ViewUtil.getText(sign_up3_name),
+            ViewUtil.getText(sign_up3_age).toInt(),
+            gender,
+            requireArguments().getInt("password_question_id"),
+            requireArguments().getString("password_answer")!!
+        )
+
+        if (signUpResult.isSucceed) {
+            signIn()
+        } else {
+            ThreadUtil.runOnUiThread {
+                ViewUtil.switchNextButton(layout_sign_up3)
+                Toast.makeText(requireContext(), R.string.sign_up3_sign_up_failed, Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun signIn() {
+        val signInResult = CommandProcess.signIn(
+            requireArguments().getString("email")!!,
+            requireArguments().getString("password")!!
+        )
+
+        if (signInResult.isSucceed) {
+            StaticComponent.user = signInResult.result!!
+            findNavController().navigate(R.id.action_to_sign_up4)
+        } else {
+            ThreadUtil.runOnUiThread {
+                Toast.makeText(requireContext(), R.string.sign_up3_sign_in_failed, Toast.LENGTH_SHORT).show()
+            }
         }
     }
 }

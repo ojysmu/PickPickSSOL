@@ -4,6 +4,8 @@ import mbtinder.android.io.component.ServerResult
 import mbtinder.lib.component.SignUpQuestionContent
 import mbtinder.lib.component.UserContent
 import mbtinder.lib.io.constant.Command
+import mbtinder.lib.util.JSONList
+import org.json.JSONArray
 import org.json.JSONObject
 import java.util.*
 
@@ -76,4 +78,14 @@ object CommandProcess {
     fun getSignUpQuestion() = SocketUtil.getJSONListResult<SignUpQuestionContent>(
         SocketUtil.getServerResult(Command.GET_SIGN_UP_QUESTIONS, JSONObject()), "questions"
     )
+
+    fun setSignUpQuestions(userId: UUID, signUpQuestions: JSONList<SignUpQuestionContent>): ServerResult<Void> {
+        val arguments = JSONObject()
+        arguments.put("user_id", userId.toString())
+        arguments.put("sign_up_questions", signUpQuestions.toJSONArray())
+
+        val result = SocketUtil.getServerResult(Command.SET_SIGN_UP_QUESTIONS, arguments)
+
+        return SocketUtil.getVoidResult(result)
+    }
 }

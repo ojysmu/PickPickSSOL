@@ -42,6 +42,8 @@ enum class Command {
 
     GET_SIGN_UP_QUESTIONS,
 
+    SET_SIGN_UP_QUESTIONS,
+
     /**
      * Client command.
      * Sign in with email, password.

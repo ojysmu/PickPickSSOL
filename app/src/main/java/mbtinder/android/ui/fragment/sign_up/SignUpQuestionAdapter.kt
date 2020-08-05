@@ -8,6 +8,12 @@ import mbtinder.lib.component.SignUpQuestionContent
 class SignUpQuestionAdapter(private val contents: MutableList<SignUpQuestionContent>)
     : Adapter<SignUpQuestionContent>(R.layout.card_sign_up4_questions, contents, SignUpQuestionViewHolder::class.java) {
 
-    override fun onBindViewHolder(holder: AdaptableViewHolder<SignUpQuestionContent>, position: Int)
-            = holder.adapt(contents[position])
+    private val holders = ArrayList<SignUpQuestionViewHolder>()
+
+    override fun onBindViewHolder(holder: AdaptableViewHolder<SignUpQuestionContent>, position: Int) {
+        holders.add(holder as SignUpQuestionViewHolder)
+        holder.adapt(contents[position])
+    }
+
+    fun getCheckedItemPositions() = holders.map { it.getCheckItemPosition() }
 }

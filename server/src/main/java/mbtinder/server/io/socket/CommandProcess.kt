@@ -1,9 +1,6 @@
 package mbtinder.server.io.socket
 
-import mbtinder.lib.component.ChatContent
-import mbtinder.lib.component.MessageContent
-import mbtinder.lib.component.UserContent
-import mbtinder.lib.component.UserImageContent
+import mbtinder.lib.component.*
 import mbtinder.lib.constant.ServerPath
 import mbtinder.lib.constant.ServerResponse
 import mbtinder.lib.io.component.CommandContent
@@ -38,6 +35,7 @@ object CommandProcess {
             Command.FIND_PASSWORD -> findPassword(command)
             Command.UPDATE_PASSWORD -> updatePassword(command)
             Command.GET_SIGN_UP_QUESTIONS -> getSignUpQuestion(command)
+            Command.SET_SIGN_UP_QUESTIONS -> setSignUpQuestion(command)
 
             Command.CREATE_CHAT -> createChat(command)
             Command.DELETE_CHAT -> deleteChat(command)
@@ -160,6 +158,14 @@ object CommandProcess {
         val questions = SignUpQuestionUtil.getQuestions().toJSONList()
 
         return Connection.makePositiveResponse(command.uuid, JSONObject().apply { put("questions", questions.toJSONArray()) })
+    }
+
+    private fun setSignUpQuestion(command: CommandContent): JSONObject {
+        val userId = command.arguments.getString("user_id")
+        val signUpQuestions = command.arguments.getJSONArray("sign_up_questions")
+        signUpQuestions.saveJSONArray(LocalFile.getUserSignUpQuestionPath(userId))
+
+        return Connection.makePositiveResponse(command.uuid)
     }
 
     private fun signIn(command: CommandContent): JSONObject {

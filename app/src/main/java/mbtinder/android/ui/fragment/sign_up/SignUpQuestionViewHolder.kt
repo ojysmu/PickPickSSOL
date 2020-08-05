@@ -10,15 +10,19 @@ import mbtinder.lib.component.SignUpQuestionContent
 
 class SignUpQuestionViewHolder(itemView: View) :
     AdaptableViewHolder<SignUpQuestionContent>(itemView) {
-    val titleTextView: TextView = itemView.findViewById(R.id.card_sign_up4_question_title)
-    val selectableGroup: ChipGroup = itemView.findViewById(R.id.card_sign_up4_question_selector)
+    private val titleTextView: TextView = itemView.findViewById(R.id.card_sign_up4_question_title)
+    private val selectableGroup: ChipGroup = itemView.findViewById(R.id.card_sign_up4_question_selector)
 
     override fun adapt(content: SignUpQuestionContent) {
         titleTextView.text = content.question
         (0 until content.selectable.length()).forEach {
             selectableGroup.addView(Chip(itemView.context).apply {
+                id = it
                 text = content.selectable.getString(it)
+                isCheckable = true
             })
         }
     }
+
+    fun getCheckItemPosition() = selectableGroup.checkedChipId
 }

@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.LayoutRes
 import androidx.recyclerview.widget.RecyclerView
+import java.lang.reflect.Constructor
 
 abstract class Adapter<T>(@LayoutRes private val rootView: Int,
                           private var contents: MutableList<T>,
@@ -16,7 +17,7 @@ abstract class Adapter<T>(@LayoutRes private val rootView: Int,
         context = parent.context
         val view = LayoutInflater.from(context).inflate(rootView, parent, false)
 
-        return clazz.getDeclaredConstructor(View::class.java).newInstance(view) as AdaptableViewHolder<T>
+        return clazz.getDeclaredConstructor(View::class.java).newInstance(view)
     }
 
     override fun getItemCount(): Int {

@@ -2,6 +2,7 @@
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layout_sign_up4"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.fragment.sign_up.SignUp4Fragment">
@@ -19,6 +20,7 @@
 
         <Button
             style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:id="@+id/sign_up4_go_test"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/activity_horizontal_margin"
@@ -39,7 +41,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/card_vertical_margin"
-            android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
+            android:paddingHorizontal="@dimen/activity_horizontal_margin"
+            android:clipToPadding="false"
             app:layout_constraintTop_toBottomOf="@id/sign_up4_mbti_title"
             tools:listitem="@layout/card_sign_up4_mbti"
             tools:itemCount="2" />
@@ -48,9 +51,30 @@
             android:id="@+id/sign_up4_questions_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
             app:layout_constraintTop_toBottomOf="@id/sign_up4_mbti_recycler_view"
             tools:listitem="@layout/card_sign_up4_questions"
             tools:itemCount="3" />
+
+        <Button
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:id="@+id/switchable_next"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:layout_marginEnd="@dimen/activity_horizontal_margin"
+            app:layout_constraintTop_toBottomOf="@id/sign_up4_questions_recycler_view"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:text="@string/common_next" />
+
+        <ProgressBar
+            style="?android:attr/progressBarStyleSmall"
+            android:id="@+id/switchable_waiting"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintTop_toTopOf="@id/switchable_next"
+            app:layout_constraintBottom_toBottomOf="@id/switchable_next"
+            app:layout_constraintStart_toStartOf="@id/switchable_next"
+            app:layout_constraintEnd_toEndOf="@id/switchable_next" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>

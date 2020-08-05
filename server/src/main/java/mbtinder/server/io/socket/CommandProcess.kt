@@ -159,7 +159,7 @@ object CommandProcess {
     private fun getSignUpQuestion(command: CommandContent): JSONObject {
         val questions = SignUpQuestionUtil.getQuestions().toJSONList()
 
-        return Connection.makePositiveResponse(command.uuid, JSONObject()).apply { put("questions", questions.toJSONArray()) }
+        return Connection.makePositiveResponse(command.uuid, JSONObject().apply { put("questions", questions.toJSONArray()) })
     }
 
     private fun signIn(command: CommandContent): JSONObject {

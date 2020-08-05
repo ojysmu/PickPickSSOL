@@ -18,7 +18,7 @@ import mbtinder.android.util.ThreadUtil
 import mbtinder.android.util.ViewUtil
 import mbtinder.lib.constant.PasswordQuestion
 
-class FindPasswordFragment : ProgressFragment() {
+class FindPasswordFragment : ProgressFragment(R.layout.fragment_find_password) {
     override fun initializeView() {
         super.initializeView()
 
@@ -49,10 +49,6 @@ class FindPasswordFragment : ProgressFragment() {
                 }
             }
         }
-    }
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflateView(R.layout.fragment_find_password, inflater, container!!)
     }
 
     private fun onEmailChanged(editable: Editable?) {

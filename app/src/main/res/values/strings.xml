@@ -47,6 +47,15 @@
     <string name="sign_up_password_answer">답변</string>
     <string name="sign_up_succeed">회원가입을 축하드립니다. 가입하신 정보로 로그인해주세요.</string>
     <string name="sign_up_failed">회원가입을 실패했습니다. 잠시 후 다시 시도해주세요.</string>
+    
+    <string name="sign_up1_title">회원가입</string>
+    <string name="sign_up1_email">이메일</string>
+    <string name="sign_up1_email_error">이메일을 확인해주세요.</string>
+    <string name="sign_up1_email_duplicated">이미 존재하는 이메일입니다.</string>
+    <string name="sign_up1_password">비밀번호 (8~16자)</string>
+    <string name="sign_up1_password_error">비밀번호를 확인해주세요. 8자 이상, 16자 이하여야 합니다.</string>
+    <string name="sign_up1_password_repeat">비밀번호 확인</string>
+    <string name="sign_up1_password_repeat_error">비밀번호가 일치하지 않습니다.</string>
 
     <string name="sign_in_title">로그인</string>
     <string name="sign_in_forgot">잊어버리셨다면</string>

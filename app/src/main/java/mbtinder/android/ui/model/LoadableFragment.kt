@@ -11,7 +11,7 @@ import kotlinx.android.synthetic.main.fragment_loadable.*
 import mbtinder.android.R
 import mbtinder.android.util.ThreadUtil
 
-abstract class LoadableFragment: Fragment() {
+abstract class LoadableFragment(@LayoutRes private val layout: Int): Fragment(layout) {
     private lateinit var innerLayout: ViewGroup
 
     override fun initializeView() {

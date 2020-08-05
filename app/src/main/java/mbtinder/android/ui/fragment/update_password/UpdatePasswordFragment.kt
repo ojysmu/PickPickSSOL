@@ -1,10 +1,6 @@
 package mbtinder.android.ui.fragment.update_password
 
-import android.os.Bundle
 import android.text.Editable
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.widget.Toast
 import androidx.navigation.fragment.findNavController
 import kotlinx.android.synthetic.main.fragment_update_password.*
@@ -15,7 +11,7 @@ import mbtinder.android.util.ThreadUtil
 import mbtinder.android.util.ViewUtil
 import java.util.*
 
-class UpdatePasswordFragment : ProgressFragment() {
+class UpdatePasswordFragment : ProgressFragment(R.layout.fragment_update_password) {
     override fun initializeView() {
         super.initializeView()
 
@@ -37,10 +33,6 @@ class UpdatePasswordFragment : ProgressFragment() {
                 }
             }
         }
-    }
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflateView(R.layout.fragment_update_password, inflater, container!!)
     }
 
     private fun onPasswordChanged(editable: Editable?) {

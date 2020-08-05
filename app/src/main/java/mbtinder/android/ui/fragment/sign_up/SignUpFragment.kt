@@ -19,7 +19,7 @@ import mbtinder.android.util.ThreadUtil
 import mbtinder.android.util.ViewUtil
 import mbtinder.lib.constant.PasswordQuestion
 
-class SignUpFragment : Fragment() {
+class SignUpFragment : Fragment(R.layout.fragment_sign_up) {
     private val formStatus = arrayOf(
         false, // 0: 이메일
         false, // 1: 비밀번호
@@ -35,9 +35,9 @@ class SignUpFragment : Fragment() {
     override fun initializeView() {
         val passwordQuestionSelector = sign_up_password_question_selector.findViewById<Spinner>(R.id.spinner)
 
-        initializeFocusableEditText(sign_up_email, this::onEmailChanged, this::onLeaveEmail)
-        initializeFocusableEditText(sign_up_password, this::onPasswordChanged, this::onLeavePassword)
-        initializeFocusableEditText(sign_up_password_repeat, this::onPasswordRepeatChanged, this::onLeavePasswordRepeat)
+        initializeFocusableEditText(sign_up1_email, this::onEmailChanged, this::onLeaveEmail)
+        initializeFocusableEditText(sign_up1_password, this::onPasswordChanged, this::onLeavePassword)
+        initializeFocusableEditText(sign_up1_password_repeat, this::onPasswordRepeatChanged, this::onLeavePasswordRepeat)
         initializeFocusableEditText(sign_up_age, this::onAgeChanged)
         initializeFocusableEditText(sign_up_name, this::onNameChanged)
         initializeFocusableEditText(sign_up_password_answer, this::onAnswerChanged)
@@ -49,8 +49,8 @@ class SignUpFragment : Fragment() {
             ViewUtil.switchNextButton(layout_sign_up)
             ThreadUtil.runOnBackground {
                 val signUpResult = SocketUtil.signUp(
-                    ViewUtil.getText(sign_up_email),
-                    ViewUtil.getText(sign_up_password),
+                    ViewUtil.getText(sign_up1_email),
+                    ViewUtil.getText(sign_up1_password),
                     ViewUtil.getText(sign_up_name),
                     ViewUtil.getText(sign_up_age).toInt(),
                     gender,
@@ -85,8 +85,8 @@ class SignUpFragment : Fragment() {
         editable?.let {
             if (Patterns.EMAIL_ADDRESS.matcher(it).matches()) {
                 formStatus[0] = true
-                sign_up_email.isErrorEnabled = false
-            } else if (getFocusCount(sign_up_email) != 1) {
+                sign_up1_email.isErrorEnabled = false
+            } else if (getFocusCount(sign_up1_email) != 1) {
                 onEmailIssued(R.string.sign_up_email_error)
             }
             enableNextButton()
@@ -94,7 +94,7 @@ class SignUpFragment : Fragment() {
     }
 
     private fun onLeaveEmail() {
-        val email = ViewUtil.getText(sign_up_email)
+        val email = ViewUtil.getText(sign_up1_email)
 
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             onEmailIssued(R.string.sign_up_email_error)
@@ -109,16 +109,16 @@ class SignUpFragment : Fragment() {
 
     private fun onEmailIssued(@StringRes error: Int) {
         formStatus[0] = false
-        sign_up_email.isErrorEnabled = true
-        sign_up_email.error = getString(error)
+        sign_up1_email.isErrorEnabled = true
+        sign_up1_email.error = getString(error)
     }
 
     private fun onPasswordChanged(editable: Editable?) {
         editable?.let {
             if (it.length in 8..16) {
                 formStatus[1] = true
-                sign_up_password.isErrorEnabled = false
-            } else if (getFocusCount(sign_up_password) != 1) {
+                sign_up1_password.isErrorEnabled = false
+            } else if (getFocusCount(sign_up1_password) != 1) {
                 onPasswordIssued()
             }
             onPasswordRepeatChanged(it)
@@ -126,23 +126,23 @@ class SignUpFragment : Fragment() {
     }
 
     private fun onLeavePassword() {
-        if (ViewUtil.getText(sign_up_password).length !in 8..16) {
+        if (ViewUtil.getText(sign_up1_password).length !in 8..16) {
             onPasswordIssued()
         }
     }
 
     private fun onPasswordIssued() {
         formStatus[1] = false
-        sign_up_password.isErrorEnabled = true
-        sign_up_password.error = getString(R.string.sign_up_password_error)
+        sign_up1_password.isErrorEnabled = true
+        sign_up1_password.error = getString(R.string.sign_up_password_error)
     }
 
     private fun onPasswordRepeatChanged(editable: Editable?) {
-        val focusCount = getFocusCount(sign_up_password_repeat)
+        val focusCount = getFocusCount(sign_up1_password_repeat)
 
-        if (ViewUtil.hasSameText(sign_up_password, sign_up_password_repeat)) {
+        if (ViewUtil.hasSameText(sign_up1_password, sign_up1_password_repeat)) {
             formStatus[2] = true
-            sign_up_password_repeat.isErrorEnabled = false
+            sign_up1_password_repeat.isErrorEnabled = false
         } else if (focusCount > 1) {
             onPasswordRepeatIssued()
         }
@@ -150,15 +150,15 @@ class SignUpFragment : Fragment() {
     }
 
     private fun onLeavePasswordRepeat() {
-        if (!ViewUtil.hasSameText(sign_up_password, sign_up_password_repeat)) {
+        if (!ViewUtil.hasSameText(sign_up1_password, sign_up1_password_repeat)) {
             onPasswordRepeatIssued()
         }
     }
 
     private fun onPasswordRepeatIssued() {
         formStatus[2] = false
-        sign_up_password_repeat.isErrorEnabled = true
-        sign_up_password_repeat.error = getString(R.string.sign_up_password_repeat_error)
+        sign_up1_password_repeat.isErrorEnabled = true
+        sign_up1_password_repeat.error = getString(R.string.sign_up_password_repeat_error)
     }
 
     private fun onGenderSelected(view: View, checkedId: Int, isChecked: Boolean) {

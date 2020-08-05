@@ -13,12 +13,16 @@ import androidx.annotation.LayoutRes
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import com.google.android.material.textfield.TextInputLayout
+import mbtinder.android.util.ViewUtil
 
-abstract class Fragment : Fragment(), View.OnFocusChangeListener {
+abstract class Fragment(@LayoutRes private val layout: Int) : Fragment(), View.OnFocusChangeListener {
     private val focusCount = HashMap<View, Int>()
     private val focusEvent = HashMap<View, () -> Unit>()
 
     protected lateinit var rootView: View
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
+        inflateView(layout, inflater, container)
 
     protected fun inflateView(@LayoutRes layout: Int, inflater: LayoutInflater, container: ViewGroup?): View? {
         rootView = inflater.inflate(layout, container, false)
@@ -56,18 +60,10 @@ abstract class Fragment : Fragment(), View.OnFocusChangeListener {
     }
 
     protected fun addFocusEvent(v: View, event: () -> Unit) {
-        focusEvent[if (v is TextInputLayout) {
-            v.editText!!
-        } else {
-            v
-        }] = event
+        focusEvent[ViewUtil.filterEditText(v)] = event
     }
 
-    protected fun getFocusCount(v: View): Int = focusCount.getOrDefault(if (v is TextInputLayout) {
-        v.editText!!
-    } else {
-        v
-    }, 0)
+    protected fun getFocusCount(v: View): Int = focusCount.getOrDefault(ViewUtil.filterEditText(v), 0)
 
     protected fun initializeFocusableEditText(textInputLayout: TextInputLayout, afterTextChanged: (Editable?) -> Unit, leaveEvent: (() -> Unit)? = null) {
         textInputLayout.editText!!.onFocusChangeListener = this

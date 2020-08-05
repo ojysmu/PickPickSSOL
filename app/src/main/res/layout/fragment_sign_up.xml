@@ -35,7 +35,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:id="@+id/sign_up_email"
+            android:id="@+id/sign_up1_email"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
@@ -53,12 +53,12 @@
 
         <com.google.android.material.textfield.TextInputLayout
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:id="@+id/sign_up_password"
+            android:id="@+id/sign_up1_password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
             android:layout_marginTop="@dimen/card_vertical_margin"
-            app:layout_constraintTop_toBottomOf="@id/sign_up_email"
+            app:layout_constraintTop_toBottomOf="@id/sign_up1_email"
             android:hint="@string/sign_up_password">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -71,12 +71,12 @@
 
         <com.google.android.material.textfield.TextInputLayout
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:id="@+id/sign_up_password_repeat"
+            android:id="@+id/sign_up1_password_repeat"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
             android:layout_marginTop="@dimen/card_vertical_margin"
-            app:layout_constraintTop_toBottomOf="@id/sign_up_password"
+            app:layout_constraintTop_toBottomOf="@id/sign_up1_password"
             android:hint="@string/sign_up_password_repeat">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -91,7 +91,7 @@
             style="@style/FragmentContent.Medium"
             android:id="@+id/sign_up_gender_title"
             android:text="@string/sign_up_gender"
-            app:layout_constraintTop_toBottomOf="@id/sign_up_password_repeat"
+            app:layout_constraintTop_toBottomOf="@id/sign_up1_password_repeat"
             app:layout_constraintStart_toStartOf="parent" />
 
         <com.google.android.material.button.MaterialButtonToggleGroup

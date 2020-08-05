@@ -4,11 +4,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ProgressBar
+import androidx.annotation.LayoutRes
 import com.google.android.material.textfield.TextInputLayout
 import mbtinder.android.R
 import mbtinder.android.util.ViewUtil
 
-open class ProgressFragment : Fragment() {
+open class ProgressFragment(@LayoutRes private val layout: Int) : Fragment(layout) {
     private val formStatus = HashMap<View, Boolean>()
 
     private lateinit var nextButton: Button

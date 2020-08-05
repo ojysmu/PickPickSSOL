@@ -9,6 +9,8 @@
     android:layout_marginBottom="@dimen/card_vertical_margin"
     android:layout_marginStart="@dimen/card_horizontal_margin"
     android:layout_marginEnd="@dimen/card_horizontal_margin"
+    app:cardCornerRadius="24dp"
+    app:cardElevation="8dp"
     style="@style/CardView.Light">
 
     <androidx.constraintlayout.widget.ConstraintLayout

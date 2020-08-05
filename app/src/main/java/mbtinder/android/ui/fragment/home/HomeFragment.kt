@@ -15,7 +15,7 @@ import mbtinder.android.util.ImageUtil
 import mbtinder.lib.component.CardStackContent
 import java.util.*
 
-class HomeFragment : Fragment() {
+class HomeFragment : Fragment(R.layout.fragment_home) {
     private val sampleContents = arrayListOf<CardStackContent>()
 
     private val cardStackLayoutManager by lazy { CardStackLayoutManager(requireContext(), cardStackListener) }
@@ -53,10 +53,6 @@ class HomeFragment : Fragment() {
         home_rewind.setOnClickListener {
             home_card_stack_view.rewind()
         }
-    }
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflateView(R.layout.fragment_home, inflater, container)
     }
 
     private val cardStackListener = object : CardStackListener {

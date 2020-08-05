@@ -1,10 +1,7 @@
 package mbtinder.android.ui.fragment.splash
 
 import android.animation.ObjectAnimator
-import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Toast
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -17,9 +14,9 @@ import mbtinder.android.util.Log
 import mbtinder.android.util.SharedPreferencesUtil
 import mbtinder.android.util.ThreadUtil
 
-class SplashFragment : Fragment() {
+class SplashFragment : Fragment(R.layout.fragment_splash) {
     override fun initializeView() {
-        requireActivity().window.statusBarColor = requireContext().getColor(android.R.color.white)
+//        requireActivity().window.statusBarColor = requireContext().getColor(android.R.color.black)
         requireActivity().findViewById<BottomNavigationView>(R.id.nav_view).visibility = View.GONE
 
         ThreadUtil.runOnBackground {
@@ -40,10 +37,6 @@ class SplashFragment : Fragment() {
                 loadAnimation()
             }
         }
-    }
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflateView(R.layout.fragment_splash, inflater, container)
     }
 
     private fun loadAnimation() {

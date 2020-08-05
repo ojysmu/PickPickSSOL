@@ -1,11 +1,7 @@
 package mbtinder.android.ui.fragment.sign_in
 
-import android.os.Bundle
 import android.text.Editable
 import android.util.Patterns
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.widget.Toast
 import androidx.navigation.fragment.findNavController
 import kotlinx.android.synthetic.main.fragment_sign_in.*
@@ -17,7 +13,7 @@ import mbtinder.android.util.SharedPreferencesUtil
 import mbtinder.android.util.ThreadUtil
 import mbtinder.android.util.ViewUtil
 
-class SignInFragment : Fragment() {
+class SignInFragment : Fragment(R.layout.fragment_sign_in) {
     private val formStatus = arrayOf(false, false)
 
     override fun initializeView() {
@@ -52,10 +48,6 @@ class SignInFragment : Fragment() {
                 }
             }
         }
-    }
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflateView(R.layout.fragment_sign_in, inflater, container!!)
     }
 
     private fun enableNextButton() {

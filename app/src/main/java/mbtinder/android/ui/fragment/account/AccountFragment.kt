@@ -7,12 +7,8 @@ import android.view.ViewGroup
 import mbtinder.android.R
 import mbtinder.android.ui.model.Fragment
 
-class AccountFragment : Fragment() {
+class AccountFragment : Fragment(R.layout.fragment_account) {
     override fun initializeView() {
 
-    }
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflateView(R.layout.fragment_account, inflater, container!!)
     }
 }

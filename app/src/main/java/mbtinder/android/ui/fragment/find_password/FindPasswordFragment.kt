@@ -12,6 +12,7 @@ import android.widget.Toast
 import androidx.navigation.fragment.findNavController
 import kotlinx.android.synthetic.main.fragment_find_password.*
 import mbtinder.android.R
+import mbtinder.android.io.CommandProcess
 import mbtinder.android.io.SocketUtil
 import mbtinder.android.ui.model.ProgressFragment
 import mbtinder.android.util.ThreadUtil
@@ -36,7 +37,7 @@ class FindPasswordFragment : ProgressFragment(R.layout.fragment_find_password) {
             val answer = ViewUtil.getText(find_password_answer)
 
             ThreadUtil.runOnBackground {
-                val findResult = SocketUtil.findPassword(email, questionId, answer)
+                val findResult = CommandProcess.findPassword(email, questionId, answer)
 
                 if (findResult.isSucceed) {
                     val bundle = Bundle().apply { putString("user_id", findResult.result!!.toString()) }

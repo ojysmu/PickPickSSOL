@@ -5,6 +5,7 @@ import android.widget.Toast
 import androidx.navigation.fragment.findNavController
 import kotlinx.android.synthetic.main.fragment_update_password.*
 import mbtinder.android.R
+import mbtinder.android.io.CommandProcess
 import mbtinder.android.io.SocketUtil
 import mbtinder.android.ui.model.ProgressFragment
 import mbtinder.android.util.ThreadUtil
@@ -24,7 +25,7 @@ class UpdatePasswordFragment : ProgressFragment(R.layout.fragment_update_passwor
             switchWaitingStatus()
             ThreadUtil.runOnBackground {
                 val password = ViewUtil.getText(update_password_password) // TODO: encrypt
-                val updateResult = SocketUtil.updatePassword(userId, password)
+                val updateResult = CommandProcess.updatePassword(userId, password)
                 if (updateResult.isSucceed) {
                     ThreadUtil.runOnUiThread {
                         Toast.makeText(requireContext(), R.string.update_password_succeed, Toast.LENGTH_SHORT).show()

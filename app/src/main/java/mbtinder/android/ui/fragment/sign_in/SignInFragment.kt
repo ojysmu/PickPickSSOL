@@ -7,6 +7,7 @@ import androidx.navigation.fragment.findNavController
 import kotlinx.android.synthetic.main.fragment_sign_in.*
 import mbtinder.android.R
 import mbtinder.android.component.StaticComponent
+import mbtinder.android.io.CommandProcess
 import mbtinder.android.io.SocketUtil
 import mbtinder.android.ui.model.Fragment
 import mbtinder.android.util.SharedPreferencesUtil
@@ -30,7 +31,7 @@ class SignInFragment : Fragment(R.layout.fragment_sign_in) {
                 val email = ViewUtil.getText(sign_in_email)
                 val password = ViewUtil.getText(sign_in_password)
 
-                val signInResult = SocketUtil.signIn(email, password)
+                val signInResult = CommandProcess.signIn(email, password)
                 if (signInResult.isSucceed) {
                     SharedPreferencesUtil
                         .getContext(requireContext(), SharedPreferencesUtil.PREF_ACCOUNT)

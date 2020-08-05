@@ -8,6 +8,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.fragment_splash.*
 import mbtinder.android.R
 import mbtinder.android.component.StaticComponent
+import mbtinder.android.io.CommandProcess
 import mbtinder.android.io.SocketUtil
 import mbtinder.android.ui.model.Fragment
 import mbtinder.android.util.Log
@@ -22,7 +23,7 @@ class SplashFragment : Fragment(R.layout.fragment_splash) {
         ThreadUtil.runOnBackground {
             if (hasAccountInfo()) {
                 val (email, password) = getAccountInfo()
-                val signInResult = SocketUtil.signIn(email, password)
+                val signInResult = CommandProcess.signIn(email, password)
                 if (signInResult.isSucceed) {
                     StaticComponent.user = signInResult.result!!
                     findNavController().navigate(R.id.action_to_home)

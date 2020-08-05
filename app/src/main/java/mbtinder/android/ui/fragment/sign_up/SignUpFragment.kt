@@ -13,6 +13,7 @@ import androidx.annotation.StringRes
 import androidx.navigation.fragment.findNavController
 import kotlinx.android.synthetic.main.fragment_sign_up.*
 import mbtinder.android.R
+import mbtinder.android.io.CommandProcess
 import mbtinder.android.io.SocketUtil
 import mbtinder.android.ui.model.Fragment
 import mbtinder.android.util.ThreadUtil
@@ -48,7 +49,7 @@ class SignUpFragment : Fragment(R.layout.fragment_sign_up) {
         switchable_next.setOnClickListener {
             ViewUtil.switchNextButton(layout_sign_up)
             ThreadUtil.runOnBackground {
-                val signUpResult = SocketUtil.signUp(
+                val signUpResult = CommandProcess.signUp(
                     ViewUtil.getText(sign_up1_email),
                     ViewUtil.getText(sign_up1_password),
                     ViewUtil.getText(sign_up_name),
@@ -100,7 +101,7 @@ class SignUpFragment : Fragment(R.layout.fragment_sign_up) {
             onEmailIssued(R.string.sign_up_email_error)
         } else {
             ThreadUtil.runOnBackground {
-                if (!SocketUtil.checkEmailDuplicated(email).isSucceed) {
+                if (!CommandProcess.checkEmailDuplicated(email).isSucceed) {
                     ThreadUtil.runOnUiThread { onEmailIssued(R.string.sign_up_email_duplicated) }
                 }
             }

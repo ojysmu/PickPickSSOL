@@ -6,6 +6,7 @@ import android.util.Patterns
 import androidx.navigation.fragment.findNavController
 import kotlinx.android.synthetic.main.fragment_sign_up1.*
 import mbtinder.android.R
+import mbtinder.android.io.CommandProcess
 import mbtinder.android.io.SocketUtil
 import mbtinder.android.ui.model.Fragment
 import mbtinder.android.util.FormStateChecker
@@ -54,7 +55,7 @@ class SignUp1Fragment : Fragment(R.layout.fragment_sign_up1) {
             onInputIssued(sign_up1_email, R.string.sign_up1_email_error, formStateChecker)
         } else {
             ThreadUtil.runOnBackground {
-                if (!SocketUtil.checkEmailDuplicated(email).isSucceed) {
+                if (!CommandProcess.checkEmailDuplicated(email).isSucceed) {
                     ThreadUtil.runOnUiThread {
                         onInputIssued(sign_up1_email, R.string.sign_up1_email_duplicated, formStateChecker)
                     }

@@ -77,7 +77,9 @@ class SQLiteConnection private constructor(val userId: UUID): CloseableThread(),
 
     fun addQuery(sql: String): UUID {
         val queryId = UUID.randomUUID()
-        queries.add(Query(queryId, sql))
+        synchronized(queryId) {
+            queries.add(Query(queryId, sql))
+        }
 
         return queryId
     }
@@ -86,7 +88,9 @@ class SQLiteConnection private constructor(val userId: UUID): CloseableThread(),
         while (!results.contains(queryId)) {
             sleep()
         }
-        return results.remove(queryId)
+        return synchronized(results) {
+            results.remove(queryId)
+        }
     }
 
     override fun getUUID() = userId

@@ -21,7 +21,7 @@ class SQLiteConnection private constructor(val userId: UUID): CloseableThread(),
 
         fun getConnection(userId: UUID): SQLiteConnection = synchronized(connections) {
             return connections.find { it.userId == userId }
-                ?: SQLiteConnection(userId).apply { connections.add(this) }
+                ?: SQLiteConnection(userId).apply { connections.add(this); start() }
         }
 
         fun getCreateChatSql(chatId: UUID) = "CREATE TABLE $chatId (" +

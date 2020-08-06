@@ -51,7 +51,7 @@ class SQLiteConnection private constructor(val userId: UUID): CloseableThread(),
             if (queries.isEmpty()) {
                 sleep()
             } else {
-                val query = queries.removeAt(0)
+                val query = synchronized(queries) { queries.removeAt(0) }
                 println("SQLiteConnection.loop() Found: query=${query.sql}")
 
                 if (query.needResult) {
@@ -82,9 +82,7 @@ class SQLiteConnection private constructor(val userId: UUID): CloseableThread(),
 
     fun addQuery(sql: String): UUID {
         val queryId = UUID.randomUUID()
-        synchronized(queries) {
-            queries.add(Query(queryId, sql))
-        }
+        queries.add(Query(queryId, sql))
 
         return queryId
     }

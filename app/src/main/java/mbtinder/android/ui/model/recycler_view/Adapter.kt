@@ -26,6 +26,12 @@ abstract class Adapter<T>(@LayoutRes private val rootView: Int,
 
     fun addContent(element: T) {
         contents.add(element)
+        notifyItemInserted(contents.size - 1)
+    }
+
+    fun removeAt(index: Int) {
+        contents.removeAt(index)
+        notifyItemRemoved(index)
     }
 
     fun updateContents(content: MutableList<T>) {

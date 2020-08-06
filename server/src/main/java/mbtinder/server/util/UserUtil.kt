@@ -1,6 +1,12 @@
 package mbtinder.server.util
 
+import mbtinder.lib.component.SignUpQuestionContent
 import mbtinder.lib.component.UserContent
+import mbtinder.lib.constant.MBTI
+import mbtinder.lib.util.loadJSONArray
+import mbtinder.lib.util.loadJSONObject
+import mbtinder.lib.util.toJSONList
+import mbtinder.server.constant.LocalFile
 import mbtinder.server.io.database.MySQLServer
 import mbtinder.server.io.database.component.Row
 import java.util.*
@@ -69,5 +75,26 @@ object UserUtil {
             users = updateUsers()
             return users.find { it.email == email }
         }
+    }
+
+    fun getUserIds() = users.map { it.userId }
+
+    fun getMatchingScore(userId: UUID, userMBTI: MBTI, opponentId: UUID, userSignUpQuestions: List<SignUpQuestionContent.ConnectionForm>): Int {
+        var sum = 0
+        val opponentMBTI = MBTI.findByName(loadJSONObject(LocalFile.getUserMBTIPath(opponentId)).getString("value"))
+        val mbtiMatching = userMBTI.getState(opponentMBTI)
+        sum += mbtiMatching * 10
+
+        val opponentSignUpQuestions = loadJSONArray(LocalFile.getUserSignUpQuestionPath(userId)).toJSONList<SignUpQuestionContent.ConnectionForm>()
+        var signUpQuestionCount = 0
+        userSignUpQuestions.forEach { userForm ->
+            opponentSignUpQuestions.find { opponentForm ->
+                opponentForm.questionId == userForm.questionId &&
+                        opponentForm.selected == userForm.selected
+            }?.let { signUpQuestionCount++ }
+        }
+        sum += signUpQuestionCount * 4
+
+        return sum
     }
 }

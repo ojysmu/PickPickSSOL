@@ -5,6 +5,7 @@ import mbtinder.lib.component.UserContent
 import mbtinder.lib.constant.PasswordQuestion
 import mbtinder.lib.util.JSONList
 import mbtinder.lib.util.toJSONArray
+import mbtinder.lib.util.toJSONList
 import org.json.JSONObject
 import java.lang.reflect.Field
 import java.sql.Date

@@ -30,7 +30,7 @@
         android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
         android:layout_marginTop="@dimen/card_vertical_margin"
         app:layout_constraintTop_toBottomOf="@id/sign_up2_question_selector"
-        android:hint="@string/sign_up_password_answer">
+        android:hint="@string/sign_up2_answer">
 
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"

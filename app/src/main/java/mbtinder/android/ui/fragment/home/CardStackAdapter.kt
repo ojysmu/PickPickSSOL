@@ -5,7 +5,7 @@ import mbtinder.android.ui.model.recycler_view.AdaptableViewHolder
 import mbtinder.android.ui.model.recycler_view.Adapter
 import mbtinder.lib.component.CardStackContent
 
-class CardStackAdapter(private val contents: MutableList<CardStackContent>): Adapter<CardStackContent>(
+class CardStackAdapter(private val contents: MutableList<CardStackContent>, private val fragment: HomeFragment): Adapter<CardStackContent>(
     R.layout.card_main_stack,
     contents,
     CardStackViewHolder::class.java) {
@@ -15,5 +15,10 @@ class CardStackAdapter(private val contents: MutableList<CardStackContent>): Ada
     override fun onBindViewHolder(holder: AdaptableViewHolder<CardStackContent>, position: Int) {
         holders.add(holder as CardStackViewHolder)
         holder.adapt(contents[position])
+        holder.adapter = this
+    }
+
+    fun requestUpdate() {
+        fragment.updateCardStack()
     }
 }

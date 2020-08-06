@@ -60,27 +60,6 @@
     <string name="splash_find_password">비밀번호 찾기</string>
     <string name="splash_failed_to_sign_in">저장된 정보로 로그인을 실패했습니다. 다시 로그인해주세요.</string>
 
-    <string name="sign_up_title">회원가입</string>
-    <string name="sign_up_info">정보</string>
-    <string name="sign_up_email">이메일</string>
-    <string name="sign_up_email_error">이메일을 확인해주세요.</string>
-    <string name="sign_up_email_duplicated">이미 존재하는 이메일입니다.</string>
-    <string name="sign_up_password">비밀번호 (8~16자)</string>
-    <string name="sign_up_password_error">비밀번호를 확인해주세요. 8자 이상, 16자 이하여야 합니다.</string>
-    <string name="sign_up_password_repeat">비밀번호 확인</string>
-    <string name="sign_up_password_repeat_error">비밀번호가 일치하지 않습니다.</string>
-    <string name="sign_up_gender">성별</string>
-    <string name="sign_up_gender_male">남성</string>
-    <string name="sign_up_gender_female">여성</string>
-    <string name="sign_up_age">나이</string>
-    <string name="sign_up_name">이름</string>
-    <string name="sign_up_name_hint">이름 (10자 이내)</string>
-    <string name="sign_up_password_qna_title">비밀번호 찾기 질문 및 답변</string>
-    <string name="sign_up_password_question">질문</string>
-    <string name="sign_up_password_answer">답변</string>
-    <string name="sign_up_succeed">회원가입을 축하드립니다. 가입하신 정보로 로그인해주세요.</string>
-    <string name="sign_up_failed">회원가입을 실패했습니다. 잠시 후 다시 시도해주세요.</string>
-
     <string name="sign_up1_title">회원가입</string>
     <string name="sign_up1_email">이메일</string>
     <string name="sign_up1_email_error">이메일을 확인해주세요.</string>
@@ -140,6 +119,8 @@
     <string name="home_rewind_default">0</string>
     <string name="home_nope">NOPE</string>
     <string name="home_pick">PICK!</string>
+    <string name="home_stack_empty">목록의 끝이에요.</string>
+    <string name="home_stack_refresh">새로고침</string>
 
     <string name="message_list_title">메시지 목록</string>
 

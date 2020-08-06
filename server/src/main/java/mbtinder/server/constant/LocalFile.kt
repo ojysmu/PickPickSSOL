@@ -14,6 +14,7 @@ object LocalFile {
 
     fun getUserSignUpQuestionPath(userId: UUID) = "$userRoot/$userId/$userSignUpQuestionList"
     fun getUserSignUpQuestionPath(userId: String) = "$userRoot/$userId/$userSignUpQuestionList"
+    fun getUserMBTIPath(userId: UUID) = "$userRoot/$userId/$userMBTIList"
     fun getUserMBTIPath(userId: String) = "$userRoot/$userId/$userMBTIList"
     fun getUserInterestPath(userId: UUID) = "$userRoot/$userId/$userInterestList"
     fun getUserInterestList(userId: UUID) = loadJSONList<InterestContent>(getUserInterestPath(userId))

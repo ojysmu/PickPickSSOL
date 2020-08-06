@@ -11,6 +11,9 @@ fun JSONArray.saveJSONArray(path: String) = saveJSONString(toString(), path)
 
 fun loadJSONArray(path: String): JSONArray {
     val file = File(path)
+    if (!file.exists()) {
+        return JSONArray()
+    }
 
     FileInputStream(file).apply {
         val rawArray = String(readBytes())
@@ -25,8 +28,11 @@ inline fun <reified T: JSONContent> loadJSONList(path: String) = loadJSONArray(p
 
 fun JSONObject.saveJSONObject(path: String) = saveJSONString(toString(), path)
 
-fun JSONObject.loadJSONObject(path: String): JSONObject {
+fun loadJSONObject(path: String): JSONObject {
     val file = File(path)
+    if (!file.exists()) {
+        return JSONObject()
+    }
 
     FileInputStream(file).apply {
         val rawArray = String(readBytes())

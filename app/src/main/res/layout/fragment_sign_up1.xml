@@ -20,7 +20,7 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
         android:layout_marginTop="@dimen/activity_vertical_margin"
-        android:hint="@string/sign_up_email"
+        android:hint="@string/sign_up1_email"
         app:layout_constraintTop_toBottomOf="@id/sign_up1_title">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -39,7 +39,7 @@
         android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
         android:layout_marginTop="@dimen/card_vertical_margin"
         app:layout_constraintTop_toBottomOf="@id/sign_up1_email"
-        android:hint="@string/sign_up_password">
+        android:hint="@string/sign_up1_password">
 
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
@@ -57,7 +57,7 @@
         android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
         android:layout_marginTop="@dimen/card_vertical_margin"
         app:layout_constraintTop_toBottomOf="@id/sign_up1_password"
-        android:hint="@string/sign_up_password_repeat">
+        android:hint="@string/sign_up1_password_repeat">
 
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"

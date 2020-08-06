@@ -9,12 +9,16 @@ import mbtinder.android.component.StaticComponent
 import mbtinder.android.io.CommandProcess
 import mbtinder.android.ui.model.Fragment
 import mbtinder.android.util.FormStateChecker
+import mbtinder.android.util.SharedPreferencesUtil
 import mbtinder.android.util.ThreadUtil
 import mbtinder.android.util.ViewUtil
 
 class SignUp3Fragment : Fragment(R.layout.fragment_sign_up3) {
     private val formStateChecker = FormStateChecker()
     private var gender: Int = -1
+
+    private val email by lazy { requireArguments().getString("email")!! }
+    private val password by lazy { requireArguments().getString("password")!! }
 
     override fun initializeView() {
         formStateChecker.addViews(sign_up3_name, sign_up3_gender_selector, sign_up3_age)
@@ -73,13 +77,13 @@ class SignUp3Fragment : Fragment(R.layout.fragment_sign_up3) {
 
     private fun signUp() {
         val signUpResult = CommandProcess.signUp(
-            requireArguments().getString("email")!!,
-            requireArguments().getString("password")!!,
-            ViewUtil.getText(sign_up3_name),
-            ViewUtil.getText(sign_up3_age).toInt(),
-            gender,
-            requireArguments().getInt("password_question_id"),
-            requireArguments().getString("password_answer")!!
+            email = email,
+            password = password,
+            name = ViewUtil.getText(sign_up3_name),
+            age = ViewUtil.getText(sign_up3_age).toInt(),
+            gender = gender,
+            passwordQuestionId = requireArguments().getInt("password_question_id"),
+            passwordAnswer = requireArguments().getString("password_answer")!!
         )
 
         if (signUpResult.isSucceed) {
@@ -93,12 +97,13 @@ class SignUp3Fragment : Fragment(R.layout.fragment_sign_up3) {
     }
 
     private fun signIn() {
-        val signInResult = CommandProcess.signIn(
-            requireArguments().getString("email")!!,
-            requireArguments().getString("password")!!
-        )
+        val signInResult = CommandProcess.signIn(email = email, password = password)
 
         if (signInResult.isSucceed) {
+            SharedPreferencesUtil
+                .getContext(requireContext(), SharedPreferencesUtil.PREF_ACCOUNT)
+                .put("email", email)
+                .put("password", password)
             StaticComponent.user = signInResult.result!!
             findNavController().navigate(R.id.action_to_sign_up4)
         } else {

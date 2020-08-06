@@ -23,6 +23,43 @@
             android:layout_height="match_parent"
             android:scaleType="centerCrop" />
 
+        <TextView
+            android:id="@+id/card_main_stack_empty"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/home_stack_empty"
+            android:textSize="@dimen/text_large4"
+            android:textColor="@android:color/black"
+            android:textStyle="bold"
+            android:textAlignment="center"
+            android:visibility="invisible"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <Button
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:id="@+id/card_main_stack_refresh"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/home_stack_refresh"
+            android:visibility="invisible"
+            app:layout_constraintTop_toBottomOf="@id/card_main_stack_empty"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <ProgressBar
+            style="?android:attr/progressBarStyleSmall"
+            android:id="@+id/card_main_stack_refreshing"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/card_vertical_margin"
+            android:visibility="invisible"
+            app:layout_constraintTop_toBottomOf="@id/card_main_stack_empty"
+            app:layout_constraintStart_toStartOf="@id/card_main_stack_empty"
+            app:layout_constraintEnd_toEndOf="@id/card_main_stack_empty" />
+
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/card_main_stack_nope"
             android:layout_width="@dimen/main_pick_width"

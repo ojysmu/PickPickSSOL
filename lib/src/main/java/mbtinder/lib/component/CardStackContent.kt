@@ -5,10 +5,15 @@ import java.util.*
 class CardStackContent: IDContent, ImageComponent {
     lateinit var userId: UUID
     lateinit var contents: List<String>
+    var isEmptyBody = false
 
     private var image: ByteArray? = null
     private lateinit var imageName: String
     private lateinit var imageUrl: String
+
+    constructor() {
+        isEmptyBody = true
+    }
 
     constructor(userId: UUID, contents: List<String>, imageName: String, imageUrl: String) {
         this.userId = userId

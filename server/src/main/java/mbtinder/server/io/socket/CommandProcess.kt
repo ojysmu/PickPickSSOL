@@ -1,14 +1,12 @@
 package mbtinder.server.io.socket
 
 import mbtinder.lib.component.*
+import mbtinder.lib.constant.MBTI
 import mbtinder.lib.constant.ServerPath
 import mbtinder.lib.constant.ServerResponse
 import mbtinder.lib.io.component.CommandContent
 import mbtinder.lib.io.constant.Command
-import mbtinder.lib.util.JSONList
-import mbtinder.lib.util.saveJSONArray
-import mbtinder.lib.util.saveJSONObject
-import mbtinder.lib.util.toJSONList
+import mbtinder.lib.util.*
 import mbtinder.server.constant.LocalFile
 import mbtinder.server.io.database.MySQLServer
 import mbtinder.server.io.database.SQLiteConnection
@@ -38,6 +36,9 @@ object CommandProcess {
             Command.GET_SIGN_UP_QUESTIONS -> getSignUpQuestion(command)
             Command.SET_SIGN_UP_QUESTIONS -> setSignUpQuestion(command)
             Command.SET_MBTI -> setMBTI(command)
+            Command.GET_MATCHABLE_USERS -> getMatchableUsers(command)
+            Command.PICK -> TODO()
+            Command.NOPE -> TODO()
 
             Command.CREATE_CHAT -> createChat(command)
             Command.DELETE_CHAT -> deleteChat(command)
@@ -88,10 +89,19 @@ object CommandProcess {
         JSONArray().saveJSONArray(LocalFile.getUserInterestPath(userId))
 
         val sqLiteConnection = SQLiteConnection.getConnection(userId)
-        val createTableSql = "CREATE TABLE chat (" +
-                "_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "receiver_id CHAR(36) NOT NULL)"
-        sqLiteConnection.addQuery(createTableSql)
+        run {
+            val createTableSql = "CREATE TABLE chat (" +
+                    "_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    "receiver_id CHAR(36) NOT NULL)"
+            sqLiteConnection.addQuery(createTableSql)
+        }
+        run {
+            val createTableSql = "CREATE TABLE pick (" +
+                    "_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    "opponent_id CHAR(36) NOT NULL, " +
+                    "is_picked BOOLEAN NOT NULL)"
+            sqLiteConnection.addQuery(createTableSql)
+        }
 
         return Connection.makePositiveResponse(command.uuid)
     }
@@ -223,6 +233,39 @@ object CommandProcess {
         MySQLServer.getInstance().addQuery(sql)
 
         return Connection.makePositiveResponse(command.uuid)
+    }
+
+    private fun getMatchableUsers(command: CommandContent): JSONObject {
+        // 탐색을 시도하는 사용자 ID
+        val userId = UUID.fromString(command.arguments.getString("user_id"))
+        // 사용자 MBTI
+        val userMBTI = MBTI.findByName(
+            loadJSONObject(LocalFile.getUserMBTIPath(userId)).getString("value")
+        )
+        // 가입 시 입력한 취향
+        val userSignUpQuestions = loadJSONArray(LocalFile.getUserSignUpQuestionPath(userId))
+            .toJSONList<SignUpQuestionContent.ConnectionForm>()
+
+        val sqLiteConnection = SQLiteConnection.getConnection(userId)
+        val sql = "SELECT opponent_id FROM pick"
+        val queryId = sqLiteConnection.addQuery(sql)
+        val queryResult = sqLiteConnection.getResult(queryId)
+        // 이미 목록에 나타났던 사용자 목록
+        val metList = queryResult.content.map { it.getUUID("opponent_id") }
+
+        val filteredUsers = UserUtil.getUserIds()
+            // 본인과 이미 목록이 표시되었던 사용자 제외
+            .filter { it != userId && !metList.contains(userId) }
+            // 매칭 점수가 70점 이하인 사용자 제외
+            .filter { UserUtil.getMatchingScore(userId, userMBTI, it, userSignUpQuestions) > 70 }
+            // 실제 사용자 정보 반환
+            .map { UserUtil.getUser(it)!! }
+            .toJSONList()
+            .toJSONArray()
+
+        // STOPSHIP: 2020/08/06 NEED TEST
+
+        return Connection.makePositiveResponse(command.uuid, JSONObject().apply { put("users", filteredUsers) })
     }
 
     private fun createChat(command: CommandContent): JSONObject {

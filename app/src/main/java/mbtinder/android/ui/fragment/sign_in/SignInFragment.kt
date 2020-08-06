@@ -102,6 +102,6 @@ class SignInFragment : Fragment(R.layout.fragment_sign_in) {
     private fun onPasswordIssued() {
         formStatus[1] = false
         sign_in_password.isErrorEnabled = true
-        sign_in_password.error = getString(R.string.sign_up_password_error)
+        sign_in_password.error = getString(R.string.sign_in_password_error)
     }
 }

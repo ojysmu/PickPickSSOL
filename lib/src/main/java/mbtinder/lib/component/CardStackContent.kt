@@ -1,6 +1,8 @@
 package mbtinder.lib.component
 
+import mbtinder.lib.constant.ServerPath
 import java.util.*
+import kotlin.collections.ArrayList
 
 class CardStackContent: IDContent, ImageComponent {
     lateinit var userId: UUID
@@ -13,6 +15,13 @@ class CardStackContent: IDContent, ImageComponent {
 
     constructor() {
         isEmptyBody = true
+    }
+
+    constructor(userContent: UserContent) {
+        this.userId = userContent.userId
+        this.contents = ArrayList()
+        this.imageName = "${userContent.userId}.png"
+        this.imageUrl = ServerPath.getUserImageUrl(userId, imageName)
     }
 
     constructor(userId: UUID, contents: List<String>, imageName: String, imageUrl: String) {

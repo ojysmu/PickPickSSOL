@@ -14,7 +14,7 @@
     <string name="common_submit">제출</string>
     <string name="common_wait">잠시만 기다려주세요.</string>
 
-    <string name="common_mbti_intj_title">INJT</string>
+    <string name="common_mbti_intj_title">INTJ</string>
     <string name="common_mbti_intj_content">용의주도한 전략가</string>
     <string name="common_mbti_intp_title">INTP</string>
     <string name="common_mbti_intp_content">논리적인 사색가</string>
@@ -121,6 +121,7 @@
     <string name="home_pick">PICK!</string>
     <string name="home_stack_empty">목록의 끝이에요.</string>
     <string name="home_stack_refresh">새로고침</string>
+    <string name="home_stack_update_failed">목록을 불러오는데 실패했습니다. 다시 시도해주세요.</string>
 
     <string name="message_list_title">메시지 목록</string>
 

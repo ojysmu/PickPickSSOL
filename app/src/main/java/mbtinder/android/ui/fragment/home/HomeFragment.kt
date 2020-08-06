@@ -2,32 +2,36 @@ package mbtinder.android.ui.fragment.home
 
 import android.view.View
 import android.view.animation.LinearInterpolator
+import android.widget.Toast
 import androidx.recyclerview.widget.DefaultItemAnimator
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.yuyakaido.android.cardstackview.*
 import kotlinx.android.synthetic.main.fragment_home.*
 import mbtinder.android.R
+import mbtinder.android.component.StaticComponent
+import mbtinder.android.io.CommandProcess
 import mbtinder.android.ui.model.Fragment
 import mbtinder.android.util.ImageUtil
 import mbtinder.android.util.Log
+import mbtinder.android.util.ThreadUtil
 import mbtinder.lib.component.CardStackContent
 import java.util.*
 
 class HomeFragment : Fragment(R.layout.fragment_home) {
-    private val sampleContents = arrayListOf<CardStackContent>()
-
     private lateinit var cardStackLayoutManager: CardStackLayoutManager
-    private val cardStackAdapter by lazy { CardStackAdapter(sampleContents, this) }
+    private val cardStackAdapter by lazy { CardStackAdapter(arrayListOf(), this) }
     private var currentPosition = 0
 
     override fun initializeView() {
         requireActivity().findViewById<BottomNavigationView>(R.id.nav_view).visibility = View.VISIBLE
 
-        for (i in 0 until 3) {
-            val content = CardStackContent(UUID.randomUUID(), listOf("내용1", "내용2"), "name", "url")
-            content.setImage(ImageUtil.drawableToByteArray(requireContext().getDrawable(R.drawable.image)!!))
-            sampleContents.add(content)
-        }
+//        for (i in 0 until 3) {
+//            val content = CardStackContent(UUID.randomUUID(), listOf("내용1", "내용2"), "name", "url")
+//            content.setImage(ImageUtil.drawableToByteArray(requireContext().getDrawable(R.drawable.image)!!))
+//            cardStackAdapter.addContent(content)
+//        }
+
+        updateCardStack()
 
         cardStackLayoutManager = CardStackLayoutManager(requireContext(), cardStackListener)
         cardStackLayoutManager.setStackFrom(StackFrom.None)
@@ -56,7 +60,20 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     }
 
     fun updateCardStack() {
-
+        ThreadUtil.runOnBackground {
+            val getResult = CommandProcess.getMatchableUsers(StaticComponent.user.userId)
+            if (getResult.isSucceed) {
+                ThreadUtil.runOnUiThread {
+                    cardStackAdapter.addContents(getResult.result!!.mapTo(ArrayList()) { CardStackContent(it) })
+                    home_waiting.visibility = View.INVISIBLE
+                    home_card_stack_view.visibility = View.VISIBLE
+                }
+            } else {
+                ThreadUtil.runOnUiThread {
+                    Toast.makeText(requireContext(), R.string.home_stack_update_failed, Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
     }
 
     private val cardStackListener = object : CardStackListener {
@@ -86,8 +103,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             }
         }
 
-        override fun onCardSwiped(direction: Direction?) {
-        }
+        override fun onCardSwiped(direction: Direction?) = Unit
 
         override fun onCardCanceled() {
             val holder = cardStackAdapter.holders[currentPosition]

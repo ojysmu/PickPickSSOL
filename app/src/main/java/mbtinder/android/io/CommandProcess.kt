@@ -71,6 +71,13 @@ object CommandProcess {
         )
     }
 
+    fun getMatchableUsers(userId: UUID): ServerResult<JSONList<UserContent>> {
+        val arguments = JSONObject().apply { put("user_id", userId.toString()) }
+        val result = SocketUtil.getServerResult(Command.GET_MATCHABLE_USERS, arguments)
+
+        return SocketUtil.getJSONListResult(result, "users")
+    }
+
     fun getSignUpQuestion() = SocketUtil.getJSONListResult<SignUpQuestionContent>(
         SocketUtil.getServerResult(Command.GET_SIGN_UP_QUESTIONS, JSONObject()), "questions"
     )
@@ -95,12 +102,5 @@ object CommandProcess {
 
         val result = SocketUtil.getServerResult(Command.SET_MBTI, arguments)
         return SocketUtil.getVoidResult(result)
-    }
-
-    fun getMatchableUsers(userId: UUID): ServerResult<JSONList<UserContent>> {
-        val arguments = JSONObject().apply { put("user_id", userId.toString()) }
-        val result = SocketUtil.getServerResult(Command.GET_MATCHABLE_USERS, arguments)
-
-        return SocketUtil.getJSONListResult(result, "users")
     }
 }

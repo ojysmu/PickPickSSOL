@@ -29,6 +29,11 @@ abstract class Adapter<T>(@LayoutRes private val rootView: Int,
         notifyItemInserted(contents.size - 1)
     }
 
+    fun addContents(elements: Collection<T>) {
+        contents.addAll(elements)
+        notifyItemRangeChanged(contents.size - elements.size - 1, elements.size)
+    }
+
     fun removeAt(index: Int) {
         contents.removeAt(index)
         notifyItemRemoved(index)

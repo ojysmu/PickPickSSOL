@@ -255,7 +255,7 @@ object CommandProcess {
 
         val filteredUsers = UserUtil.getUserIds()
             // 본인과 이미 목록이 표시되었던 사용자 제외
-            .filter { it != userId && !metList.contains(userId) }
+            .filter { it != userId && !metList.contains(it) }
             // 매칭 점수가 70점 이하인 사용자 제외
             .filter { UserUtil.getMatchingScore(userId, userMBTI, it, userSignUpQuestions) > 70 }
             // 실제 사용자 정보 반환

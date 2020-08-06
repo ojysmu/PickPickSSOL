@@ -52,13 +52,18 @@ class SQLiteConnection private constructor(val userId: UUID): CloseableThread(),
                 sleep()
             } else {
                 val query = queries.removeAt(0)
+                println("SQLiteConnection.loop() Found: query=${query.sql}")
 
                 if (query.needResult) {
+                    println("SQLiteConnection.loop() needResult")
                     try {
+                        println("SQLiteConnection.loop() executeQuery")
                         val resultSet = statement.executeQuery(query.sql)
+                        println("SQLiteConnection.loop() executeQuery Done")
                         val queryResult = QueryResult(query, resultSet)
                         resultSet.close()
                         results.add(queryResult)
+                        println("SQLiteConnection.loop() Added to results")
                     } catch (e: SQLException) {
                         System.err.println("Error occurred while running query: ${query.sql}")
                         e.printStackTrace()
@@ -77,7 +82,7 @@ class SQLiteConnection private constructor(val userId: UUID): CloseableThread(),
 
     fun addQuery(sql: String): UUID {
         val queryId = UUID.randomUUID()
-        synchronized(queryId) {
+        synchronized(queries) {
             queries.add(Query(queryId, sql))
         }
 

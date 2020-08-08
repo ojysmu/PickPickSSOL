@@ -13,6 +13,7 @@ import mbtinder.server.io.database.SQLiteConnection
 import mbtinder.server.util.MessageUtil
 import mbtinder.server.util.SignUpQuestionUtil
 import mbtinder.server.util.UserUtil
+import mbtinder.server.util.hasProfileImage
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
@@ -258,12 +259,12 @@ object CommandProcess {
             .filter { it != userId && !metList.contains(it) }
             // 매칭 점수가 70점 이하인 사용자 제외
             .filter { UserUtil.getMatchingScore(userId, userMBTI, it, userSignUpQuestions) > 70 }
+            // 프로필 이미지가 없는 사용자 제외
+            .filter { hasProfileImage(it) }
             // 실제 사용자 정보 반환
             .map { UserUtil.getUser(it)!! }
             .toJSONList()
             .toJSONArray()
-
-        // STOPSHIP: 2020/08/06 NEED TEST
 
         return Connection.makePositiveResponse(command.uuid, JSONObject().apply { put("users", filteredUsers) })
     }

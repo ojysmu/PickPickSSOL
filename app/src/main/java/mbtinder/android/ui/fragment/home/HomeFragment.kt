@@ -25,12 +25,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     override fun initializeView() {
         requireActivity().findViewById<BottomNavigationView>(R.id.nav_view).visibility = View.VISIBLE
 
-//        for (i in 0 until 3) {
-//            val content = CardStackContent(UUID.randomUUID(), listOf("내용1", "내용2"), "name", "url")
-//            content.setImage(ImageUtil.drawableToByteArray(requireContext().getDrawable(R.drawable.image)!!))
-//            cardStackAdapter.addContent(content)
-//        }
-
         updateCardStack()
 
         cardStackLayoutManager = CardStackLayoutManager(requireContext(), cardStackListener)
@@ -59,18 +53,32 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         }
     }
 
-    fun updateCardStack() {
+    fun updateCardStack(onUpdateFinished: ((isSucceed: Boolean, content: CardStackContent?) -> Unit)? = null) {
         ThreadUtil.runOnBackground {
             val getResult = CommandProcess.getMatchableUsers(StaticComponent.user.userId)
             if (getResult.isSucceed) {
                 ThreadUtil.runOnUiThread {
-                    cardStackAdapter.addContents(getResult.result!!.mapTo(ArrayList()) { CardStackContent(it) })
+                    val contents = getResult.result!!.mapTo(ArrayList()) { CardStackContent(it) }
+                    if (contents.isEmpty()) {
+//                        cardStackAdapter.addContent(CardStackContent())
+//                        cardStackLayoutManager.setCanScrollHorizontal(false)
+//                        onUpdateFinished?.invoke(false, null)
+                    } else {
+                        cardStackAdapter.addContents(contents)
+                        cardStackLayoutManager.setCanScrollHorizontal(true)
+//                        onUpdateFinished?.let {
+//                            it.invoke(true, contents[0])
+//                            home_card_stack_view.swipe()
+//                        }
+                    }
+
                     home_waiting.visibility = View.INVISIBLE
                     home_card_stack_view.visibility = View.VISIBLE
                 }
             } else {
                 ThreadUtil.runOnUiThread {
                     Toast.makeText(requireContext(), R.string.home_stack_update_failed, Toast.LENGTH_SHORT).show()
+                    onUpdateFinished?.invoke(false, null)
                 }
             }
         }
@@ -82,9 +90,10 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             holder.setNopeTransparency(0.0f)
             holder.setPickTransparency(0.0f)
 
-            if (position == cardStackAdapter.itemCount - 2) {
+            if (position == cardStackAdapter.itemCount - 1 ||
+                position == cardStackAdapter.itemCount - 2) {
                 Log.v("onCardDisappeared() Empty: position=$position")
-                cardStackAdapter.addContent(CardStackContent())
+//                cardStackAdapter.addContent(CardStackContent())
             }
         }
 

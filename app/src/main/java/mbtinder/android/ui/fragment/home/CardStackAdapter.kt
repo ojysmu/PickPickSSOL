@@ -18,7 +18,7 @@ class CardStackAdapter(private val contents: MutableList<CardStackContent>, priv
         holder.adapter = this
     }
 
-    fun requestUpdate() {
-        fragment.updateCardStack()
+    fun requestUpdate(onUpdateFinished: (isSucceed: Boolean, content: CardStackContent?) -> Unit) {
+        fragment.updateCardStack(onUpdateFinished)
     }
 }

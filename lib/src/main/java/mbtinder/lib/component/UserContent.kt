@@ -3,6 +3,7 @@ package mbtinder.lib.component
 import mbtinder.lib.component.json.JSONParsable
 import mbtinder.lib.constant.PasswordQuestion
 import org.json.JSONObject
+import java.io.File
 import java.sql.Date
 import java.util.*
 

@@ -13,14 +13,14 @@ class CardStackContent: IDContent, ImageComponent {
     private lateinit var imageName: String
     private lateinit var imageUrl: String
 
-    constructor() {
-        isEmptyBody = true
-    }
+//    constructor() {
+//        isEmptyBody = true
+//    }
 
     constructor(userContent: UserContent) {
         this.userId = userContent.userId
         this.contents = ArrayList()
-        this.imageName = "${userContent.userId}.png"
+        this.imageName = "profile.png"
         this.imageUrl = ServerPath.getUserImageUrl(userId, imageName)
     }
 

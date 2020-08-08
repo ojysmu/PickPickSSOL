@@ -5,6 +5,7 @@ import android.os.AsyncTask
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatImageView
 import mbtinder.android.util.ImageUtil
+import mbtinder.android.util.Log
 import mbtinder.lib.component.ImageComponent
 import java.io.FileNotFoundException
 import java.net.URL
@@ -32,6 +33,7 @@ class AsyncImageView: AppCompatImageView {
                 inputStream.close()
                 bytes
             } catch (e: FileNotFoundException) {
+                Log.e("Failed to download image", e)
                 null
             }
         }

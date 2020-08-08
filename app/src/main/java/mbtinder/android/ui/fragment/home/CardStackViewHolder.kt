@@ -58,7 +58,8 @@ class CardStackViewHolder(private val view: View): AdaptableViewHolder<CardStack
         cardPick.visibility = View.VISIBLE
         cardNope.visibility = View.VISIBLE
 
-        imageView.setImageDrawable(ImageUtil.byteArrayToDrawable(itemView.context, content.getImage()))
+//        imageView.setImageDrawable(ImageUtil.byteArrayToDrawable(itemView.context, content.getImage()))
+        imageView.setImage(content)
         recyclerView.itemAnimator = DefaultItemAnimator()
         recyclerView.layoutManager = LinearLayoutManager(itemView.context)
         recyclerView.adapter = CardStackContentAdapter(content.contents.toMutableList())
@@ -78,7 +79,16 @@ class CardStackViewHolder(private val view: View): AdaptableViewHolder<CardStack
         refreshButton.setOnClickListener {
             refreshButton.visibility = View.INVISIBLE
             refreshingProgressBar.visibility = View.VISIBLE
-            adapter.requestUpdate()
+            adapter.requestUpdate(this::onUpdateFinished)
+        }
+    }
+
+    private fun onUpdateFinished(isSucceed: Boolean, content: CardStackContent?) {
+        if (isSucceed) {
+            adaptContent(content!!)
+        } else {
+            refreshButton.visibility = View.VISIBLE
+            refreshingProgressBar.visibility = View.INVISIBLE
         }
     }
 }

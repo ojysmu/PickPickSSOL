@@ -11,5 +11,5 @@ object ServerPath {
     const val PORT_SOCKET = 8080
 
     fun getUserImageUrl(userId: UUID, imageName: String) =
-        "$WEB_PROTOCOL://$ADDRESS:$PORT_WEB/raw/$userId/$imageName"
+        "$WEB_PROTOCOL://$ADDRESS:$PORT_WEB/raw/user/$userId/$imageName"
 }

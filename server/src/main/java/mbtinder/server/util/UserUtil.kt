@@ -9,6 +9,7 @@ import mbtinder.lib.util.toJSONList
 import mbtinder.server.constant.LocalFile
 import mbtinder.server.io.database.MySQLServer
 import mbtinder.server.io.database.component.Row
+import java.io.File
 import java.util.*
 
 object UserUtil {
@@ -98,3 +99,7 @@ object UserUtil {
         return sum
     }
 }
+
+fun hasProfileImage(userId: UUID) = File(LocalFile.getUserImagePath(userId)).exists()
+
+fun UserContent.hasProfileImage() = File(LocalFile.getUserImagePath(userId)).exists()

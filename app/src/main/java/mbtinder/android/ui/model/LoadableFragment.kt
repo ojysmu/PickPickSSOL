@@ -33,7 +33,7 @@ abstract class LoadableFragment(@LayoutRes private val layout: Int): Fragment(la
         return inflateView(R.layout.fragment_loadable, inflater, container!!)
     }
 
-    override fun <T : View> findViewById(@IdRes id: Int): T {
+    override fun <T: View> findViewById(@IdRes id: Int): T {
         return innerLayout.findViewById(id)
     }
 

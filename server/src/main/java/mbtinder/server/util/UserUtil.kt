@@ -26,9 +26,8 @@ object UserUtil {
         val queryResult = MySQLServer.getInstance().getResult(queryId)
 
         lastUpdate = System.currentTimeMillis()
-        val result = queryResult.content.map { buildUser(it) }.sorted()
-        println("UserUtil.updateUsers() END: result=$result")
-        return result
+        users = queryResult.content.map { buildUser(it) }.sorted()
+        return users
     }
 
     private fun ensureUpdate() {
@@ -45,37 +44,16 @@ object UserUtil {
         row.getString("password_answer")
     )
 
-    fun getUser(userId: UUID, withPassword: Boolean = false): UserContent? = synchronized(users) {
+    fun getUser(userId: UUID, withPassword: Boolean = false): UserContent? {
         ensureUpdate()
 
-        val index = users.binarySearch { it.userId.compareTo(userId) }
-        return if (index >= 0) {
-            if (!withPassword) {
-                users[index].password = ""
-                users[index].passwordAnswer = ""
-            }
-            users[index]
-        } else {
-            users = updateUsers()
-            val found = users.find { it.userId == userId }
-            if (!withPassword) {
-                found?.password = ""
-                found?.passwordAnswer = ""
-            }
-            return found
-        }
+        return findBinaryTwice(users, this::updateUsers) { it.userId.compareTo(userId) }?.hidePassword(!withPassword)
     }
 
-    fun getUserByEmail(email: String): UserContent? = synchronized(users) {
+    fun getUserByEmail(email: String, withPassword: Boolean = false): UserContent? {
         ensureUpdate()
 
-        val found = users.find { it.email == email }
-        return if (found != null) {
-            found
-        } else {
-            users = updateUsers()
-            return users.find { it.email == email }
-        }
+        return findBinaryTwice(users, this::updateUsers) { it.email.compareTo(email) }?.hidePassword(!withPassword)
     }
 
     fun getUserIds() = users.map { it.userId }
@@ -103,3 +81,12 @@ object UserUtil {
 fun hasProfileImage(userId: UUID) = File(LocalFile.getUserImagePath(userId)).exists()
 
 fun UserContent.hasProfileImage() = File(LocalFile.getUserImagePath(userId)).exists()
+
+fun UserContent.hidePassword(hide: Boolean): UserContent {
+    if (hide) {
+        password = ""
+        passwordAnswer = ""
+    }
+
+    return this
+}

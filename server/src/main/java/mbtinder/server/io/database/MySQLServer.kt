@@ -2,6 +2,8 @@ package mbtinder.server.io.database
 
 import mbtinder.lib.util.CloseableThread
 import mbtinder.lib.util.IDList
+import mbtinder.lib.util.block
+import mbtinder.lib.util.sync
 import mbtinder.server.io.database.component.Query
 import mbtinder.server.io.database.component.QueryResult
 import java.sql.Connection
@@ -90,7 +92,7 @@ class MySQLServer private constructor(url: String, database: String, id: String,
             if (queries.isEmpty()) {
                 sleep()
             } else {
-                val query = queries.removeAt(0)
+                val query = sync(queries, queries::removeAt, 0)
 
                 if (query.needResult) {
                     try {
@@ -135,9 +137,8 @@ class MySQLServer private constructor(url: String, database: String, id: String,
      * @return 실행한 SQL의 결과
      */
     fun getResult(queryId: UUID): QueryResult {
-        while (!results.contains(queryId)) {
-            sleep()
-        }
-        return results.remove(queryId)
+        block(results, intervalInMillis) { !it.contains(queryId) }
+
+        return sync(results) { it.remove(queryId) }
     }
 }

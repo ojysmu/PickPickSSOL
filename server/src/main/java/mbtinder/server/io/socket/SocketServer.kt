@@ -44,8 +44,7 @@ class SocketServer private constructor(private val port: Int): CloseableThread()
          */
         fun createInstance(port: Int): SocketServer {
             if (instance == null) {
-                instance =
-                    SocketServer(port)
+                instance = SocketServer(port)
 
                 return instance!!
             } else {
@@ -86,8 +85,7 @@ class SocketServer private constructor(private val port: Int): CloseableThread()
         // Thread 반복 정의
         loop = {
             // 연결 수락 후 Connection pool에 저장
-            connections.add(
-                Connection(serverSocket.accept()).apply { start() })
+            connections.add(Connection(serverSocket.accept()).apply { start() })
         }
     }
 

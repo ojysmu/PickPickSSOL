@@ -6,6 +6,8 @@ import mbtinder.android.util.Log
 import mbtinder.lib.io.component.CommandContent
 import mbtinder.lib.util.CloseableThread
 import mbtinder.lib.util.IDList
+import mbtinder.lib.util.block
+import mbtinder.lib.util.sync
 import org.json.JSONObject
 import java.io.DataInputStream
 import java.io.DataOutputStream
@@ -13,7 +15,7 @@ import java.io.IOException
 import java.net.Socket
 import java.util.*
 
-class SocketClient(private val address: String, private val port: Int): CloseableThread() {
+class SocketClient private constructor(private val address: String, private val port: Int): CloseableThread() {
     companion object {
         const val CONNECTION_RETRY_MAX = 3
 
@@ -75,7 +77,7 @@ class SocketClient(private val address: String, private val port: Int): Closeabl
             if (commandPool.isEmpty()) {
                 sleep()
             } else {
-                val command = commandPool.removeAt(0)
+                val command = sync(commandPool, commandPool::removeAt, 0)
                 val clientMessage = command.jsonObject.toString()
                 Log.v("clientMessage=$clientMessage")
 
@@ -101,22 +103,14 @@ class SocketClient(private val address: String, private val port: Int): Closeabl
         instance = null
     }
 
-    fun addCommand(commandContent: CommandContent) = synchronized(commandPool) {
-        commandPool.add(commandContent)
-    }
+    fun addCommand(commandContent: CommandContent) = sync(commandPool) { it.add(commandContent) }
 
-    fun addResult(commandResult: CommandResult) = synchronized(resultPool) {
-        resultPool.add(commandResult)
-    }
+    fun addResult(commandResult: CommandResult) = sync(resultPool) { it.add(commandResult) }
 
     fun getResult(commandId: UUID): JSONObject {
-        while (!resultPool.contains(commandId)) {
-            sleep()
-        }
+        block(resultPool, intervalInMillis) { !it.contains(commandId) }
 
-        return synchronized(resultPool) {
-            resultPool.remove(commandId).arguments
-        }
+        return sync(resultPool) { it.remove(commandId) }.arguments
     }
 
     override fun pauseThread() {

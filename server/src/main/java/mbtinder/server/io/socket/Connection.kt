@@ -43,8 +43,6 @@ class Connection(private val socket: Socket): CloseableThread(), IDContent {
     override fun close() {
         super.close()
 
-//        bufferedReader.close()
-//        bufferedWriter.close()
         dataInputStream.close()
         dataOutputStream.close()
         socket.close()

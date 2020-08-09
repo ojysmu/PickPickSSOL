@@ -17,7 +17,8 @@ object ChatUtil {
         val queryResult = MySQLServer.getInstance().getResult(queryId)
 
         lastUpdate = System.currentTimeMillis()
-        return queryResult.content.map { buildChat(it) }.sorted()
+        chats = queryResult.content.map { buildChat(it) }.sorted()
+        return chats
     }
 
     private fun ensureUpdate() {
@@ -30,15 +31,8 @@ object ChatUtil {
         row.getUUID("chat_id"), row.getUUID("sender_id"), row.getUUID("receiver_id")
     )
 
-    fun getChatContent(chatId: UUID): ChatContent? = synchronized(chats) {
+    fun getChatContent(chatId: UUID): ChatContent? {
         ensureUpdate()
-
-        val chatContent = chats.find { it.chatId == chatId }
-        return if (chatContent != null) {
-            chatContent
-        } else {
-            updateChats()
-            chats.find { it.chatId == chatId }
-        }
+        return findBinaryTwice(chats, this::updateChats) { it.getUUID().compareTo(chatId) }
     }
 }

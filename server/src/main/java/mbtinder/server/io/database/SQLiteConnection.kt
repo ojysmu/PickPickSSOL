@@ -3,6 +3,8 @@ package mbtinder.server.io.database
 import mbtinder.lib.component.IDContent
 import mbtinder.lib.util.CloseableThread
 import mbtinder.lib.util.IDList
+import mbtinder.lib.util.block
+import mbtinder.lib.util.sync
 import mbtinder.server.constant.LocalFile
 import mbtinder.server.io.database.component.Query
 import mbtinder.server.io.database.component.QueryResult
@@ -13,15 +15,15 @@ import java.util.*
 
 class SQLiteConnection private constructor(val userId: UUID): CloseableThread(), IDContent {
     companion object {
-        const val SELECT_MESSAGE_LIMIT = 20
+        private const val SELECT_MESSAGE_LIMIT = 20
 
         val dbHeader = "jdbc:sqlite:${LocalFile.userRoot}"
 
         private val connections = IDList<SQLiteConnection>()
 
-        fun getConnection(userId: UUID): SQLiteConnection = synchronized(connections) {
-            return connections.find { it.userId == userId }
-                ?: SQLiteConnection(userId).apply { connections.add(this); start() }
+        fun getConnection(userId: UUID) = sync(connections) { connections: IDList<SQLiteConnection> ->
+            connections.find { it.userId == userId } ?:
+                    SQLiteConnection(userId).apply { connections.add(this); start() }
         }
 
         fun getCreateChatSql(chatId: UUID) = "CREATE TABLE $chatId (" +
@@ -51,28 +53,21 @@ class SQLiteConnection private constructor(val userId: UUID): CloseableThread(),
             if (queries.isEmpty()) {
                 sleep()
             } else {
-                val query = synchronized(queries) { queries.removeAt(0) }
-                println("SQLiteConnection.loop() Found: query=${query.sql}")
+                val query = sync(queries, queries::removeAt, 0)
 
                 if (query.needResult) {
-                    println("SQLiteConnection.loop() needResult")
                     try {
-                        println("SQLiteConnection.loop() executeQuery")
                         val resultSet = statement.executeQuery(query.sql)
-                        println("SQLiteConnection.loop() executeQuery Done")
                         val queryResult = QueryResult(query, resultSet)
                         resultSet.close()
                         results.add(queryResult)
-                        println("SQLiteConnection.loop() Added to results")
                     } catch (e: SQLException) {
-                        System.err.println("Error occurred while running query: ${query.sql}")
                         e.printStackTrace()
                     }
                 } else {
                     try {
                         statement.executeUpdate(query.sql)
                     } catch (e: SQLException) {
-                        System.err.println("Error occurred while running query: ${query.sql}")
                         e.printStackTrace()
                     }
                 }
@@ -88,12 +83,9 @@ class SQLiteConnection private constructor(val userId: UUID): CloseableThread(),
     }
 
     fun getResult(queryId: UUID): QueryResult {
-        while (!results.contains(queryId)) {
-            sleep()
-        }
-        return synchronized(results) {
-            results.remove(queryId)
-        }
+        block(results, intervalInMillis) { !it.contains(queryId) }
+
+        return sync(results) { it.remove(queryId) }
     }
 
     override fun getUUID() = userId

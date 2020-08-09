@@ -24,7 +24,6 @@ enum class Command {
     UPDATE_PASSWORD,        // 비밀번호 변경
     GET_MATCHABLE_USERS,    // 현재 사용자와 매칭 가능한 사용자 목록 탐색(=카드스택 업데이트)
     PICK,                   // PICK 누적
-    NOPE,                   // NOPE 누적
 
     // Message related commands
     /**

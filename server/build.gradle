@@ -12,3 +12,25 @@ dependencies {
 
 sourceCompatibility = "1.8"
 targetCompatibility = "1.8"
+
+jar {
+    project.properties.forEach { k, v -> logger.quiet(k + ":" + v.toString()) }
+    archiveFileName = 'server.jar'
+
+    manifest {
+        attributes 'Main-Class': 'mbtinder.server.Main'
+    }
+
+    from {
+        String[] include = ["kotlin-runtime-1.3.72.jar", "kotlin-stdlib-1.3.72.jar"]
+
+        configurations.compile
+                .findAll {
+                    logger.info(it.name)
+                    include.contains(it.name)
+                }
+                .collect {
+                    println(it)
+                    it.isDirectory() ? it : zipTree(it) }
+    }
+}

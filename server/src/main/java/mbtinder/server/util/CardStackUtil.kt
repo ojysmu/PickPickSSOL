@@ -41,7 +41,7 @@ object CardStackUtil {
         ensureUpdate()
 
         return userIds.map { userId: UUID ->
-            cardStacks!![cardStacks!!.binarySearch { card: CardStackContent -> card.userId.compareTo(userId) }]
+            cardStacks!![cardStacks!!.binarySearch { card: CardStackContent -> card.userId.compareTo(userId) }].getCloned()
         }
     }
 }

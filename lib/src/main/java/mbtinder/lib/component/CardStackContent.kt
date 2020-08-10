@@ -12,6 +12,7 @@ class CardStackContent: JSONParsable, IDContent, ImageComponent, CloneableConten
     lateinit var userId: UUID
     lateinit var mbti: MBTI
     lateinit var contents: JSONList<SignUpQuestionContent>
+    var score: Int = -1
 
     @SkipParsing
     private var image: ByteArray? = null
@@ -25,22 +26,24 @@ class CardStackContent: JSONParsable, IDContent, ImageComponent, CloneableConten
         this.imageUrl = ServerPath.getUserImageUrl(userId, imageName)
     }
 
-    constructor(userContent: UserContent, mbti: MBTI, contents: JSONList<SignUpQuestionContent>) {
+    constructor(userContent: UserContent, mbti: MBTI, contents: JSONList<SignUpQuestionContent>, score: Int = 0) {
         this.userId = userContent.userId
         this.mbti = mbti
         this.contents = contents
         this.imageName = "profile.png"
         this.imageUrl = ServerPath.getUserImageUrl(userId, imageName)
+        this.score = score
 
         updateJSONObject()
     }
 
-    constructor(userId: UUID, mbti: MBTI, contents: JSONList<SignUpQuestionContent>) {
+    constructor(userId: UUID, mbti: MBTI, contents: JSONList<SignUpQuestionContent>, score: Int = 0) {
         this.userId = userId
         this.mbti = mbti
         this.contents = contents
         this.imageName = "profile.png"
         this.imageUrl = ServerPath.getUserImageUrl(userId, imageName)
+        this.score = score
 
         updateJSONObject()
     }
@@ -59,7 +62,7 @@ class CardStackContent: JSONParsable, IDContent, ImageComponent, CloneableConten
         this.image = image
     }
 
-    override fun getCloned() = CardStackContent(userId, mbti, contents)
+    override fun getCloned() = CardStackContent(userId, mbti, contents, score)
 
     override fun compareTo(other: CardStackContent) = userId.compareTo(other.userId)
 }

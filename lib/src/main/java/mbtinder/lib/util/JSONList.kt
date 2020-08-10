@@ -38,6 +38,10 @@ class JSONList<T: JSONContent> : ArrayList<T> {
 
     fun updateJSONObject() = forEach { it.updateJSONObject() }
 
+    public override fun removeRange(start: Int, end: Int) {
+        super.removeRange(start, end)
+    }
+
     override fun toString() = toJSONArray().toString()
 }
 

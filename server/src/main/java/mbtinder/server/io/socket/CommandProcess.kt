@@ -325,9 +325,16 @@ object CommandProcess {
             .filter { it != userId && !metList.contains(it) }
             // 가변인자 전달을 위한 배열 변환
             .toTypedArray()
+        var length = 0
         val filteredCards = CardStackUtil.findByUserIds(*filteredUsers)
             // 매칭 점수가 30점 미만인 사용자 제외
-            .filter { UserUtil.getMatchingScore(userMBTI, userSignUpQuestions, it) >= 30 }
+            .filter {
+                val score = UserUtil.getMatchingScore(userMBTI, userSignUpQuestions, it)
+                it.score = score
+                score >= 30
+            }
+            .sortedBy { it.score }
+            .filter { length++ < 10 }
             .toJSONList()
             .toJSONArray()
 

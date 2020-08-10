@@ -325,17 +325,11 @@ object CommandProcess {
             .filter { it != userId && !metList.contains(it) }
             // 가변인자 전달을 위한 배열 변환
             .toTypedArray()
-//            // 매칭 점수가 70점 이하인 사용자 제외
-//            .filter { UserUtil.getMatchingScore(userMBTI, userSignUpQuestions, it) >= 30 }
-//            // 실제 사용자 정보 반환
-//            .toJSONList()
-//            .toJSONArray()
         val filteredCards = CardStackUtil.findByUserIds(*filteredUsers)
             // 매칭 점수가 30점 미만인 사용자 제외
             .filter { UserUtil.getMatchingScore(userMBTI, userSignUpQuestions, it) >= 30 }
             .toJSONList()
             .toJSONArray()
-
 
         return Connection.makePositiveResponse(command.uuid, JSONObject().apply { put("users", filteredCards) })
     }
@@ -349,7 +343,7 @@ object CommandProcess {
         val userId = UUID.fromString(command.arguments.getString("user_id"))
         val opponentId = command.arguments.getString("opponent_id")
         val isPick = command.arguments.getBoolean("is_pick")
-        val sql = "INSERT INTO pick (opponent_id, pick) VALUES ('$opponentId', $isPick)"
+        val sql = "INSERT INTO pick (opponent_id, is_picked) VALUES ('$opponentId', $isPick)"
         SQLiteConnection.getConnection(userId).addQuery(sql)
 
         return Connection.makePositiveResponse(command.uuid)

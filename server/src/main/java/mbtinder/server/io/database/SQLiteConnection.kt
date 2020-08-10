@@ -53,7 +53,8 @@ class SQLiteConnection private constructor(val userId: UUID): CloseableThread(),
             if (queries.isEmpty()) {
                 sleep()
             } else {
-                val query = sync(queries, queries::removeAt, 0)
+//                val query = sync(queries, queries::removeAt, 0)
+                val query = sync(queries) { it.removeAt(0) }
 
                 if (query.needResult) {
                     try {

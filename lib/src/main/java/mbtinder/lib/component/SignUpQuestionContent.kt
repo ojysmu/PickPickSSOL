@@ -10,7 +10,7 @@ class SignUpQuestionContent: JSONParsable, IDContent, Comparable<SignUpQuestionC
     lateinit var questionId: UUID
     lateinit var question: String
     lateinit var selectable: JSONArray
-    var selected = -1
+    var selected: Int = -1
 
     constructor(jsonObject: JSONObject): super(jsonObject)
 

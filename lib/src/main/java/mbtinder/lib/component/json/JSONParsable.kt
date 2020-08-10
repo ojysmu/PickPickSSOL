@@ -1,16 +1,13 @@
 package mbtinder.lib.component.json
 
 import mbtinder.lib.annotation.SkipParsing
-import mbtinder.lib.component.UserContent
+import mbtinder.lib.component.SignUpQuestionContent
 import mbtinder.lib.constant.MBTI
-import mbtinder.lib.constant.PasswordQuestion
 import mbtinder.lib.util.JSONList
 import mbtinder.lib.util.clone
 import mbtinder.lib.util.toJSONArray
-import mbtinder.lib.util.toJSONList
 import org.json.JSONObject
 import java.lang.reflect.Field
-import java.lang.reflect.Type
 import java.sql.Date
 import java.util.*
 import kotlin.collections.ArrayList
@@ -88,20 +85,16 @@ abstract class JSONParsable: JSONContent {
             field.isAccessible = true
 
             if (containsSkipParsing(field)) {
+                // SkipParsing annotation 무시
                 continue
             }
 
             if (field.type.isArray) {
+                // 배열 무시
                 continue
             }
 
-            val formatted = toUnderscore(field.name)
-            if (formatted == "companion") {
-                // Companion 무시
-                continue
-            }
-
-            parseFromField(field, formatted, jsonObject)
+            parseFromField(field, toUnderscore(field.name), jsonObject)
         }
     }
 
@@ -111,6 +104,11 @@ abstract class JSONParsable: JSONContent {
             UUID::class.java -> field.set(this, UUID.fromString(jsonObject.getString(key)))
             Date::class.java -> field.set(this, Date.valueOf(jsonObject.getString(key)))
             MBTI::class.java -> field.set(this, MBTI.findByName(jsonObject.getString(key)))
+            SignUpQuestionContent.ConnectionForm::class.java -> field.set(this, SignUpQuestionContent.ConnectionForm(
+                UUID.fromString(jsonObject.getString("category_id")),
+                UUID.fromString(jsonObject.getString("question_id")),
+                jsonObject.getInt("selected")
+            ))
             JSONList::class.java -> {
                 // key와 변환된 변수 이름이 같을 때
                 // Generic 타입을 사용하므로 변수의 제너릭 타입을 가져옴
@@ -146,7 +144,9 @@ abstract class JSONParsable: JSONContent {
                 jsonObject.put(key, value.toJSONArray())
             }
             is List<*> -> jsonObject.put(key, toJSONArray())
-            is Companion -> {}
+            is Companion -> {
+                // Companion 무시
+            }
             is JSONParsable -> jsonObject.put(key, value.toJSONObject())
             is JSONContent -> jsonObject.put(key, value.toJSONObject())
             else -> jsonObject.put(key, value)

@@ -33,6 +33,8 @@ fun loadJSONArray(path: String): JSONArray {
     }
 }
 
+fun <T: JSONContent> JSONList<T>.saveJSONList(path: String) = saveJSONString(toJSONArray().toString(), path)
+
 inline fun <reified T: JSONContent> loadJSONList(path: String) = loadJSONArray(path).toJSONList<T>()
 
 fun JSONObject.saveJSONObject(path: String) = saveJSONString(toString(), path)

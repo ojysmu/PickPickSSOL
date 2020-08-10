@@ -37,6 +37,8 @@ class JSONList<T: JSONContent> : ArrayList<T> {
     }
 
     fun updateJSONObject() = forEach { it.updateJSONObject() }
+
+    override fun toString() = toJSONArray().toString()
 }
 
 fun <T: JSONContent> jsonListOf(vararg elements: T) = JSONList<T>().apply { addAll(elements) }

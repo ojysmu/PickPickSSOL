@@ -1,6 +1,7 @@
 package mbtinder.server.util
 
 import mbtinder.lib.component.CardStackContent
+import mbtinder.lib.component.SignUpQuestionContent
 import mbtinder.lib.constant.MBTI
 import mbtinder.lib.util.*
 import mbtinder.server.constant.LocalFile
@@ -18,7 +19,9 @@ object CardStackUtil {
         userIds.forEach {
             val mbti = MBTI.findByName(loadJSONObject(LocalFile.getUserMBTIPath(it)).getString("value"))
             val signUpQuestions = SignUpQuestionUtil.parseFilled(
-                loadJSONList(LocalFile.getUserSignUpQuestionPath(it))
+                loadJSONList<SignUpQuestionContent.ConnectionForm>(LocalFile.getUserSignUpQuestionPath(it)).apply {
+                    println(toString())
+                }
             ).toJSONList()
 
             println("updateCardStacks(): signUpQuestions=${signUpQuestions.toJSONArray()}")

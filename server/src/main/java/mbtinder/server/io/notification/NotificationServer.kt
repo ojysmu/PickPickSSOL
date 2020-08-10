@@ -41,8 +41,7 @@ class NotificationServer private constructor(): CloseableThread() {
             // 연결 수립 여부 확인
             if (SocketServer.getInstance().isAlive(notification.receiverId)) {
                 // 연결되어 있다면 전송
-                val receiverConnection = SocketServer.getInstance().getConnection(notification.receiverId)
-                receiverConnection.sendNotification(notification)
+                SocketServer.getInstance().getConnection(notification.receiverId).sendNotification(notification)
             } else {
                 // 연결되어있지 않다면 맨 뒤로 보냄
                 notifications.add(notification)
@@ -50,9 +49,7 @@ class NotificationServer private constructor(): CloseableThread() {
         }
     }
 
-    fun addNotification(notification: Notification) {
-        notifications.add(notification)
-    }
+    fun addNotification(notification: Notification) = notifications.add(notification)
 
     private fun waitForConnection() {
         block(notifications, intervalInMillis) {

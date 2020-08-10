@@ -8,6 +8,7 @@ import mbtinder.lib.io.constant.Command
 import mbtinder.lib.util.CloseableThread
 import org.json.JSONObject
 import java.io.*
+import java.lang.Exception
 import java.net.Socket
 import java.util.*
 
@@ -18,16 +19,24 @@ class Connection(private val socket: Socket): CloseableThread(), IDContent {
 
     init {
         loop = {
-            val clientMessage = dataInputStream.readUTF()
-            println("message=$clientMessage")
+            try {
+                val clientMessage = dataInputStream.readUTF()
+                println("message=$clientMessage")
 
-            val parsedMessage = JSONObject(clientMessage)
-            if (parsedMessage.getString("name") == Command.CLOSE.name) {
-                close()
-            } else {
-                val command = CommandContent(parsedMessage)
-                val serverMessage = CommandProcess.onReceived(command, this)
-                send(serverMessage)
+                val parsedMessage = JSONObject(clientMessage)
+                if (parsedMessage.getString("name") == Command.CLOSE.name) {
+                    close()
+                } else {
+                    val command = CommandContent(parsedMessage)
+                    val serverMessage = CommandProcess.onReceived(command, this)
+                    send(serverMessage)
+                }
+            } catch (e: IOException) {
+                try {
+                    close()
+                } catch (e: Exception) {
+                    SocketServer.getInstance().removeConnection(this)
+                }
             }
         }
     }

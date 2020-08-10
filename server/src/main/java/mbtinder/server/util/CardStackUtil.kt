@@ -23,7 +23,15 @@ object CardStackUtil {
 //            val rawSignUpQuestions = loadJSONList<SignUpQuestionContent.ConnectionForm>(LocalFile.getUserSignUpQuestionPath(it))
             val rawSignUpQuestions = loadJSONArray(LocalFile.getUserSignUpQuestionPath(it))
             println("updateCardStacks(): rawSignUpQuestions=$rawSignUpQuestions")
-            val asJSONList = rawSignUpQuestions.toJSONList<SignUpQuestionContent.ConnectionForm>()
+//            val asJSONList = rawSignUpQuestions.toJSONList<SignUpQuestionContent.ConnectionForm>()
+            val asJSONList: JSONList<SignUpQuestionContent.ConnectionForm> = (0 until rawSignUpQuestions.length()).mapTo(JSONList()) { index: Int ->
+                val rawForm = rawSignUpQuestions.getJSONObject(index)
+                SignUpQuestionContent.ConnectionForm(
+                    UUID.fromString(rawForm.getString("category_id")),
+                    UUID.fromString(rawForm.getString("question_id")),
+                    rawForm.getInt("selected")
+                )
+            }
             println("updateCardStacks(): asJSONList=$asJSONList")
             val signUpQuestions = SignUpQuestionUtil.parseFilled(asJSONList).toJSONList()
             println("updateCardStacks(): signUpQuestions=$signUpQuestions")

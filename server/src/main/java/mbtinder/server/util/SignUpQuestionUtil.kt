@@ -26,9 +26,8 @@ object SignUpQuestionUtil {
         return questions!!
     }
 
-    fun parseFilled(list: List<SignUpQuestionContent.ConnectionForm>): List<SignUpQuestionContent> {
-        return list.map { findByQuestionId(it.questionId) }
-    }
+    fun parseFilled(list: List<SignUpQuestionContent.ConnectionForm>) =
+        list.map { findByQuestionId(it.questionId).apply { selected = it.selected }}
 
     fun findByQuestionId(questionId: UUID): SignUpQuestionContent {
         if (questions == null) {

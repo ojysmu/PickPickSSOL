@@ -13,6 +13,7 @@ import mbtinder.android.R
 import mbtinder.android.ui.model.recycler_view.AdaptableViewHolder
 import mbtinder.android.ui.view.AsyncImageView
 import mbtinder.android.util.ImageUtil
+import mbtinder.android.util.Log
 import mbtinder.android.util.ViewUtil
 import mbtinder.lib.component.CardStackContent
 
@@ -67,7 +68,10 @@ class CardStackViewHolder(private val view: View): AdaptableViewHolder<CardStack
         imageView.setImage(content)
         recyclerView.itemAnimator = DefaultItemAnimator()
         recyclerView.layoutManager = LinearLayoutManager(itemView.context)
-        recyclerView.adapter = CardStackContentAdapter(content.contents.mapTo(ArrayList()) { it.selectable.getString(it.selected) })
+        recyclerView.adapter = CardStackContentAdapter(content.contents.mapTo(ArrayList()) {
+            Log.v("adaptContent(): user_id=${content.userId}, contents=${content.contents}")
+            it.selectable.getString(it.selected)
+        })
         setPickTransparency(0.0f)
         setNopeTransparency(0.0f)
     }

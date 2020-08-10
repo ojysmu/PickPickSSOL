@@ -12,7 +12,15 @@ class SignUpQuestionContent: JSONParsable, IDContent, Comparable<SignUpQuestionC
     lateinit var selectable: JSONArray
     var selected: Int = -1
 
-    constructor(jsonObject: JSONObject): super(jsonObject)
+    constructor(jsonObject: JSONObject) {
+        categoryId = UUID.fromString(jsonObject.getString("category_id"))
+        questionId = UUID.fromString(jsonObject.getString("question_id"))
+        question = jsonObject.getString("question")
+        selectable = jsonObject.getJSONArray("selectable")
+        selected = jsonObject.getInt("selected")
+
+        updateJSONObject()
+    }
 
     constructor(categoryId: UUID, questionId: UUID, question: String, selectable: JSONArray) {
         this.categoryId = categoryId
@@ -32,7 +40,13 @@ class SignUpQuestionContent: JSONParsable, IDContent, Comparable<SignUpQuestionC
         lateinit var questionId: UUID
         var selected: Int = -1
 
-        constructor(jsonObject: JSONObject): super(jsonObject)
+        constructor(jsonObject: JSONObject) {
+            categoryId = UUID.fromString(jsonObject.getString("category_id"))
+            questionId = UUID.fromString(jsonObject.getString("question_id"))
+            selected = jsonObject.getInt("selected")
+
+            updateJSONObject()
+        }
 
         constructor(categoryId: UUID, questionId: UUID, selected: Int) {
             this.categoryId = categoryId

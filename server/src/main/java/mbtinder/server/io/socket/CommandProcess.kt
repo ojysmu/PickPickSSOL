@@ -252,7 +252,7 @@ object CommandProcess {
                 println("password matches")
                 Connection.makePositiveResponse(command.uuid, JSONObject().apply { put("user", it.hidePassword(true).toJSONObject()) })
             } else {
-                println("password mismatch")
+                println("password mismatch db=${it.password} input=$password")
                 Connection.makeNegativeResponse(command.uuid, ServerResponse.EMAIL_NOT_FOUND)
             }
         } ?:let {

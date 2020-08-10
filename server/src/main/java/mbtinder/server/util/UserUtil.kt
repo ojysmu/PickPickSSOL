@@ -53,7 +53,7 @@ object UserUtil {
     fun getUserByEmail(email: String, withPassword: Boolean = false): UserContent? {
         ensureUpdate()
 
-        return findBinaryTwice(users, this::updateUsers) { it.email.compareTo(email) }?.hidePassword(!withPassword)
+        return findAllTwice(users, this::updateUsers) { it.email == email }?.hidePassword(!withPassword)
     }
 
     fun getUserIds() = users.map { it.userId }

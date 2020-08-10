@@ -7,6 +7,15 @@ import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 
+fun JSONObject.clone(): JSONObject {
+    val cloned = JSONObject()
+    keySet().forEach {
+        cloned.put(it, get(it))
+    }
+
+    return cloned
+}
+
 fun JSONArray.saveJSONArray(path: String) = saveJSONString(toString(), path)
 
 fun loadJSONArray(path: String): JSONArray {

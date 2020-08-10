@@ -7,7 +7,7 @@ import java.io.File
 import java.sql.Date
 import java.util.*
 
-class UserContent: JSONParsable, IDContent, Comparable<UserContent> {
+class UserContent: JSONParsable, IDContent, Comparable<UserContent>, Cloneable {
     lateinit var userId: UUID
     lateinit var email: String
     lateinit var password: String
@@ -58,4 +58,18 @@ class UserContent: JSONParsable, IDContent, Comparable<UserContent> {
     override fun getUUID() = userId
 
     override fun compareTo(other: UserContent) = userId.compareTo(other.userId)
+
+    public override fun clone() = UserContent(
+        userId = userId,
+        email = email,
+        password = password,
+        name = name,
+        age = age,
+        gender = gender,
+        description = description,
+        lastLocationLng = lastLocationLng,
+        lastLocationLat = lastLocationLat,
+        passwordQuestionId = passwordQuestionId,
+        passwordAnswer = passwordAnswer
+    )
 }

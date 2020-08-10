@@ -3,12 +3,14 @@ package mbtinder.server.util
 import mbtinder.lib.component.SignUpQuestionContent
 import mbtinder.lib.component.UserContent
 import mbtinder.lib.constant.MBTI
+import mbtinder.lib.util.clone
 import mbtinder.lib.util.loadJSONArray
 import mbtinder.lib.util.loadJSONObject
 import mbtinder.lib.util.toJSONList
 import mbtinder.server.constant.LocalFile
 import mbtinder.server.io.database.MySQLServer
 import mbtinder.server.io.database.component.Row
+import org.json.JSONObject
 import java.io.File
 import java.util.*
 
@@ -82,18 +84,14 @@ fun hasProfileImage(userId: UUID) = File(LocalFile.getUserImagePath(userId)).exi
 
 fun UserContent.hasProfileImage() = File(LocalFile.getUserImagePath(userId)).exists()
 
-fun UserContent.withPassword(withPassword: Boolean): UserContent {
-    if (!withPassword) {
+fun UserContent.hidePassword() = UserContent(toJSONObject()).apply {
+    password = ""
+    passwordAnswer = ""
+}
+
+fun UserContent.withPassword(needPassword: Boolean) = clone().apply {
+    if (!needPassword) {
         password = ""
         passwordAnswer = ""
     }
-    
-    return this
-}
-
-fun UserContent.hidePassword(): UserContent {
-    password = ""
-    passwordAnswer = ""
-
-    return this
 }

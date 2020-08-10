@@ -4,6 +4,7 @@ import mbtinder.lib.annotation.SkipParsing
 import mbtinder.lib.component.UserContent
 import mbtinder.lib.constant.PasswordQuestion
 import mbtinder.lib.util.JSONList
+import mbtinder.lib.util.clone
 import mbtinder.lib.util.toJSONArray
 import mbtinder.lib.util.toJSONList
 import org.json.JSONObject
@@ -16,8 +17,8 @@ abstract class JSONParsable: JSONContent {
     var jsonObject: JSONObject
 
     constructor(jsonObject: JSONObject) {
-        this.jsonObject = jsonObject
-        updateFromJSONObject(jsonObject)
+        this.jsonObject = jsonObject.clone()
+        updateFromJSONObject(this.jsonObject)
     }
 
     constructor() {

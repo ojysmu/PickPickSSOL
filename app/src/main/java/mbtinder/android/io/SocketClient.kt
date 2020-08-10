@@ -77,7 +77,8 @@ class SocketClient private constructor(private val address: String, private val 
             if (commandPool.isEmpty()) {
                 sleep()
             } else {
-                val command = sync(commandPool, commandPool::removeAt, 0)
+//                val command = sync(commandPool, commandPool::removeAt, 0)
+                val command = sync(commandPool) { it.removeAt(0) }
                 val clientMessage = command.jsonObject.toString()
                 Log.v("clientMessage=$clientMessage")
 

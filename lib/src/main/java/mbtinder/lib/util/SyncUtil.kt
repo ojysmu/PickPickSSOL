@@ -19,9 +19,9 @@ fun <L: Any, R> sync(lock: L, block: (lock: L) -> R): R {
  * @param function: 객체가 실행할 함수
  * @param args: 함수의 인자
  */
-fun <L: Any, R> sync(lock: L, function: KFunction<R>, vararg args: Any): R {
-    return synchronized(lock) { function.call(args) }
-}
+//fun <L: Any, R> sync(lock: L, function: KFunction<R>, vararg args: Any): R {
+//    return synchronized(lock) { function.call(args[0]) }
+//}
 
 /**
  * flag가 false가 될 때까지 대기

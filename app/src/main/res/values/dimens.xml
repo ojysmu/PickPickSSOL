@@ -33,11 +33,13 @@
     <dimen name="text_small3">11sp</dimen>
     <dimen name="text_small4">10sp</dimen>
 
+    <dimen name="button_common_next">18sp</dimen>
+
     <dimen name="text_main_name">24sp</dimen>
     <dimen name="text_main_age">18sp</dimen>
     <dimen name="text_main_content">16sp</dimen>
-
     <dimen name="text_main_pick">48sp</dimen>
+
     <dimen name="main_pick_width">210dp</dimen>
     <dimen name="main_pick_height">150dp</dimen>
 

@@ -9,6 +9,8 @@ import android.graphics.drawable.Drawable
 import java.io.ByteArrayOutputStream
 
 object ImageUtil {
+    const val RESIZE_DEFAULT = 320
+
     fun drawableToByteArray(drawable: Drawable): ByteArray {
         val bitmap = (drawable as BitmapDrawable).bitmap
         val stream = ByteArrayOutputStream()
@@ -38,7 +40,7 @@ object ImageUtil {
         return byteArrayToBitmap(stream.toByteArray())
     }
 
-    fun resizeByteArray(byteArray: ByteArray, max: Int): ByteArray {
+    fun resizeByteArray(byteArray: ByteArray, max: Int = RESIZE_DEFAULT): ByteArray {
         val options = BitmapFactory.Options()
         BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size, options)
 

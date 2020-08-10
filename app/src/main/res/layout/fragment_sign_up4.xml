@@ -1,80 +1,79 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/layout_sign_up4"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ui.fragment.sign_up.SignUp4Fragment">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <TextView
+        style="@style/FragmentContent.Title"
+        android:id="@+id/sign_up4_title"
+        android:text="@string/sign_up4_title"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        style="@style/FragmentContent.Medium"
+        android:id="@+id/sign_up4_profile_title"
+        android:text="@string/sign_up4_profile_title"
+        app:layout_constraintTop_toBottomOf="@id/sign_up4_title"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:id="@+id/sign_up4_profile"
+        android:layout_width="128dp"
+        android:layout_height="128dp"
+        android:layout_marginTop="@dimen/card_vertical_margin"
+        android:background="@drawable/border_image_view"
+        android:scaleType="centerCrop"
+        android:src="@drawable/img_select_profile"
+        app:layout_constraintTop_toBottomOf="@id/sign_up4_profile_title"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <ImageView
+        android:id="@+id/sign_up4_profile_select"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/img_add"
+        app:layout_constraintBottom_toBottomOf="@id/sign_up4_profile"
+        app:layout_constraintEnd_toEndOf="@id/sign_up4_profile" />
+
+    <TextView
+        style="@style/FragmentContent.Medium"
+        android:id="@+id/sign_up4_description_title"
+        android:text="@string/sign_up4_description_title"
+        app:layout_constraintTop_toBottomOf="@id/sign_up4_profile"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:id="@+id/sign_up4_description"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="@dimen/card_vertical_margin"
+        android:hint="@string/sign_up4_description"
+        app:layout_constraintTop_toBottomOf="@id/sign_up4_description_title">
 
-        <TextView
-            style="@style/FragmentContent.Title"
-            android:id="@+id/sign_up4_title"
-            android:text="@string/sign_up4_title"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <Button
-            style="@style/Widget.MaterialComponents.Button.TextButton"
-            android:id="@+id/sign_up4_go_test"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/activity_horizontal_margin"
-            android:text="@string/sign_up4_go_test"
-            android:textSize="@dimen/text_fragment_medium"
-            app:layout_constraintBaseline_toBaselineOf="@id/sign_up4_title"
-            app:layout_constraintEnd_toEndOf="parent" />
-
-        <TextView
-            style="@style/FragmentContent.Medium"
-            android:id="@+id/sign_up4_mbti_title"
-            android:text="@string/sign_up4_mbti_title"
-            app:layout_constraintTop_toBottomOf="@id/sign_up4_title"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/sign_up4_mbti_recycler_view"
+        <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/card_vertical_margin"
-            android:paddingHorizontal="@dimen/activity_horizontal_margin"
-            android:clipToPadding="false"
-            app:layout_constraintTop_toBottomOf="@id/sign_up4_mbti_title"
-            tools:listitem="@layout/card_sign_up4_mbti"
-            tools:itemCount="2" />
+            android:inputType="text"
+            android:maxLines="1"
+            android:maxLength="20"/>
+    </com.google.android.material.textfield.TextInputLayout>
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/sign_up4_questions_recycler_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/sign_up4_mbti_recycler_view"
-            tools:listitem="@layout/card_sign_up4_questions"
-            tools:itemCount="3" />
-
-        <Button
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            android:id="@+id/switchable_next"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/activity_vertical_margin"
-            android:layout_marginEnd="@dimen/activity_horizontal_margin"
-            app:layout_constraintTop_toBottomOf="@id/sign_up4_questions_recycler_view"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:text="@string/common_next" />
-
-        <ProgressBar
-            style="?android:attr/progressBarStyleSmall"
-            android:id="@+id/switchable_waiting"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            app:layout_constraintTop_toTopOf="@id/switchable_next"
-            app:layout_constraintBottom_toBottomOf="@id/switchable_next"
-            app:layout_constraintStart_toStartOf="@id/switchable_next"
-            app:layout_constraintEnd_toEndOf="@id/switchable_next" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</androidx.core.widget.NestedScrollView>
+    <Button
+        style="@style/ButtonNext"
+        android:id="@+id/sign_up4_next"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:layout_marginEnd="@dimen/activity_horizontal_margin"
+        android:enabled="false"
+        app:layout_constraintTop_toBottomOf="@id/sign_up4_description"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:text="@string/common_next" />
+</androidx.constraintlayout.widget.ConstraintLayout>

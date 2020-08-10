@@ -12,10 +12,10 @@ class MBTIViewHolder(itemView: View) : AdaptableViewHolder<MBTIContent>(itemView
     lateinit var adapter: MBTIAdapter
     lateinit var content: MBTIContent
 
-    private val cardView: MaterialCardView = itemView.findViewById(R.id.card_sign_up4_mbti)
-    private val titleTextView: TextView = itemView.findViewById(R.id.card_sign_up4_mbti_title)
-    private val contentTextView: TextView = itemView.findViewById(R.id.card_sign_up4_mbti_content)
-    private val checkImageView: ImageView = itemView.findViewById(R.id.card_sign_up4_mbti_check)
+    private val cardView: MaterialCardView = itemView.findViewById(R.id.card_sign_up5_mbti)
+    private val titleTextView: TextView = itemView.findViewById(R.id.card_sign_up5_mbti_title)
+    private val contentTextView: TextView = itemView.findViewById(R.id.card_sign_up5_mbti_content)
+    private val checkImageView: ImageView = itemView.findViewById(R.id.card_sign_up5_mbti_check)
 
     override fun adapt(content: MBTIContent) {
         this.content = content

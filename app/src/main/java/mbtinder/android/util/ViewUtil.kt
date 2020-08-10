@@ -1,6 +1,9 @@
 package mbtinder.android.util
 
+import android.content.Context
+import android.content.Intent
 import android.graphics.Color
+import android.provider.MediaStore
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
@@ -10,6 +13,7 @@ import androidx.annotation.ColorRes
 import androidx.core.view.children
 import com.google.android.material.textfield.TextInputLayout
 import mbtinder.android.R
+import mbtinder.android.ui.model.Fragment
 
 object ViewUtil {
     fun getText(editText: EditText) = editText.text.toString()
@@ -62,4 +66,13 @@ object ViewUtil {
     } else {
         view
     }
+
+    fun callAlbum(fragment: Fragment, resultCode: Int) {
+        Intent(Intent.ACTION_PICK).apply {
+            type = MediaStore.Images.Media.CONTENT_TYPE
+            fragment.startActivityForResult(this, resultCode)
+        }
+    }
+
+    fun dp2px(context: Context, dp: Int) = (dp * context.resources.displayMetrics.density + 0.5f)
 }

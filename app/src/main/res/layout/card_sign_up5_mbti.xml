@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/card_sign_up4_mbti"
+    android:id="@+id/card_sign_up5_mbti"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_marginStart="@dimen/card_horizontal_margin"
@@ -20,7 +20,7 @@
         android:paddingHorizontal="@dimen/card_horizontal_margin">
 
         <TextView
-            android:id="@+id/card_sign_up4_mbti_title"
+            android:id="@+id/card_sign_up5_mbti_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="@dimen/text_large2"
@@ -30,7 +30,7 @@
             app:layout_constraintStart_toStartOf="parent"/>
 
         <ImageView
-            android:id="@+id/card_sign_up4_mbti_check"
+            android:id="@+id/card_sign_up5_mbti_check"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="gone"
@@ -40,14 +40,14 @@
             app:layout_constraintEnd_toEndOf="parent"/>
 
         <TextView
-            android:id="@+id/card_sign_up4_mbti_content"
+            android:id="@+id/card_sign_up5_mbti_content"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/card_vertical_margin"
             android:textSize="@dimen/text_default"
             android:textColor="@android:color/black"
             android:textStyle="bold"
-            app:layout_constraintTop_toBottomOf="@id/card_sign_up4_mbti_title"
+            app:layout_constraintTop_toBottomOf="@id/card_sign_up5_mbti_title"
             app:layout_constraintStart_toStartOf="parent"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>

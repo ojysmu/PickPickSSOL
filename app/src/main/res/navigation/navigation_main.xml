@@ -68,8 +68,21 @@
         tools:layout="@layout/fragment_sign_up4">
 
         <action
-            android:id="@+id/action_to_home"
+            android:id="@+id/action_to_sign_up5"
             app:popUpTo="@id/nav_sign_up4"
+            app:popUpToInclusive="true"
+            app:destination="@id/nav_sign_up5" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_sign_up5"
+        android:name="mbtinder.android.ui.fragment.sign_up.SignUp5Fragment"
+        android:label="@string/sign_up5_title"
+        tools:layout="@layout/fragment_sign_up5">
+
+        <action
+            android:id="@+id/action_to_home"
+            app:popUpTo="@id/nav_sign_up5"
             app:popUpToInclusive="true"
             app:destination="@id/nav_home" />
     </fragment>

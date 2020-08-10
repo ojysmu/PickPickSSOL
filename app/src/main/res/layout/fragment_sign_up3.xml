@@ -106,8 +106,8 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <Button
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-        android:id="@+id/switchable_next"
+        style="@style/ButtonNext"
+        android:id="@+id/sign_up3_next"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/activity_vertical_margin"
@@ -116,15 +116,4 @@
         app:layout_constraintTop_toBottomOf="@id/sign_up3_age"
         app:layout_constraintEnd_toEndOf="parent"
         android:text="@string/common_next" />
-
-    <ProgressBar
-        style="?android:attr/progressBarStyleSmall"
-        android:id="@+id/switchable_waiting"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        app:layout_constraintTop_toTopOf="@id/switchable_next"
-        app:layout_constraintBottom_toBottomOf="@id/switchable_next"
-        app:layout_constraintStart_toStartOf="@id/switchable_next"
-        app:layout_constraintEnd_toEndOf="@id/switchable_next" />
 </androidx.constraintlayout.widget.ConstraintLayout>

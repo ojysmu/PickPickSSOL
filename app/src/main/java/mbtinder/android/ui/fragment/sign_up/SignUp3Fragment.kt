@@ -39,16 +39,18 @@ class SignUp3Fragment : Fragment(R.layout.fragment_sign_up3) {
             formStateChecker.setState(sign_up3_gender_selector, isChecked)
         }
 
-        switchable_next.setOnClickListener {
-            ViewUtil.switchNextButton(layout_sign_up3)
-            ThreadUtil.runOnBackground {
-                signUp()
-            }
+        sign_up3_next.setOnClickListener {
+            val arguments = requireArguments()
+            arguments.putString("name", ViewUtil.getText(sign_up3_name))
+            arguments.putInt("gender", gender)
+            arguments.putInt("age", ViewUtil.getText(sign_up3_age).toInt())
+
+            findNavController().navigate(R.id.action_to_sign_up4, arguments)
         }
     }
 
     private fun enableNextButton() {
-        switchable_next.isEnabled = !formStateChecker.hasFalse()
+        sign_up3_next.isEnabled = !formStateChecker.hasFalse()
     }
 
     private fun onNameChanged(editable: Editable?) {

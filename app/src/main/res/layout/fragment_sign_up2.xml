@@ -41,7 +41,7 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <Button
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        style="@style/ButtonNext"
         android:id="@+id/sign_up2_next"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

@@ -9,6 +9,7 @@
 
     <string name="common_next">다음</string>
     <string name="common_prev">이전</string>
+    <string name="common_done">완료</string>
     <string name="common_confirm">확인</string>
     <string name="common_cancel">취소</string>
     <string name="common_submit">제출</string>
@@ -86,12 +87,17 @@
     <string name="sign_up3_sign_up_failed">회원가입을 실패했습니다. 잠시 후 다시 시도해주세요.</string>
     <string name="sign_up3_sign_in_failed">로그인을 실패했습니다. 잠시 후 다시 시도해주세요.</string>
 
-    <string name="sign_up4_title">나는</string>
-    <string name="sign_up4_go_test">MBTI 검사하기</string>
-    <string name="sign_up4_mbti_title">MBTI</string>
-    <string name="sign_up4_empty_question">답변이 선택되지 않은 질문이 있습니다.</string>
-    <string name="sign_up4_failed">취향 설정을 실패했습니다. 잠시 후 다시 시도해주세요.</string>
-
+    <string name="sign_up4_title">정보</string>
+    <string name="sign_up4_profile_title">프로필 사진 설정</string>
+    <string name="sign_up4_description_title">자기 소개</string>
+    <string name="sign_up4_description">자기 소개 쓰기(최대 20자)</string>
+    
+    <string name="sign_up5_title">나는</string>
+    <string name="sign_up5_go_test">MBTI 검사하기</string>
+    <string name="sign_up5_mbti_title">MBTI</string>
+    <string name="sign_up5_empty_question">답변이 선택되지 않은 질문이 있습니다.</string>
+    <string name="sign_up5_failed">취향 설정을 실패했습니다. 잠시 후 다시 시도해주세요.</string>
+    
     <string name="sign_in_title">로그인</string>
     <string name="sign_in_forgot">잊어버리셨다면</string>
     <string name="sign_in_email">이메일</string>

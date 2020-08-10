@@ -114,6 +114,13 @@ object CommandProcess {
                     "is_picked BOOLEAN NOT NULL)"
             sqLiteConnection.addQuery(createTableSql)
         }
+        run {
+            // pick, nope한 상대방의 정보가 저장될 테이블 생성
+            val createTableSql = "CREATE TABLE picked (" +
+                    "_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    "opponent_id CHAR(36) NOT NULL)"
+            sqLiteConnection.addQuery(createTableSql)
+        }
 
         return Connection.makePositiveResponse(command.uuid)
     }
@@ -249,14 +256,11 @@ object CommandProcess {
 
         return UserUtil.getUserByEmail(email, true)?.let {
             if (it.password == password) {
-                println("password matches")
                 Connection.makePositiveResponse(command.uuid, JSONObject().apply { put("user", it.hidePassword().toJSONObject()) })
             } else {
-                println("password mismatch db=${it.password} input=$password")
                 Connection.makeNegativeResponse(command.uuid, ServerResponse.EMAIL_NOT_FOUND)
             }
         } ?:let {
-            println("email not found")
             Connection.makeNegativeResponse(command.uuid, ServerResponse.EMAIL_NOT_FOUND)
         }
     }
@@ -333,7 +337,9 @@ object CommandProcess {
                 it.score = score
                 score >= 30
             }
+            // 점수로 정렬
             .sortedBy { it.score }
+            // 10개가 넘는 카드 제외
             .filter { length++ < 10 }
             .toJSONList()
             .toJSONArray()
@@ -348,12 +354,22 @@ object CommandProcess {
      */
     private fun pick(command: CommandContent): JSONObject {
         val userId = UUID.fromString(command.arguments.getString("user_id"))
-        val opponentId = command.arguments.getString("opponent_id")
+        val opponentId = UUID.fromString(command.arguments.getString("opponent_id"))
         val isPick = command.arguments.getBoolean("is_pick")
-        val sql = "INSERT INTO pick (opponent_id, is_picked) VALUES ('$opponentId', $isPick)"
-        SQLiteConnection.getConnection(userId).addQuery(sql)
 
-        return Connection.makePositiveResponse(command.uuid)
+        val userConnection = SQLiteConnection.getConnection(userId)
+        // 사용자 pick에 상대방 추가
+        val userInsertSql = "INSERT INTO pick (opponent_id, is_picked) VALUES ('$opponentId', $isPick)"
+        userConnection.addQuery(userInsertSql)
+        // 사용자가 상대방에게 pick됐는지 탐색
+        val userSelectSql = "SELECT * FROM picked WHERE opponent_id='$opponentId'"
+        val queryId = userConnection.addQuery(userSelectSql)
+        val queryResult = userConnection.getResult(queryId)
+        // 상대방 pick에 사용자 추가
+        val opponentSql = "INSERT INTO picked (opponent_id) VALUES ($userId)"
+        SQLiteConnection.getConnection(opponentId).addQuery(opponentSql)
+
+        return Connection.makePositiveResponse(command.uuid, JSONObject().put("is_picked", queryResult.content.isNotEmpty()))
     }
 
     private fun createChat(command: CommandContent): JSONObject {

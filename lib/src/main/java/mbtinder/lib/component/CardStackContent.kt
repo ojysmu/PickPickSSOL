@@ -1,34 +1,37 @@
 package mbtinder.lib.component
 
+import mbtinder.lib.annotation.SkipParsing
+import mbtinder.lib.component.json.JSONParsable
+import mbtinder.lib.constant.MBTI
 import mbtinder.lib.constant.ServerPath
+import org.json.JSONObject
 import java.util.*
-import kotlin.collections.ArrayList
 
-class CardStackContent: IDContent, ImageComponent {
+class CardStackContent: JSONParsable, IDContent, ImageComponent {
     lateinit var userId: UUID
-    lateinit var contents: List<String>
-    var isEmptyBody = false
+    lateinit var mbti: MBTI
+    lateinit var contents: List<SignUpQuestionContent.ConnectionForm>
 
+    @SkipParsing
     private var image: ByteArray? = null
-    private lateinit var imageName: String
-    private lateinit var imageUrl: String
+    @SkipParsing
+    private var imageName: String
+    @SkipParsing
+    private var imageUrl: String
 
-//    constructor() {
-//        isEmptyBody = true
-//    }
-
-    constructor(userContent: UserContent) {
-        this.userId = userContent.userId
-        this.contents = ArrayList()
+    constructor(jsonObject: JSONObject): super(jsonObject) {
         this.imageName = "profile.png"
         this.imageUrl = ServerPath.getUserImageUrl(userId, imageName)
     }
 
-    constructor(userId: UUID, contents: List<String>, imageName: String, imageUrl: String) {
-        this.userId = userId
+    constructor(userContent: UserContent, mbti: MBTI, contents: List<SignUpQuestionContent.ConnectionForm>) {
+        this.userId = userContent.userId
+        this.mbti = mbti
         this.contents = contents
-        this.imageName = imageName
-        this.imageUrl = imageUrl
+        this.imageName = "profile.png"
+        this.imageUrl = ServerPath.getUserImageUrl(userId, imageName)
+
+        updateJSONObject()
     }
 
     override fun getUUID() = userId

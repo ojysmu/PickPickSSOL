@@ -58,19 +58,8 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             val getResult = CommandProcess.getMatchableUsers(StaticComponent.user.userId)
             if (getResult.isSucceed) {
                 ThreadUtil.runOnUiThread {
-                    val contents = getResult.result!!.mapTo(ArrayList()) { CardStackContent(it) }
-                    if (contents.isEmpty()) {
-//                        cardStackAdapter.addContent(CardStackContent())
-//                        cardStackLayoutManager.setCanScrollHorizontal(false)
-//                        onUpdateFinished?.invoke(false, null)
-                    } else {
-                        cardStackAdapter.addContents(contents)
-                        cardStackLayoutManager.setCanScrollHorizontal(true)
-//                        onUpdateFinished?.let {
-//                            it.invoke(true, contents[0])
-//                            home_card_stack_view.swipe()
-//                        }
-                    }
+                    val contents = getResult.result!!
+                    cardStackAdapter.addContents(contents)
 
                     home_waiting.visibility = View.INVISIBLE
                     home_card_stack_view.visibility = View.VISIBLE
@@ -89,12 +78,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             val holder = cardStackAdapter.holders[currentPosition]
             holder.setNopeTransparency(0.0f)
             holder.setPickTransparency(0.0f)
-
-            if (position == cardStackAdapter.itemCount - 1 ||
-                position == cardStackAdapter.itemCount - 2) {
-                Log.v("onCardDisappeared() Empty: position=$position")
-//                cardStackAdapter.addContent(CardStackContent())
-            }
         }
 
         override fun onCardDragging(direction: Direction?, ratio: Float) {
@@ -112,7 +95,15 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             }
         }
 
-        override fun onCardSwiped(direction: Direction?) = Unit
+        override fun onCardSwiped(direction: Direction?) {
+            ThreadUtil.runOnBackground {
+                CommandProcess.pick(
+                    userId = StaticComponent.user.userId,
+                    opponentId = cardStackAdapter.contents[currentPosition].userId,
+                    isPick = direction == Direction.Right
+                )
+            }
+        }
 
         override fun onCardCanceled() {
             val holder = cardStackAdapter.holders[currentPosition]
@@ -124,16 +115,12 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
         override fun onCardAppeared(view: View?, position: Int) {
             currentPosition = position
-            if (cardStackAdapter.holders[currentPosition].isEmpty) {
-                cardStackLayoutManager.setCanScrollHorizontal(false)
-            }
         }
 
         override fun onCardRewound() {
             val holder = cardStackAdapter.holders[currentPosition]
             holder.setNopeTransparency(0.0f)
             holder.setPickTransparency(0.0f)
-            cardStackLayoutManager.setCanScrollHorizontal(true)
         }
     }
 }

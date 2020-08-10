@@ -1,5 +1,3 @@
 package mbtinder.lib.annotation
 
-annotation class SkipParsing {
-    companion object {}
-}
+annotation class SkipParsing

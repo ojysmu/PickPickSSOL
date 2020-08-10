@@ -23,5 +23,5 @@ class ChatContent: JSONParsable, IDContent, Comparable<ChatContent>, CloneableCo
 
     override fun compareTo(other: ChatContent) = chatId.compareTo(other.chatId)
 
-    override fun clone() = ChatContent(chatId, participant1, participant2)
+    override fun getCloned() = ChatContent(chatId, participant1, participant2)
 }

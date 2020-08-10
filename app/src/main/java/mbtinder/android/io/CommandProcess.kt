@@ -1,6 +1,7 @@
 package mbtinder.android.io
 
 import mbtinder.android.io.component.ServerResult
+import mbtinder.lib.component.CardStackContent
 import mbtinder.lib.component.SignUpQuestionContent
 import mbtinder.lib.component.UserContent
 import mbtinder.lib.io.constant.Command
@@ -96,7 +97,7 @@ object CommandProcess {
         return SocketUtil.getVoidResult(result)
     }
 
-    fun getMatchableUsers(userId: UUID): ServerResult<JSONList<UserContent>> {
+    fun getMatchableUsers(userId: UUID): ServerResult<JSONList<CardStackContent>> {
         val arguments = JSONObject().apply { put("user_id", userId.toString()) }
         val result = SocketUtil.getServerResult(Command.GET_MATCHABLE_USERS, arguments)
 

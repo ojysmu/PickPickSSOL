@@ -2,12 +2,12 @@ package mbtinder.lib.util
 
 import mbtinder.lib.component.CloneableContent
 
-class ImmutableList<E: CloneableContent<E>> : ArrayList<E> {
+class ImmutableList<E: CloneableContent<E>>: ArrayList<E>, CloneableContent<ImmutableList<E>> {
     constructor(): super()
 
     constructor(collection: Collection<E>): super(collection)
 
-    override fun get(index: Int) = super.get(index).clone()
+    override fun get(index: Int) = super.get(index).getCloned()
 
     private fun rangeCheck(size: Int, fromIndex: Int, toIndex: Int) {
         when {
@@ -20,7 +20,7 @@ class ImmutableList<E: CloneableContent<E>> : ArrayList<E> {
     fun find(predicate: (E) -> Boolean): E? {
         for (element in this) {
             if (predicate(element)) {
-                return element.clone()
+                return element.getCloned()
             }
         }
 
@@ -46,6 +46,10 @@ class ImmutableList<E: CloneableContent<E>> : ArrayList<E> {
         }
         return -(low + 1)
     }
+
+    override fun clone() = ImmutableList(this)
+
+    override fun getCloned() = ImmutableList(this)
 }
 
 fun <T: CloneableContent<T>> Collection<T>.toImmutableList(): ImmutableList<T> {

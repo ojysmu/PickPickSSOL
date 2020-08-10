@@ -320,15 +320,12 @@ object CommandProcess {
         // 이미 목록에 나타났던 사용자 목록
         val metList = queryResult.content.map { it.getUUID("opponent_id") }
 
-        val filteredUsers = UserUtil.getUserIds()
+        val filteredUsers = UserUtil.getAllCardStacks()
             // 본인과 이미 목록이 표시되었던 사용자 제외
-            .filter { it != userId && !metList.contains(it) }
+            .filter { it.userId != userId && !metList.contains(it.userId) }
             // 매칭 점수가 70점 이하인 사용자 제외
-            .filter { UserUtil.getMatchingScore(userId, userMBTI, it, userSignUpQuestions) >= 30 }
-            // 프로필 이미지가 없는 사용자 제외
-            .filter { hasProfileImage(it) }
+            .filter { UserUtil.getMatchingScore(userMBTI, userSignUpQuestions, it) >= 30 }
             // 실제 사용자 정보 반환
-            .map { UserUtil.getUser(it)!! }
             .toJSONList()
             .toJSONArray()
 

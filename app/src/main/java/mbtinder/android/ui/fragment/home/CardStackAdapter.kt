@@ -5,7 +5,7 @@ import mbtinder.android.ui.model.recycler_view.AdaptableViewHolder
 import mbtinder.android.ui.model.recycler_view.Adapter
 import mbtinder.lib.component.CardStackContent
 
-class CardStackAdapter(private val contents: MutableList<CardStackContent>, private val fragment: HomeFragment): Adapter<CardStackContent>(
+class CardStackAdapter(val contents: MutableList<CardStackContent>, private val fragment: HomeFragment): Adapter<CardStackContent>(
     R.layout.card_main_stack,
     contents,
     CardStackViewHolder::class.java) {

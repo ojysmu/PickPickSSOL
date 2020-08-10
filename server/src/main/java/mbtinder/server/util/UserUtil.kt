@@ -1,5 +1,6 @@
 package mbtinder.server.util
 
+import mbtinder.lib.component.CardStackContent
 import mbtinder.lib.component.SignUpQuestionContent
 import mbtinder.lib.component.UserContent
 import mbtinder.lib.constant.MBTI
@@ -57,16 +58,28 @@ object UserUtil {
 
     fun getUserIds() = users.map { it.userId }
 
-    fun getMatchingScore(userId: UUID, userMBTI: MBTI, opponentId: UUID, userSignUpQuestions: List<SignUpQuestionContent.ConnectionForm>): Int {
+    fun getAllUsers() = users.getCloned()
+
+    fun getAllCardStacks() = users.getCloned().map {
+        CardStackContent(
+            it,
+            MBTI.findByName(loadJSONObject(LocalFile.getUserMBTIPath(it.userId)).getString("value")),
+            loadJSONList(LocalFile.getUserSignUpQuestionPath(it.userId))
+        )
+    }
+
+    fun getMatchingScore(
+        userMBTI: MBTI,
+        userSignUpQuestions: List<SignUpQuestionContent.ConnectionForm>,
+        cardStackContent: CardStackContent
+    ): Int {
         var sum = 0
-        val opponentMBTI = MBTI.findByName(loadJSONObject(LocalFile.getUserMBTIPath(opponentId)).getString("value"))
-        val mbtiMatching = userMBTI.getState(opponentMBTI)
+        val mbtiMatching = userMBTI.getState(cardStackContent.mbti)
         sum += mbtiMatching * 10
 
-        val opponentSignUpQuestions = loadJSONArray(LocalFile.getUserSignUpQuestionPath(userId)).toJSONList<SignUpQuestionContent.ConnectionForm>()
         var signUpQuestionCount = 0
         userSignUpQuestions.forEach { userForm ->
-            opponentSignUpQuestions.find { opponentForm ->
+            cardStackContent.contents.find { opponentForm ->
                 opponentForm.questionId == userForm.questionId &&
                         opponentForm.selected == userForm.selected
             }?.let { signUpQuestionCount++ }
@@ -81,12 +94,12 @@ fun hasProfileImage(userId: UUID) = File(LocalFile.getUserImagePath(userId)).exi
 
 fun UserContent.hasProfileImage() = File(LocalFile.getUserImagePath(userId)).exists()
 
-fun UserContent.hidePassword() = clone().apply {
+fun UserContent.hidePassword() = getCloned().apply {
     password = ""
     passwordAnswer = ""
 }
 
-fun UserContent.withPassword(needPassword: Boolean) = clone().apply {
+fun UserContent.withPassword(needPassword: Boolean) = getCloned().apply {
     if (!needPassword) {
         password = ""
         passwordAnswer = ""

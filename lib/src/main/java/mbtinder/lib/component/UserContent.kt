@@ -19,9 +19,8 @@ class UserContent: JSONParsable, IDContent, Comparable<UserContent>, CloneableCo
 
     constructor(jsonObject: JSONObject): super(jsonObject)
 
-    constructor(userId: UUID, email: String, password: String, name: String, age: Int, gender: Int,
-                description: String, lastLocationLng: Double, lastLocationLat: Double,
-                passwordQuestionId: Int, passwordAnswer: String) {
+    constructor(userId: UUID, email: String, password: String, name: String, age: Int, gender: Int, description: String,
+                lastLocationLng: Double, lastLocationLat: Double, passwordQuestionId: Int, passwordAnswer: String) {
         this.userId = userId
         this.email = email
         this.password = password
@@ -56,7 +55,7 @@ class UserContent: JSONParsable, IDContent, Comparable<UserContent>, CloneableCo
 
     override fun compareTo(other: UserContent) = userId.compareTo(other.userId)
 
-    override fun clone() = UserContent(
+    override fun getCloned() = UserContent(
         userId = userId,
         email = email,
         password = password,

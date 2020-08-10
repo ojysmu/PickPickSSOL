@@ -320,16 +320,24 @@ object CommandProcess {
         // 이미 목록에 나타났던 사용자 목록
         val metList = queryResult.content.map { it.getUUID("opponent_id") }
 
-        val filteredUsers = UserUtil.getAllCardStacks()
+        val filteredUsers = UserUtil.getUserIds()
             // 본인과 이미 목록이 표시되었던 사용자 제외
-            .filter { it.userId != userId && !metList.contains(it.userId) }
-            // 매칭 점수가 70점 이하인 사용자 제외
+            .filter { it != userId && !metList.contains(it) }
+            // 가변인자 전달을 위한 배열 변환
+            .toTypedArray()
+//            // 매칭 점수가 70점 이하인 사용자 제외
+//            .filter { UserUtil.getMatchingScore(userMBTI, userSignUpQuestions, it) >= 30 }
+//            // 실제 사용자 정보 반환
+//            .toJSONList()
+//            .toJSONArray()
+        val filteredCards = CardStackUtil.findByUserIds(*filteredUsers)
+            // 매칭 점수가 30점 미만인 사용자 제외
             .filter { UserUtil.getMatchingScore(userMBTI, userSignUpQuestions, it) >= 30 }
-            // 실제 사용자 정보 반환
             .toJSONList()
             .toJSONArray()
 
-        return Connection.makePositiveResponse(command.uuid, JSONObject().apply { put("users", filteredUsers) })
+
+        return Connection.makePositiveResponse(command.uuid, JSONObject().apply { put("users", filteredCards) })
     }
 
     /**

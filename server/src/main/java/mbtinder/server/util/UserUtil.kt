@@ -55,13 +55,15 @@ object UserUtil {
         return findAllTwice(users, this::updateUsers) { it.email == email }?.withPassword(needPassword)
     }
 
+    fun getUserIds() = users.getCloned().map { it.getUUID() }
+
     fun getAllCardStacks() = users.getCloned().map { userContent: UserContent ->
         CardStackContent(
             userContent,
             MBTI.findByName(loadJSONObject(LocalFile.getUserMBTIPath(userContent.userId)).getString("value")),
             loadJSONList<SignUpQuestionContent.ConnectionForm>(LocalFile.getUserSignUpQuestionPath(userContent.userId))
                 .mapTo(JSONList()) { form: SignUpQuestionContent.ConnectionForm ->
-                    SignUpQuestionUtil.getQuestions().first { it.questionId == form.questionId }
+                    SignUpQuestionUtil.findByQuestionId(form.questionId)
                 }
         )
     }

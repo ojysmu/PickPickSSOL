@@ -4,7 +4,11 @@ import mbtinder.lib.component.IDContent
 import java.util.*
 import kotlin.collections.ArrayList
 
-class IDList<E: IDContent>: ArrayList<E>() {
+class IDList<E: IDContent>: ArrayList<E> {
+    constructor(): super()
+
+    constructor(collection: Collection<E>): super(collection)
+
     fun indexOf(uuid: UUID) = (0 until size).firstOrNull { get(it).getUUID() == uuid } ?: -1
 
     operator fun get(uuid: UUID) = super.get(indexOf(uuid))
@@ -19,3 +23,5 @@ class IDList<E: IDContent>: ArrayList<E>() {
 
     fun remove(uuid: UUID) = sync(this) { super.removeAt(indexOf(uuid)) }
 }
+
+fun <E: IDContent> Collection<E>.toIDList() = IDList(this)

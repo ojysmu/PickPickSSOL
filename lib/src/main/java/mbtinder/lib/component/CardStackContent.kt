@@ -8,7 +8,7 @@ import mbtinder.lib.util.JSONList
 import org.json.JSONObject
 import java.util.*
 
-class CardStackContent: JSONParsable, IDContent, ImageComponent {
+class CardStackContent: JSONParsable, IDContent, ImageComponent, CloneableContent<CardStackContent>, Comparable<CardStackContent> {
     lateinit var userId: UUID
     lateinit var mbti: MBTI
     lateinit var contents: JSONList<SignUpQuestionContent>
@@ -35,6 +35,16 @@ class CardStackContent: JSONParsable, IDContent, ImageComponent {
         updateJSONObject()
     }
 
+    constructor(userId: UUID, mbti: MBTI, contents: JSONList<SignUpQuestionContent>) {
+        this.userId = userId
+        this.mbti = mbti
+        this.contents = contents
+        this.imageName = "profile.png"
+        this.imageUrl = ServerPath.getUserImageUrl(userId, imageName)
+
+        updateJSONObject()
+    }
+
     override fun getUUID() = userId
 
     override fun hasImage() = image != null
@@ -48,4 +58,8 @@ class CardStackContent: JSONParsable, IDContent, ImageComponent {
     override fun setImage(image: ByteArray) {
         this.image = image
     }
+
+    override fun getCloned() = CardStackContent(userId, mbti, contents)
+
+    override fun compareTo(other: CardStackContent) = userId.compareTo(other.userId)
 }

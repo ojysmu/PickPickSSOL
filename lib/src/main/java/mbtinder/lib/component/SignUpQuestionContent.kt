@@ -5,7 +5,7 @@ import org.json.JSONArray
 import org.json.JSONObject
 import java.util.*
 
-class SignUpQuestionContent: JSONParsable, IDContent {
+class SignUpQuestionContent: JSONParsable, IDContent, Comparable<SignUpQuestionContent> {
     lateinit var categoryId: UUID
     lateinit var questionId: UUID
     lateinit var question: String
@@ -27,7 +27,7 @@ class SignUpQuestionContent: JSONParsable, IDContent {
 
     fun toConnectionForm() = ConnectionForm(this)
 
-    class ConnectionForm: JSONParsable, IDContent {
+    class ConnectionForm: JSONParsable, IDContent, Comparable<ConnectionForm> {
         lateinit var categoryId: UUID
         lateinit var questionId: UUID
         var selected = -1
@@ -51,5 +51,9 @@ class SignUpQuestionContent: JSONParsable, IDContent {
         }
 
         override fun getUUID() = questionId
+
+        override fun compareTo(other: ConnectionForm) = questionId.compareTo(other.questionId)
     }
+
+    override fun compareTo(other: SignUpQuestionContent) = questionId.compareTo(other.questionId)
 }

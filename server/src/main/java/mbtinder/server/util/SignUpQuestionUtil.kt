@@ -2,20 +2,40 @@ package mbtinder.server.util
 
 import mbtinder.lib.component.SignUpQuestionContent
 import mbtinder.lib.util.IDList
+import mbtinder.lib.util.toIDList
 import mbtinder.server.io.database.MySQLServer
 import mbtinder.server.io.database.component.Row
+import java.util.*
 
 object SignUpQuestionUtil {
     private var questions: IDList<SignUpQuestionContent>? = null
 
-    fun getQuestions(): IDList<SignUpQuestionContent> {
+    private fun initializeQuestions() {
         if (questions == null) {
             val sql = "SELECT * FROM mbtinder.sign_up_question"
             val rows = MySQLServer.getInstance().getResult(MySQLServer.getInstance().addQuery(sql)).content
-            questions = rows.mapTo(IDList()) { buildSignUpQuestion(it) }
+            questions = rows.map { buildSignUpQuestion(it) }.sorted().toIDList()
+        }
+    }
+
+    fun getQuestions(): IDList<SignUpQuestionContent> {
+        if (questions == null) {
+            initializeQuestions()
         }
 
         return questions!!
+    }
+
+    fun parseFilled(list: List<SignUpQuestionContent.ConnectionForm>): List<SignUpQuestionContent> {
+        return list.map { findByQuestionId(it.questionId) }
+    }
+
+    fun findByQuestionId(questionId: UUID): SignUpQuestionContent {
+        if (questions == null) {
+            initializeQuestions()
+        }
+
+        return questions!![questions!!.binarySearch { it.questionId.compareTo(questionId) }]
     }
 
     fun buildSignUpQuestion(row: Row) = SignUpQuestionContent(

@@ -1,7 +1,6 @@
 package mbtinder.server.util
 
 import mbtinder.lib.component.CardStackContent
-import mbtinder.lib.component.SignUpQuestionContent
 import mbtinder.lib.constant.MBTI
 import mbtinder.lib.util.*
 import mbtinder.server.constant.LocalFile
@@ -17,24 +16,8 @@ object CardStackUtil {
         val userIds = UserUtil.getUserIds()
         val updated = ImmutableList<CardStackContent>()
         userIds.forEach {
-            val rawMBTI = loadJSONObject(LocalFile.getUserMBTIPath(it)).getString("value")
-            val mbti = MBTI.findByName(rawMBTI)
-
-//            val rawSignUpQuestions = loadJSONList<SignUpQuestionContent.ConnectionForm>(LocalFile.getUserSignUpQuestionPath(it))
-            val rawSignUpQuestions = loadJSONArray(LocalFile.getUserSignUpQuestionPath(it))
-            println("updateCardStacks(): rawSignUpQuestions=$rawSignUpQuestions")
-//            val asJSONList = rawSignUpQuestions.toJSONList<SignUpQuestionContent.ConnectionForm>()
-            val asJSONList: JSONList<SignUpQuestionContent.ConnectionForm> = (0 until rawSignUpQuestions.length()).mapTo(JSONList()) { index: Int ->
-                val rawForm = rawSignUpQuestions.getJSONObject(index)
-                SignUpQuestionContent.ConnectionForm(
-                    UUID.fromString(rawForm.getString("category_id")),
-                    UUID.fromString(rawForm.getString("question_id")),
-                    rawForm.getInt("selected")
-                )
-            }
-            println("updateCardStacks(): asJSONList=$asJSONList")
-            val signUpQuestions = SignUpQuestionUtil.parseFilled(asJSONList).toJSONList()
-            println("updateCardStacks(): signUpQuestions=$signUpQuestions")
+            val mbti = MBTI.findByName(loadJSONObject(LocalFile.getUserMBTIPath(it)).getString("value"))
+            val signUpQuestions = SignUpQuestionUtil.parseFilled(loadJSONList(LocalFile.getUserSignUpQuestionPath(it))).toJSONList()
             updated.add(CardStackContent(it, mbti, signUpQuestions))
         }
 

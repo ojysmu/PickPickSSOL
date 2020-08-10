@@ -3,24 +3,20 @@ package mbtinder.server.util
 import mbtinder.lib.component.SignUpQuestionContent
 import mbtinder.lib.component.UserContent
 import mbtinder.lib.constant.MBTI
-import mbtinder.lib.util.clone
-import mbtinder.lib.util.loadJSONArray
-import mbtinder.lib.util.loadJSONObject
-import mbtinder.lib.util.toJSONList
+import mbtinder.lib.util.*
 import mbtinder.server.constant.LocalFile
 import mbtinder.server.io.database.MySQLServer
 import mbtinder.server.io.database.component.Row
-import org.json.JSONObject
 import java.io.File
 import java.util.*
 
 object UserUtil {
     private const val UPDATE_DURATION = 60 * 1000
 
-    private var users: List<UserContent> = updateUsers()
+    private var users: ImmutableList<UserContent> = updateUsers()
     private var lastUpdate: Long = 0
 
-    private fun updateUsers(): List<UserContent> {
+    private fun updateUsers(): ImmutableList<UserContent> {
         println("UserUtil.updateUsers() START")
 
         val sql = "SELECT * FROM mbtinder.user"
@@ -28,7 +24,8 @@ object UserUtil {
         val queryResult = MySQLServer.getInstance().getResult(queryId)
 
         lastUpdate = System.currentTimeMillis()
-        users = queryResult.content.map { buildUser(it) }.sorted()
+        users = queryResult.content.map { buildUser(it) }.sorted().toImmutableList()
+
         return users
     }
 
@@ -84,7 +81,7 @@ fun hasProfileImage(userId: UUID) = File(LocalFile.getUserImagePath(userId)).exi
 
 fun UserContent.hasProfileImage() = File(LocalFile.getUserImagePath(userId)).exists()
 
-fun UserContent.hidePassword() = UserContent(toJSONObject()).apply {
+fun UserContent.hidePassword() = clone().apply {
     password = ""
     passwordAnswer = ""
 }

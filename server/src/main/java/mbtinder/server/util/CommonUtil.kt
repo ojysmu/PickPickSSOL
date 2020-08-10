@@ -1,18 +1,21 @@
 package mbtinder.server.util
 
-fun <T> findAllTwice(collection: Collection<T>, update: () -> Collection<T>, comparison: (v: T) -> Boolean)
-        = collection.find { comparison.invoke(it) } ?: update.invoke().find(comparison)
+import mbtinder.lib.component.CloneableContent
+import mbtinder.lib.util.ImmutableList
 
-fun <T> findBinaryTwice(list: List<T>, update: () -> List<T>, compare: (T) -> Int): T? {
-    val index = list.binarySearch { compare.invoke(it) }
+fun <T: CloneableContent<T>> findAllTwice(immutableList: ImmutableList<T>, update: () -> Collection<T>, comparison: (v: T) -> Boolean)
+        = immutableList.find { comparison.invoke(it) } ?: update.invoke().find(comparison)
+
+fun <T: CloneableContent<T>> findBinaryTwice(immutableList: ImmutableList<T>, update: () -> List<T>, compare: (v: T) -> Int): T? {
+    val index = immutableList.binarySearch { compare.invoke(it) }
     return if (index < 0) {
-        val twice = update.invoke().binarySearch { compare.invoke(it) }
+        val twice = immutableList.binarySearch { compare.invoke(it) }
         if (twice < 0) {
             null
         } else {
-            list[twice]
+            immutableList[twice]
         }
     } else {
-        list[index]
+        immutableList[index]
     }
 }

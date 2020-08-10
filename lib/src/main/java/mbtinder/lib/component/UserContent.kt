@@ -1,13 +1,10 @@
 package mbtinder.lib.component
 
 import mbtinder.lib.component.json.JSONParsable
-import mbtinder.lib.constant.PasswordQuestion
 import org.json.JSONObject
-import java.io.File
-import java.sql.Date
 import java.util.*
 
-class UserContent: JSONParsable, IDContent, Comparable<UserContent>, Cloneable {
+class UserContent: JSONParsable, IDContent, Comparable<UserContent>, CloneableContent<UserContent> {
     lateinit var userId: UUID
     lateinit var email: String
     lateinit var password: String
@@ -59,7 +56,7 @@ class UserContent: JSONParsable, IDContent, Comparable<UserContent>, Cloneable {
 
     override fun compareTo(other: UserContent) = userId.compareTo(other.userId)
 
-    public override fun clone() = UserContent(
+    override fun clone() = UserContent(
         userId = userId,
         email = email,
         password = password,

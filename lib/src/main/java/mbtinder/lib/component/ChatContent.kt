@@ -4,7 +4,7 @@ import mbtinder.lib.component.json.JSONParsable
 import org.json.JSONObject
 import java.util.*
 
-class ChatContent: JSONParsable, IDContent, Comparable<ChatContent> {
+class ChatContent: JSONParsable, IDContent, Comparable<ChatContent>, CloneableContent<ChatContent> {
     lateinit var chatId: UUID
     lateinit var participant1: UUID
     lateinit var participant2: UUID
@@ -22,10 +22,6 @@ class ChatContent: JSONParsable, IDContent, Comparable<ChatContent> {
     override fun getUUID() = chatId
 
     override fun compareTo(other: ChatContent) = chatId.compareTo(other.chatId)
-}
 
-class ChatList(val chatId: UUID): ArrayList<ChatContent>(), IDContent, Comparable<ChatList> {
-    override fun getUUID() = chatId
-
-    override fun compareTo(other: ChatList) = chatId.compareTo(other.chatId)
+    override fun clone() = ChatContent(chatId, participant1, participant2)
 }

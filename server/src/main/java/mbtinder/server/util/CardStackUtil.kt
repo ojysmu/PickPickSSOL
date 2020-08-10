@@ -21,6 +21,7 @@ object CardStackUtil {
                 loadJSONList(LocalFile.getUserSignUpQuestionPath(it))
             ).toJSONList()
 
+            println("updateCardStacks(): signUpQuestions=${signUpQuestions.toJSONArray()}")
             updated.add(CardStackContent(it, mbti, signUpQuestions))
         }
 

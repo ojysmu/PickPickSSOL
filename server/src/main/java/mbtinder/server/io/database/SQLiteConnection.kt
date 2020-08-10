@@ -45,13 +45,21 @@ class SQLiteConnection private constructor(val userId: UUID): CloseableThread(),
     private val queries = IDList<Query>()
     private val results = IDList<QueryResult>()
 
+    private var alive: Int = 0
+
     init {
         val connection = DriverManager.getConnection("$dbHeader/$userId/tables.db")
         statement = connection.createStatement()
 
         loop = {
+            if (alive > 60 * 1000) {
+                connections.remove(this)
+                close()
+            }
+
             if (queries.isEmpty()) {
                 sleep()
+                alive += intervalInMillis.toInt()
             } else {
                 val query = sync(queries) { it.removeAt(0) }
 
@@ -86,6 +94,12 @@ class SQLiteConnection private constructor(val userId: UUID): CloseableThread(),
         block(results, intervalInMillis) { !it.contains(queryId) }
 
         return sync(results) { it.remove(queryId) }
+    }
+
+    override fun close() {
+        super.close()
+
+        statement.close()
     }
 
     override fun getUUID() = userId

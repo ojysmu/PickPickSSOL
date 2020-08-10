@@ -17,14 +17,16 @@ object CardStackUtil {
         val userIds = UserUtil.getUserIds()
         val updated = ImmutableList<CardStackContent>()
         userIds.forEach {
-            val mbti = MBTI.findByName(loadJSONObject(LocalFile.getUserMBTIPath(it)).getString("value"))
-            val signUpQuestions = SignUpQuestionUtil.parseFilled(
-                loadJSONList<SignUpQuestionContent.ConnectionForm>(LocalFile.getUserSignUpQuestionPath(it)).apply {
-                    println(toString())
-                }
-            ).toJSONList()
+            val rawMBTI = loadJSONObject(LocalFile.getUserMBTIPath(it)).getString("value")
+            val mbti = MBTI.findByName(rawMBTI)
 
-            println("updateCardStacks(): signUpQuestions=${signUpQuestions.toJSONArray()}")
+//            val rawSignUpQuestions = loadJSONList<SignUpQuestionContent.ConnectionForm>(LocalFile.getUserSignUpQuestionPath(it))
+            val rawSignUpQuestions = loadJSONArray(LocalFile.getUserSignUpQuestionPath(it))
+            println("updateCardStacks(): rawSignUpQuestions=$rawSignUpQuestions")
+            val asJSONList = rawSignUpQuestions.toJSONList<SignUpQuestionContent.ConnectionForm>()
+            println("updateCardStacks(): asJSONList=$asJSONList")
+            val signUpQuestions = SignUpQuestionUtil.parseFilled(asJSONList).toJSONList()
+            println("updateCardStacks(): signUpQuestions=$signUpQuestions")
             updated.add(CardStackContent(it, mbti, signUpQuestions))
         }
 

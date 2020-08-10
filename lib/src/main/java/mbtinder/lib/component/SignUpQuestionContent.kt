@@ -30,7 +30,7 @@ class SignUpQuestionContent: JSONParsable, IDContent, Comparable<SignUpQuestionC
     class ConnectionForm: JSONParsable, IDContent, Comparable<ConnectionForm> {
         lateinit var categoryId: UUID
         lateinit var questionId: UUID
-        var selected = -1
+        var selected: Int = -1
 
         constructor(jsonObject: JSONObject): super(jsonObject)
 

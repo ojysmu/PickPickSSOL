@@ -60,11 +60,14 @@ object UserUtil {
 
     fun getAllUsers() = users.getCloned()
 
-    fun getAllCardStacks() = users.getCloned().map {
+    fun getAllCardStacks() = users.getCloned().map { userContent: UserContent ->
         CardStackContent(
-            it,
-            MBTI.findByName(loadJSONObject(LocalFile.getUserMBTIPath(it.userId)).getString("value")),
-            loadJSONList(LocalFile.getUserSignUpQuestionPath(it.userId))
+            userContent,
+            MBTI.findByName(loadJSONObject(LocalFile.getUserMBTIPath(userContent.userId)).getString("value")),
+            loadJSONList<SignUpQuestionContent.ConnectionForm>(LocalFile.getUserSignUpQuestionPath(userContent.userId))
+                .map { form: SignUpQuestionContent.ConnectionForm ->
+                    SignUpQuestionUtil.getQuestions().first { it.questionId == form.questionId }
+                }
         )
     }
 

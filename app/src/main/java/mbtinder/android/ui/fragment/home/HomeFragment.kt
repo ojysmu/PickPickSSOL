@@ -11,11 +11,8 @@ import mbtinder.android.R
 import mbtinder.android.component.StaticComponent
 import mbtinder.android.io.CommandProcess
 import mbtinder.android.ui.model.Fragment
-import mbtinder.android.util.ImageUtil
-import mbtinder.android.util.Log
 import mbtinder.android.util.ThreadUtil
 import mbtinder.lib.component.CardStackContent
-import java.util.*
 
 class HomeFragment : Fragment(R.layout.fragment_home) {
     private lateinit var cardStackLayoutManager: CardStackLayoutManager
@@ -24,7 +21,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
     override fun initializeView() {
         requireActivity().findViewById<BottomNavigationView>(R.id.nav_view).visibility = View.VISIBLE
-
         updateCardStack()
 
         cardStackLayoutManager = CardStackLayoutManager(requireContext(), cardStackListener)
@@ -57,8 +53,9 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         ThreadUtil.runOnBackground {
             val getResult = CommandProcess.getMatchableUsers(StaticComponent.user.userId)
             if (getResult.isSucceed) {
+                val contents = getResult.result!!
+
                 ThreadUtil.runOnUiThread {
-                    val contents = getResult.result!!
                     cardStackAdapter.addContents(contents)
 
                     home_waiting.visibility = View.INVISIBLE

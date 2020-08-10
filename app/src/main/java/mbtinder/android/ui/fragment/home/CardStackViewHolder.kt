@@ -45,13 +45,14 @@ class CardStackViewHolder(private val view: View): AdaptableViewHolder<CardStack
     }
 
     override fun adapt(content: CardStackContent) {
-        isEmpty = content.isEmptyBody
-
-        if (content.isEmptyBody) {
-            adaptEmpty()
-        } else {
-            adaptContent(content)
-        }
+//        isEmpty = content.isEmptyBody
+//
+//        if (content.isEmptyBody) {
+//            adaptEmpty()
+//        } else {
+//            adaptContent(content)
+//        }
+        adaptContent(content)
     }
 
     private fun adaptContent(content: CardStackContent) {
@@ -67,7 +68,7 @@ class CardStackViewHolder(private val view: View): AdaptableViewHolder<CardStack
         imageView.setImage(content)
         recyclerView.itemAnimator = DefaultItemAnimator()
         recyclerView.layoutManager = LinearLayoutManager(itemView.context)
-        recyclerView.adapter = CardStackContentAdapter(content.contents.toMutableList())
+        recyclerView.adapter = CardStackContentAdapter(content.contents.mapTo(ArrayList()) { it.selectable.getString(it.selected) })
         setPickTransparency(0.0f)
         setNopeTransparency(0.0f)
     }

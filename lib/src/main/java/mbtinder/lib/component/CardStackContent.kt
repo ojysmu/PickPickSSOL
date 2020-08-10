@@ -10,7 +10,7 @@ import java.util.*
 class CardStackContent: JSONParsable, IDContent, ImageComponent {
     lateinit var userId: UUID
     lateinit var mbti: MBTI
-    lateinit var contents: List<SignUpQuestionContent.ConnectionForm>
+    lateinit var contents: List<SignUpQuestionContent>
 
     @SkipParsing
     private var image: ByteArray? = null
@@ -24,7 +24,7 @@ class CardStackContent: JSONParsable, IDContent, ImageComponent {
         this.imageUrl = ServerPath.getUserImageUrl(userId, imageName)
     }
 
-    constructor(userContent: UserContent, mbti: MBTI, contents: List<SignUpQuestionContent.ConnectionForm>) {
+    constructor(userContent: UserContent, mbti: MBTI, contents: List<SignUpQuestionContent>) {
         this.userId = userContent.userId
         this.mbti = mbti
         this.contents = contents

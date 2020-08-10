@@ -105,6 +105,7 @@ object CommandProcess {
             // 채팅 목록 테이블 생성
             val createTableSql = "CREATE TABLE chat (" +
                     "_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    "chat_id CHAR(36) NOT NULL, " +
                     "receiver_id CHAR(36) NOT NULL)"
             sqLiteConnection.addQuery(createTableSql)
         }

@@ -34,7 +34,7 @@ class SQLiteConnection private constructor(val userId: UUID): CloseableThread(),
                 "body        VARCHAR(200) NOT NULL)"
 
         fun getInsertNewChatSql(chatId: UUID, participantId: UUID) =
-            "INSERT INTO chat (chat_id, receiver_id) VALUES ('${chatId}', '${participantId}')"
+            "INSERT INTO chat (chat_id, receiver_id) VALUES ('$chatId', '$participantId')"
 
         fun getSelectMessageSql(chatId: UUID, endIndex: Int): String {
             return "SELECT * FROM $chatId LIMIT ${endIndex - SELECT_MESSAGE_LIMIT}, $SELECT_MESSAGE_LIMIT"

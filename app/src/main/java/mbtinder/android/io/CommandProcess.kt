@@ -106,8 +106,8 @@ object CommandProcess {
 
     fun pick(userId: UUID, opponentId: UUID, isPick: Boolean): ServerResult<Boolean> {
         val arguments = JSONObject()
-        arguments.put("sender_id", userId.toString())
-        arguments.put("receiver_id", opponentId.toString())
+        arguments.put("user_id", userId.toString())
+        arguments.put("opponent_id", opponentId.toString())
         arguments.put("is_pick", isPick)
 
         val result = SocketUtil.getServerResult(Command.PICK, arguments)
@@ -120,8 +120,8 @@ object CommandProcess {
 
     fun createChat(userId: UUID, opponentId: UUID): ServerResult<Void> {
         val arguments = JSONObject()
-        arguments.put("user_id", userId.toString())
-        arguments.put("opponent_id", opponentId.toString())
+        arguments.put("sender_id", userId.toString())
+        arguments.put("receiver_id", opponentId.toString())
 
         return SocketUtil.getVoidResult(SocketUtil.getServerResult(Command.CREATE_CHAT, arguments))
     }

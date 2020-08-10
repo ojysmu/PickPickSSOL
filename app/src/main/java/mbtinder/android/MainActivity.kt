@@ -1,5 +1,6 @@
 package mbtinder.android
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.navigation.Navigation.findNavController
 import androidx.navigation.findNavController
@@ -10,6 +11,7 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import mbtinder.android.io.SocketClient
+import mbtinder.android.service.ThreadService
 import mbtinder.android.ui.fragment.splash.SplashFragment
 import mbtinder.android.ui.model.Activity
 import mbtinder.android.util.DialogFactory
@@ -37,6 +39,8 @@ class MainActivity : Activity() {
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         val navController = navHostFragment.navController
         navView.setupWithNavController(navController)
+
+        startForegroundService(Intent(this, ThreadService::class.java))
     }
 
     private fun initializeNotifications() {
@@ -44,7 +48,7 @@ class MainActivity : Activity() {
     }
 
     private fun initializeSocketClient() {
-        val socketClient = SocketClient.createInstance(ServerPath.ADDRESS, ServerPath.PORT_SOCKET)
+        val socketClient = SocketClient.createInstance(ServerPath.ADDRESS, ServerPath.PORT_SOCKET, this)
         socketClient.onConnected = this::onConnected
         socketClient.onConnectionFailed = this::onConnectionFailed
         socketClient.onDisconnected = this::onDisconnected
@@ -89,7 +93,7 @@ class MainActivity : Activity() {
         }
 
         var result: Boolean? = null
-        SocketClient.createInstance(ServerPath.ADDRESS, ServerPath.PORT_SOCKET).apply {
+        SocketClient.createInstance(ServerPath.ADDRESS, ServerPath.PORT_SOCKET, this).apply {
             onConnected = {
                 Log.v("retryConnection: onConnected depth=$depth")
                 result = true

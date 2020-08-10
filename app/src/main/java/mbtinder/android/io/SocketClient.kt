@@ -1,7 +1,7 @@
 package mbtinder.android.io
 
+import android.content.Context
 import mbtinder.android.component.CommandResult
-import mbtinder.android.util.ListeningThread
 import mbtinder.android.util.Log
 import mbtinder.lib.io.component.CommandContent
 import mbtinder.lib.util.CloseableThread
@@ -15,15 +15,16 @@ import java.io.IOException
 import java.net.Socket
 import java.util.*
 
-class SocketClient private constructor(private val address: String, private val port: Int): CloseableThread() {
+class SocketClient private constructor(private val address: String, private val port: Int, private val context: Context)
+    : CloseableThread() {
     companion object {
         const val CONNECTION_RETRY_MAX = 3
 
         private var instance: SocketClient? = null
 
-        fun createInstance(address: String, port: Int): SocketClient {
+        fun createInstance(address: String, port: Int, context: Context): SocketClient {
             if (instance == null) {
-                instance = SocketClient(address, port)
+                instance = SocketClient(address, port, context)
 
                 return instance!!
             } else {
@@ -42,6 +43,8 @@ class SocketClient private constructor(private val address: String, private val 
         fun releaseInstance() {
             instance = null
         }
+
+        fun isAlive() = instance != null
     }
 
     private lateinit var socket: Socket
@@ -65,7 +68,8 @@ class SocketClient private constructor(private val address: String, private val 
 
                 onConnected?.let { it() }
 
-                listeningThread = ListeningThread(dataInputStream, onDisconnected ?: {})
+                listeningThread =
+                    ListeningThread(context, dataInputStream, onDisconnected ?: {})
                 listeningThread.start()
             } catch (e: IOException) {
                 stopThread()

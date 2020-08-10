@@ -104,12 +104,19 @@ object CommandProcess {
         return SocketUtil.getJSONListResult(result, "users")
     }
 
-    fun pick(userId: UUID, opponentId: UUID, isPick: Boolean): ServerResult<Void> {
+    fun pick(userId: UUID, opponentId: UUID, isPick: Boolean): ServerResult<Boolean> {
         val arguments = JSONObject()
         arguments.put("user_id", userId.toString())
         arguments.put("opponent_id", opponentId.toString())
         arguments.put("is_pick", isPick)
 
-        return SocketUtil.getVoidResult(SocketUtil.getServerResult(Command.PICK, arguments))
+        val result = SocketUtil.getServerResult(Command.PICK, arguments)
+        return if (result.getBoolean("result")) {
+            ServerResult(true, 0, result.getBoolean("is_picked"))
+        } else {
+            ServerResult(false, result.getInt("code"))
+        }
     }
+
+
 }

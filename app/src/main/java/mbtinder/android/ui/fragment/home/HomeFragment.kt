@@ -94,11 +94,12 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
         override fun onCardSwiped(direction: Direction?) {
             ThreadUtil.runOnBackground {
-                CommandProcess.pick(
+                val isPicked = CommandProcess.pick(
                     userId = StaticComponent.user.userId,
                     opponentId = cardStackAdapter.contents[currentPosition].userId,
                     isPick = direction == Direction.Right
-                )
+                ).result!!
+
             }
         }
 

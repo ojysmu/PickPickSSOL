@@ -1,8 +1,9 @@
-package mbtinder.android.util
+package mbtinder.android.io
 
+import android.content.Context
 import mbtinder.android.component.CommandResult
 import mbtinder.android.component.notifications
-import mbtinder.android.io.SocketClient
+import mbtinder.android.util.Log
 import mbtinder.lib.util.CloseableThread
 import org.json.JSONException
 import org.json.JSONObject
@@ -10,7 +11,8 @@ import java.io.DataInputStream
 import java.io.IOException
 import java.util.*
 
-internal class ListeningThread(dataInputStream: DataInputStream,
+internal class ListeningThread(private val context: Context,
+                               dataInputStream: DataInputStream,
                                onDisconnected: (IOException) -> Unit): CloseableThread() {
     init {
         loop = {
@@ -21,7 +23,7 @@ internal class ListeningThread(dataInputStream: DataInputStream,
                     val title = response.getString("title")
                     val content = response.getString("content")
 
-                    notifications[id].perform(title, content)
+                    notifications[id].perform(context, title, content)
                 } else {
                     Log.v("ListeningThread: $response")
                     SocketClient.getInstance().addResult(CommandResult(response))

@@ -90,6 +90,14 @@ class SocketServer private constructor(private val port: Int): CloseableThread()
     }
 
     /**
+     * token에 해당하는 Connection이 연결중인지 확인
+     *
+     * @param token: 연결여부를 확인할 token
+     * @return token 연결 여부
+     */
+    fun isAlive(token: UUID) = connections.contains(token)
+
+    /**
      * Connection token에 해당하는 Connection 반환
      *
      * @param token: 탐색할 token
@@ -119,6 +127,16 @@ class SocketServer private constructor(private val port: Int): CloseableThread()
      * @return 현재 pool에 저장된 connection의 수
      */
     fun getConnectionCount() = connections.size
+
+    fun containsConnections(tokens: List<UUID>): Boolean {
+        tokens.forEach { token ->
+            if (connections.contains(token)) {
+                return true
+            }
+        }
+
+        return false
+    }
 
     /**
      * 실행중인 서버의 IPv4 주소 반환

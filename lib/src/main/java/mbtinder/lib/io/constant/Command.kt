@@ -26,21 +26,9 @@ enum class Command {
     PICK,                   // PICK 누적
 
     // Message related commands
-    /**
-     *
-     */
-    CREATE_CHAT,
-
-    /**
-     *
-     */
-    DELETE_CHAT,
-
-    GET_MESSAGES,
-    /**
-     * Client command.
-     * Send a message to server.
-     */
+    CREATE_CHAT,            // 채팅방 생성 요청
+    DELETE_CHAT,            // 채팅방 삭제
+    GET_MESSAGES,           // 채팅방 메시지 목록 요청
     SEND_MESSAGE_TO_SERVER;
 
     companion object {

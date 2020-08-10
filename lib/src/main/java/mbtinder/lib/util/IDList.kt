@@ -25,3 +25,5 @@ class IDList<E: IDContent>: ArrayList<E> {
 }
 
 fun <E: IDContent> Collection<E>.toIDList() = IDList(this)
+
+fun <E: IDContent> idListOf(vararg elements: E) = IDList(elements.toList())

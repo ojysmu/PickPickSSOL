@@ -1,6 +1,7 @@
 package mbtinder.server.io.socket
 
 import mbtinder.lib.component.IDContent
+import mbtinder.lib.constant.Notification
 import mbtinder.lib.constant.ServerResponse
 import mbtinder.lib.io.component.CommandContent
 import mbtinder.lib.io.constant.Command
@@ -36,6 +37,16 @@ class Connection(private val socket: Socket): CloseableThread(), IDContent {
 
         dataOutputStream.writeUTF(serverMessage.toString())
         dataOutputStream.flush()
+    }
+
+    fun sendNotification(notification: Notification) {
+        val serverMessage = JSONObject()
+        serverMessage.put("is_notification", true)
+        serverMessage.put("notification_id", notification.notificationId.toString())
+        serverMessage.put("title", notification.title)
+        serverMessage.put("content", notification.content)
+
+        send(serverMessage)
     }
 
     override fun getUUID(): UUID = token

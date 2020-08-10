@@ -2,6 +2,7 @@ package mbtinder.server.io.socket
 
 import mbtinder.lib.component.*
 import mbtinder.lib.constant.MBTI
+import mbtinder.lib.constant.Notification
 import mbtinder.lib.constant.ServerPath
 import mbtinder.lib.constant.ServerResponse
 import mbtinder.lib.io.component.CommandContent
@@ -10,6 +11,7 @@ import mbtinder.lib.util.*
 import mbtinder.server.constant.LocalFile
 import mbtinder.server.io.database.MySQLServer
 import mbtinder.server.io.database.SQLiteConnection
+import mbtinder.server.io.notification.NotificationServer
 import mbtinder.server.util.*
 import org.json.JSONArray
 import org.json.JSONObject
@@ -390,6 +392,17 @@ object CommandProcess {
                 "chat_id, participant1, participant2" +
                 ") VALUES (" +
                 "'$chatId', '$senderId', '$receiverId')")
+
+        NotificationServer.getInstance().addNotification(Notification.MESSAGE_RECEIVED.apply {
+            this.receiverId = senderId
+            this.title = "매칭되었습니다."
+            this.content = "서로 PICK했어요! 메시지를 확인해보세요."
+        })
+        NotificationServer.getInstance().addNotification(Notification.MESSAGE_RECEIVED.apply {
+            this.receiverId = receiverId
+            this.title = "매칭되었습니다."
+            this.content = "내가 PICK한 사용자가 나를 PICK했어요! 메시지를 확인해보세요."
+        })
 
         return Connection.makePositiveResponse(command.uuid, JSONObject().apply { put("chat_id", chatId.toString()) })
     }

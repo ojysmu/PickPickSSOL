@@ -26,10 +26,14 @@ class Connection(private val socket: Socket): CloseableThread(), IDContent {
                 close()
             } else {
                 val command = CommandContent(parsedMessage)
-                val serverMessage = CommandProcess.onReceived(command)
+                val serverMessage = CommandProcess.onReceived(command, this)
                 send(serverMessage)
             }
         }
+    }
+
+    fun setToken(token: UUID) {
+        this.token = token
     }
 
     private fun send(serverMessage: JSONObject) {
@@ -49,7 +53,7 @@ class Connection(private val socket: Socket): CloseableThread(), IDContent {
         send(serverMessage)
     }
 
-    override fun getUUID(): UUID = token
+    override fun getUUID() = token
 
     override fun close() {
         super.close()

@@ -22,7 +22,7 @@ import java.util.*
  * 서버 명령 처리 object
  */
 object CommandProcess {
-    fun onReceived(command: CommandContent): JSONObject {
+    fun onReceived(command: CommandContent, connection: Connection): JSONObject {
         return when (Command.findCommand(command.name)) {
             Command.CLOSE -> JSONObject()
 
@@ -33,7 +33,7 @@ object CommandProcess {
             Command.DELETE_USER -> deleteUser(command)
             Command.GET_USER_IMAGES -> getUserImages(command)
             Command.DELETE_USER_IMAGE -> deleteUserImage(command)
-            Command.SIGN_IN -> signIn(command)
+            Command.SIGN_IN -> signIn(command, connection)
             Command.FIND_PASSWORD -> findPassword(command)
             Command.UPDATE_PASSWORD -> updatePassword(command)
             Command.GET_SIGN_UP_QUESTIONS -> getSignUpQuestion(command)
@@ -251,13 +251,14 @@ object CommandProcess {
      * @param command: 인수는 다음을 포함해야함: 이메일, 비밀번호
      * @return 입력한 이메일과 비밀번호에 일치하는 사용자가 있을 경우 [UserContent], 없을 경우 [ServerResponse.EMAIL_NOT_FOUND]
      */
-    private fun signIn(command: CommandContent): JSONObject {
+    private fun signIn(command: CommandContent, connection: Connection): JSONObject {
         val email = command.arguments.getString("email")
         // TODO: Encrypt
         val password = command.arguments.getString("password")
 
         return UserUtil.getUserByEmail(email, true)?.let {
             if (it.password == password) {
+                connection.setToken(it.userId)
                 Connection.makePositiveResponse(command.uuid, JSONObject().apply { put("user", it.hidePassword().toJSONObject()) })
             } else {
                 Connection.makeNegativeResponse(command.uuid, ServerResponse.EMAIL_NOT_FOUND)

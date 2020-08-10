@@ -94,12 +94,17 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
         override fun onCardSwiped(direction: Direction?) {
             ThreadUtil.runOnBackground {
+                val opponentId = cardStackAdapter.contents[currentPosition].userId
+
                 val isPicked = CommandProcess.pick(
                     userId = StaticComponent.user.userId,
-                    opponentId = cardStackAdapter.contents[currentPosition].userId,
+                    opponentId = opponentId,
                     isPick = direction == Direction.Right
                 ).result!!
 
+                if (isPicked) {
+                    CommandProcess.createChat(StaticComponent.user.userId, opponentId)
+                }
             }
         }
 

@@ -64,7 +64,6 @@ class CardStackViewHolder(private val view: View): AdaptableViewHolder<CardStack
         cardPick.visibility = View.VISIBLE
         cardNope.visibility = View.VISIBLE
 
-//        imageView.setImageDrawable(ImageUtil.byteArrayToDrawable(itemView.context, content.getImage()))
         imageView.setImage(content)
         recyclerView.itemAnimator = DefaultItemAnimator()
         recyclerView.layoutManager = LinearLayoutManager(itemView.context)

@@ -2,6 +2,7 @@ package mbtinder.lib.component.json
 
 import mbtinder.lib.annotation.SkipParsing
 import mbtinder.lib.component.UserContent
+import mbtinder.lib.constant.MBTI
 import mbtinder.lib.constant.PasswordQuestion
 import mbtinder.lib.util.JSONList
 import mbtinder.lib.util.clone
@@ -9,6 +10,7 @@ import mbtinder.lib.util.toJSONArray
 import mbtinder.lib.util.toJSONList
 import org.json.JSONObject
 import java.lang.reflect.Field
+import java.lang.reflect.Type
 import java.sql.Date
 import java.util.*
 import kotlin.collections.ArrayList
@@ -67,32 +69,7 @@ abstract class JSONParsable: JSONContent {
                         continue
                     }
 
-                    when (field.type) {
-                        // UUID, Date, JSONList의 경우 별도 wrapping 필요
-                        UUID::class.java -> field.set(this, UUID.fromString(jsonObject.getString(key)))
-                        Date::class.java -> field.set(this, Date.valueOf(jsonObject.getString(key)))
-                        JSONList::class.java -> {
-                            // key와 변환된 변수 이름이 같을 때
-                            // Generic 타입을 사용하므로 변수의 제너릭 타입을 가져옴
-                            // 제너릭 타입으로 생성한 Class
-                            // ex) informedClass: class com.special_uridongne.jupeed.component.User
-                            val informedClass = Class.forName(getGenericName(field.genericType.typeName))
-                            // JSONParsable을 상속받음을 명시
-                            // T: JSONParsable에 대한 T로 사용할 수 있음
-                            val genericClass = informedClass.asSubclass(JSONContent::class.java)
-                            field.set(this, JSONList(jsonObject.getJSONArray(key), genericClass))
-                        }
-                        List::class.java -> {
-                            // List 무시
-                        }
-                        Companion::class.java -> {
-                            // Companion 무시
-                        }
-                        JSONObject::class.java -> field.set(this, jsonObject.getJSONObject(key))
-                        // 이외에는 String, Int 등 get-set 가능한 타입들
-                        else -> field.set(this, jsonObject.get(key))
-                    }
-
+                    parseFromType(field, jsonObject, key)
                     break
                 }
             }
@@ -124,26 +101,55 @@ abstract class JSONParsable: JSONContent {
                 continue
             }
 
-            when (val value = field.get(this)) {
-                is JSONList<*> -> {
-                    // JSONList<*>는 element.updateJSONObject() 실행 후 추가
-                    value.updateJSONObject()
-                    // toJSONArray()라는 별도의 함수 사용
-                    jsonObject.put(formatted, value.toJSONArray())
-                }
-                is JSONParsable -> {
-                    jsonObject.put(formatted, value.jsonObject)
-                }
-                is JSONContent -> {
-                    jsonObject.put(formatted, value.toJSONObject())
-                }
-                is List<*> -> {
-                    jsonObject.put(formatted, toJSONArray())
-                }
-                is UUID -> jsonObject.put(formatted, value.toString())
-                is Date -> jsonObject.put(formatted, value.toString())
-                else -> jsonObject.put(formatted, value)
+            parseFromField(field, formatted, jsonObject)
+        }
+    }
+
+    private fun parseFromType(field: Field, jsonObject: JSONObject, key: String) {
+        when (field.type) {
+            // UUID, Date, JSONList의 경우 별도 wrapping 필요
+            UUID::class.java -> field.set(this, UUID.fromString(jsonObject.getString(key)))
+            Date::class.java -> field.set(this, Date.valueOf(jsonObject.getString(key)))
+            MBTI::class.java -> field.set(this, MBTI.findByName(jsonObject.getString(key)))
+            JSONList::class.java -> {
+                // key와 변환된 변수 이름이 같을 때
+                // Generic 타입을 사용하므로 변수의 제너릭 타입을 가져옴
+                // 제너릭 타입으로 생성한 Class
+                // ex) informedClass: class com.special_uridongne.jupeed.component.User
+                val informedClass = Class.forName(getGenericName(field.genericType.typeName))
+                // JSONParsable을 상속받음을 명시
+                // T: JSONParsable에 대한 T로 사용할 수 있음
+                val genericClass = informedClass.asSubclass(JSONContent::class.java)
+                field.set(this, JSONList(jsonObject.getJSONArray(key), genericClass))
             }
+            List::class.java -> {
+                // List 무시
+            }
+            Companion::class.java -> {
+                // Companion 무시
+            }
+            JSONObject::class.java -> field.set(this, jsonObject.getJSONObject(key))
+            // 이외에는 String, Int 등 get-set 가능한 타입들
+            else -> field.set(this, jsonObject.get(key))
+        }
+    }
+
+    private fun parseFromField(field: Field, key: String, jsonObject: JSONObject) {
+        when (val value = field.get(this)) {
+            is UUID -> jsonObject.put(key, value.toString())
+            is Date -> jsonObject.put(key, value.toString())
+            is MBTI -> jsonObject.put(key, value.name)
+            is JSONList<*> -> {
+                // JSONList<*>는 element.updateJSONObject() 실행 후 추가
+                value.updateJSONObject()
+                // toJSONArray()라는 별도의 함수 사용
+                jsonObject.put(key, value.toJSONArray())
+            }
+            is List<*> -> jsonObject.put(key, toJSONArray())
+            is Companion -> {}
+            is JSONParsable -> jsonObject.put(key, value.toJSONObject())
+            is JSONContent -> jsonObject.put(key, value.toJSONObject())
+            else -> jsonObject.put(key, value)
         }
     }
 

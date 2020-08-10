@@ -366,7 +366,7 @@ object CommandProcess {
         val queryId = userConnection.addQuery(userSelectSql)
         val queryResult = userConnection.getResult(queryId)
         // 상대방 pick에 사용자 추가
-        val opponentSql = "INSERT INTO picked (opponent_id) VALUES ($userId)"
+        val opponentSql = "INSERT INTO picked (opponent_id) VALUES ('$userId')"
         SQLiteConnection.getConnection(opponentId).addQuery(opponentSql)
 
         return Connection.makePositiveResponse(command.uuid, JSONObject().put("is_picked", queryResult.content.isNotEmpty()))

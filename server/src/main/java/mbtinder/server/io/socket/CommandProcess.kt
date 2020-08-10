@@ -247,13 +247,16 @@ object CommandProcess {
         // TODO: Encrypt
         val password = command.arguments.getString("password")
 
-        return UserUtil.getUserByEmail(email, true) ?.let {
+        return UserUtil.getUserByEmail(email, true)?.let {
             if (it.password == password) {
+                println("password matches")
                 Connection.makePositiveResponse(command.uuid, JSONObject().apply { put("user", it.hidePassword(true).toJSONObject()) })
             } else {
+                println("password mismatch")
                 Connection.makeNegativeResponse(command.uuid, ServerResponse.EMAIL_NOT_FOUND)
             }
         } ?:let {
+            println("email not found")
             Connection.makeNegativeResponse(command.uuid, ServerResponse.EMAIL_NOT_FOUND)
         }
     }

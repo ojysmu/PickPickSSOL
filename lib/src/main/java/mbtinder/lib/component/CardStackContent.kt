@@ -4,13 +4,14 @@ import mbtinder.lib.annotation.SkipParsing
 import mbtinder.lib.component.json.JSONParsable
 import mbtinder.lib.constant.MBTI
 import mbtinder.lib.constant.ServerPath
+import mbtinder.lib.util.JSONList
 import org.json.JSONObject
 import java.util.*
 
 class CardStackContent: JSONParsable, IDContent, ImageComponent {
     lateinit var userId: UUID
     lateinit var mbti: MBTI
-    lateinit var contents: List<SignUpQuestionContent>
+    lateinit var contents: JSONList<SignUpQuestionContent>
 
     @SkipParsing
     private var image: ByteArray? = null
@@ -24,7 +25,7 @@ class CardStackContent: JSONParsable, IDContent, ImageComponent {
         this.imageUrl = ServerPath.getUserImageUrl(userId, imageName)
     }
 
-    constructor(userContent: UserContent, mbti: MBTI, contents: List<SignUpQuestionContent>) {
+    constructor(userContent: UserContent, mbti: MBTI, contents: JSONList<SignUpQuestionContent>) {
         this.userId = userContent.userId
         this.mbti = mbti
         this.contents = contents

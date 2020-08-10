@@ -8,7 +8,6 @@ import mbtinder.lib.util.*
 import mbtinder.server.constant.LocalFile
 import mbtinder.server.io.database.MySQLServer
 import mbtinder.server.io.database.component.Row
-import java.io.File
 import java.util.*
 
 object UserUtil {
@@ -56,16 +55,12 @@ object UserUtil {
         return findAllTwice(users, this::updateUsers) { it.email == email }?.withPassword(needPassword)
     }
 
-    fun getUserIds() = users.map { it.userId }
-
-    fun getAllUsers() = users.getCloned()
-
     fun getAllCardStacks() = users.getCloned().map { userContent: UserContent ->
         CardStackContent(
             userContent,
             MBTI.findByName(loadJSONObject(LocalFile.getUserMBTIPath(userContent.userId)).getString("value")),
             loadJSONList<SignUpQuestionContent.ConnectionForm>(LocalFile.getUserSignUpQuestionPath(userContent.userId))
-                .map { form: SignUpQuestionContent.ConnectionForm ->
+                .mapTo(JSONList()) { form: SignUpQuestionContent.ConnectionForm ->
                     SignUpQuestionUtil.getQuestions().first { it.questionId == form.questionId }
                 }
         )
@@ -92,10 +87,6 @@ object UserUtil {
         return sum
     }
 }
-
-fun hasProfileImage(userId: UUID) = File(LocalFile.getUserImagePath(userId)).exists()
-
-fun UserContent.hasProfileImage() = File(LocalFile.getUserImagePath(userId)).exists()
 
 fun UserContent.hidePassword() = getCloned().apply {
     password = ""

@@ -250,7 +250,7 @@ object CommandProcess {
         return UserUtil.getUserByEmail(email, true)?.let {
             if (it.password == password) {
                 println("password matches")
-                Connection.makePositiveResponse(command.uuid, JSONObject().apply { put("user", it.hidePassword(true).toJSONObject()) })
+                Connection.makePositiveResponse(command.uuid, JSONObject().apply { put("user", it.hidePassword().toJSONObject()) })
             } else {
                 println("password mismatch db=${it.password} input=$password")
                 Connection.makeNegativeResponse(command.uuid, ServerResponse.EMAIL_NOT_FOUND)

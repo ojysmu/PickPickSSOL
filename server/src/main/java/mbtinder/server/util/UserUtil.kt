@@ -44,16 +44,16 @@ object UserUtil {
         row.getString("password_answer")
     )
 
-    fun getUser(userId: UUID, withPassword: Boolean = false): UserContent? {
+    fun getUser(userId: UUID, needPassword: Boolean = false): UserContent? {
         ensureUpdate()
 
-        return findBinaryTwice(users, this::updateUsers) { it.userId.compareTo(userId) }?.hidePassword(!withPassword)
+        return findBinaryTwice(users, this::updateUsers) { it.userId.compareTo(userId) }?.withPassword(needPassword)
     }
 
-    fun getUserByEmail(email: String, withPassword: Boolean = false): UserContent? {
+    fun getUserByEmail(email: String, needPassword: Boolean = false): UserContent? {
         ensureUpdate()
 
-        return findAllTwice(users, this::updateUsers) { it.email == email }?.hidePassword(!withPassword)
+        return findAllTwice(users, this::updateUsers) { it.email == email }?.withPassword(needPassword)
     }
 
     fun getUserIds() = users.map { it.userId }
@@ -82,11 +82,18 @@ fun hasProfileImage(userId: UUID) = File(LocalFile.getUserImagePath(userId)).exi
 
 fun UserContent.hasProfileImage() = File(LocalFile.getUserImagePath(userId)).exists()
 
-fun UserContent.hidePassword(hide: Boolean): UserContent {
-    if (hide) {
+fun UserContent.withPassword(withPassword: Boolean): UserContent {
+    if (!withPassword) {
         password = ""
         passwordAnswer = ""
     }
+    
+    return this
+}
+
+fun UserContent.hidePassword(): UserContent {
+    password = ""
+    passwordAnswer = ""
 
     return this
 }

@@ -2,6 +2,7 @@ package mbtinder.android.io
 
 import mbtinder.android.io.component.ServerResult
 import mbtinder.lib.component.CardStackContent
+import mbtinder.lib.component.MessageContent
 import mbtinder.lib.component.SignUpQuestionContent
 import mbtinder.lib.component.UserContent
 import mbtinder.lib.io.constant.Command
@@ -123,6 +124,15 @@ object CommandProcess {
         arguments.put("sender_id", userId.toString())
         arguments.put("receiver_id", opponentId.toString())
 
-        return SocketUtil.getVoidResult(SocketUtil.getServerResult(Command.CREATE_CHAT, arguments))
+        return SocketUtil.getVoidResult(
+            SocketUtil.getServerResult(Command.CREATE_CHAT, arguments)
+        )
+    }
+
+    fun getLastMessages(userId: UUID): ServerResult<JSONList<MessageContent>> {
+        return SocketUtil.getJSONListResult(
+            SocketUtil.getServerResult(Command.GET_LAST_MESSAGES, JSONObject().apply { put("user_id", userId.toString()) }),
+            "messages"
+        )
     }
 }

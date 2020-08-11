@@ -42,6 +42,7 @@ object CommandProcess {
             Command.CREATE_CHAT -> createChat(command)
             Command.DELETE_CHAT -> deleteChat(command)
             Command.GET_MESSAGES -> getMessages(command)
+            Command.GET_LAST_MESSAGES -> getLastMessages(command)
             Command.SEND_MESSAGE_TO_SERVER -> sendMessageToServer(command)
         }
     }
@@ -373,6 +374,12 @@ object CommandProcess {
         return Connection.makePositiveResponse(command.uuid, JSONObject().put("is_picked", queryResult.content.isNotEmpty()))
     }
 
+    /**
+     * 채팅방 생성
+     *
+     * @param command: 인수는 다음을 포함해야함: 사용자 ID, 상대방 ID
+     * @return 생성된 채팅 ID
+     */
     private fun createChat(command: CommandContent): JSONObject {
         val chatId = UUID.randomUUID()
         val senderId = UUID.fromString(command.arguments.getString("sender_id"))
@@ -381,23 +388,30 @@ object CommandProcess {
         val senderConnection = SQLiteConnection.getConnection(senderId)
         val receiverConnection = SQLiteConnection.getConnection(receiverId)
 
+        // 사용자 채팅방 생성
         senderConnection.addQuery(SQLiteConnection.getCreateChatSql(chatId))
+        // 사용자 채팅방 정보 삽입
         senderConnection.addQuery(SQLiteConnection.getInsertNewChatSql(chatId, receiverId))
 
+        // 상대방 채팅방 생성
         receiverConnection.addQuery(SQLiteConnection.getCreateChatSql(chatId))
+        // 상대방 채팅방 정보 삽입
         receiverConnection.addQuery(SQLiteConnection.getInsertNewChatSql(chatId, senderId))
 
+        // MySQL 채팅 정보 삽입
         MySQLServer.getInstance().addQuery("INSERT INTO mbtinder.chat (" +
                 "chat_id, participant1, participant2" +
                 ") VALUES (" +
                 "'$chatId', '$senderId', '$receiverId')")
 
+        // 사용자 알림 보내기
         NotificationServer.getInstance().addNotification(NotificationForm(
             notification = Notification.MESSAGE_RECEIVED,
             receiverId = senderId,
             title = "매칭되었습니다.",
             content = "서로 PICK했어요! 메시지를 확인해보세요."
         ))
+        // 상대방 알림 보내기
         NotificationServer.getInstance().addNotification(NotificationForm(
             notification = Notification.MESSAGE_RECEIVED,
             receiverId = receiverId,
@@ -434,6 +448,21 @@ object CommandProcess {
         arguments.put("messages", messageList.toJSONArray())
 
         return Connection.makePositiveResponse(command.uuid, arguments)
+    }
+
+    private fun getLastMessages(command: CommandContent): JSONObject {
+        val userId = UUID.fromString(command.arguments.getString("user_id"))
+
+        val connection = SQLiteConnection.getConnection(userId)
+        val chatIds = connection.getResult(connection.addQuery("SELECT chat_id from chat")).content.map { it.getUUID("chat_id") }
+        val lastMessages = JSONList<MessageContent>().also { list: JSONList<MessageContent> ->
+            chatIds.forEach {
+                val sql = "SELECT * FROM '$it' where _id = (SELECT MAX(_id) FROM '$it'"
+                list.add(MessageUtil.buildMessage(connection.getResult(connection.addQuery(sql)).content[0], it))
+            }
+        }
+
+        return Connection.makePositiveResponse(command.uuid, JSONObject().apply { put("messages", lastMessages.toJSONArray()) })
     }
 
     private fun sendMessageToServer(command: CommandContent): JSONObject {

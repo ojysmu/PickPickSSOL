@@ -135,15 +135,20 @@ class SocketServer private constructor(private val port: Int): CloseableThread()
      */
     fun getConnectionCount() = connections.size
 
+    /**
+     * 인수의 token들에 해당하는 connection이 있는지 탐색
+     *
+     * @param tokens: 연결되었는지 확인할 token
+     * @return 탐색된 connection의 index, 없을 경우 -1
+     */
     fun containsConnections(tokens: List<UUID>): Int {
-        println(tokens)
         for ((index, token) in tokens.withIndex()) {
             if (connections.contains(token)) {
-                println("SocketServer.containsConnections(): token=$token")
+                // 탐색되었을 경우 index 반환
                 return index
             }
         }
-
+        // 탐색된 connection이 없을 경우 -1 반환
         return -1
     }
 

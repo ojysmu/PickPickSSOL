@@ -4,7 +4,7 @@ import mbtinder.lib.component.json.JSONParsable
 import org.json.JSONObject
 import java.util.*
 
-class MessageContent: JSONParsable, Comparable<MessageContent> {
+class MessageContent: JSONParsable, Comparable<MessageContent>, IDContent {
     lateinit var chatId: UUID
     lateinit var senderId: UUID
     lateinit var receiverId: UUID
@@ -23,6 +23,12 @@ class MessageContent: JSONParsable, Comparable<MessageContent> {
         updateJSONObject()
     }
 
+    fun getOpponentId(userId: UUID) = if (senderId == userId) {
+        receiverId
+    } else {
+        senderId
+    }
+
     override fun compareTo(other: MessageContent) = timestamp.compareTo(other.timestamp)
 
     fun getLocalInsertMessageSql() = "INSERT INTO $chatId (" +
@@ -36,4 +42,6 @@ class MessageContent: JSONParsable, Comparable<MessageContent> {
                 ") VALUES (" +
                 "'$chatId', '$senderId', '$receiverId', $timestamp, '$body')"
     }
+
+    override fun getUUID() = chatId
 }

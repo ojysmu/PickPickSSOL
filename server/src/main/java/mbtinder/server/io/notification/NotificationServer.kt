@@ -71,10 +71,11 @@ class NotificationServer private constructor(): CloseableThread() {
 
     private fun waitForConnection(): Int {
         var index: Int = -1
-        block(notifications, intervalInMillis) {
-            notifications.isEmpty()
-                    || SocketServer.getInstance().getConnectionCount() == 0
-                    || SocketServer.getInstance().containsConnections(notifications.map { it.receiverId }).also { index = it } == -1
+        block(notifications, 500) {
+            print("Blocked by: ")
+            notifications.isEmpty().also { if (it) print(1) }
+                    || (SocketServer.getInstance().getConnectionCount() == 0).also { if (it) print(2) }
+                    || (SocketServer.getInstance().containsConnections(notifications.map { it.receiverId }).also { index = it } == -1).also { if (it) print(3) }
         }
 
         return index

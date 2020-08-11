@@ -12,6 +12,8 @@ dependencies {
     implementation 'org.xerial:sqlite-jdbc:3.32.3.1'
 }
 
+mainClassName = "mbtinder.server.Main"
+
 sourceCompatibility = "1.8"
 targetCompatibility = "1.8"
 

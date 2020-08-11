@@ -392,11 +392,15 @@ object CommandProcess {
         senderConnection.addQuery(SQLiteConnection.getCreateChatSql(chatId))
         // 사용자 채팅방 정보 삽입
         senderConnection.addQuery(SQLiteConnection.getInsertNewChatSql(chatId, receiverId))
+        // 첫 메시지 삽입
+        senderConnection.addQuery(SQLiteConnection.getInsertFirstMessageSql(chatId, receiverId))
 
         // 상대방 채팅방 생성
         receiverConnection.addQuery(SQLiteConnection.getCreateChatSql(chatId))
         // 상대방 채팅방 정보 삽입
         receiverConnection.addQuery(SQLiteConnection.getInsertNewChatSql(chatId, senderId))
+        // 첫 메시지 삽입
+        receiverConnection.addQuery(SQLiteConnection.getInsertFirstMessageSql(chatId, receiverId))
 
         // MySQL 채팅 정보 삽입
         MySQLServer.getInstance().addQuery("INSERT INTO mbtinder.chat (" +

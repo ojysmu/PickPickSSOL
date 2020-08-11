@@ -1,4 +1,4 @@
-package mbtinder.server.io.database.component
+package mbtinder.lib.component.database
 
 import org.json.JSONArray
 import java.sql.Date

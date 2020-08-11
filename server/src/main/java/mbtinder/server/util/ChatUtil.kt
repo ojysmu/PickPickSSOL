@@ -4,7 +4,7 @@ import mbtinder.lib.component.ChatContent
 import mbtinder.lib.util.ImmutableList
 import mbtinder.lib.util.toImmutableList
 import mbtinder.server.io.database.MySQLServer
-import mbtinder.server.io.database.component.Row
+import mbtinder.lib.component.database.Row
 import java.util.*
 
 object ChatUtil {

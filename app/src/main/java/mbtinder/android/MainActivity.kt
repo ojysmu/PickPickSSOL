@@ -10,6 +10,7 @@ import androidx.navigation.ui.NavigationUI.setupActionBarWithNavController
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import mbtinder.android.io.SQLiteConnection
 import mbtinder.android.io.SocketClient
 import mbtinder.android.service.ThreadService
 import mbtinder.android.ui.fragment.splash.SplashFragment
@@ -33,6 +34,7 @@ class MainActivity : Activity() {
         } catch (e: RuntimeException) {
             SocketClient.releaseInstance()
             initializeSocketClient()
+            initializeSQLiteConnection()
         }
 
         val navView = findViewById<BottomNavigationView>(R.id.nav_view)
@@ -43,16 +45,16 @@ class MainActivity : Activity() {
         startForegroundService(Intent(this, ThreadService::class.java))
     }
 
-    private fun initializeNotifications() {
-
-    }
-
     private fun initializeSocketClient() {
         val socketClient = SocketClient.createInstance(ServerPath.ADDRESS, ServerPath.PORT_SOCKET, this)
         socketClient.onConnected = this::onConnected
         socketClient.onConnectionFailed = this::onConnectionFailed
         socketClient.onDisconnected = this::onDisconnected
         socketClient.start()
+    }
+
+    private fun initializeSQLiteConnection() {
+        SQLiteConnection.createInstance(this).start()
     }
 
     private fun onConnected() {

@@ -4,8 +4,8 @@ import mbtinder.lib.util.CloseableThread
 import mbtinder.lib.util.IDList
 import mbtinder.lib.util.block
 import mbtinder.lib.util.sync
-import mbtinder.server.io.database.component.Query
-import mbtinder.server.io.database.component.QueryResult
+import mbtinder.lib.component.database.Query
+import mbtinder.lib.component.database.QueryResult
 import java.sql.Connection
 import java.sql.DriverManager
 import java.sql.SQLException
@@ -97,7 +97,8 @@ class MySQLServer private constructor(url: String, database: String, id: String,
                 if (query.needResult) {
                     try {
                         val resultSet = statement.executeQuery(query.sql)
-                        val queryResult = QueryResult(query, resultSet)
+                        val queryResult =
+                            QueryResult(query, resultSet)
                         resultSet.close()
                         results.add(queryResult)
                     } catch (e: SQLException) {

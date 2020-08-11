@@ -1,6 +1,8 @@
-package mbtinder.server.io.database.component
+package mbtinder.lib.component.database
 
 import mbtinder.lib.component.IDContent
+import mbtinder.lib.component.database.Query
+import mbtinder.lib.component.database.Row
 import java.sql.ResultSet
 import java.util.ArrayList
 

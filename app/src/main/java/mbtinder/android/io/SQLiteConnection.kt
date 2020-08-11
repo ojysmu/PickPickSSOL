@@ -1,70 +1,55 @@
-package mbtinder.server.io.database
+package mbtinder.android.io
 
-import mbtinder.lib.component.IDContent
+import android.content.Context
+import mbtinder.lib.component.database.Query
+import mbtinder.lib.component.database.QueryResult
 import mbtinder.lib.util.CloseableThread
 import mbtinder.lib.util.IDList
 import mbtinder.lib.util.block
 import mbtinder.lib.util.sync
-import mbtinder.server.constant.LocalFile
-import mbtinder.lib.component.database.Query
-import mbtinder.lib.component.database.QueryResult
 import java.sql.DriverManager
 import java.sql.SQLException
 import java.sql.Statement
 import java.util.*
 
-class SQLiteConnection private constructor(val userId: UUID): CloseableThread(), IDContent {
+class SQLiteConnection private constructor(context: Context): CloseableThread() {
     companion object {
         const val SELECT_MESSAGE_LIMIT = 20
 
-        val dbHeader = "jdbc:sqlite:${LocalFile.userRoot}"
+        private var instance: SQLiteConnection? = null
 
-        private val connections = IDList<SQLiteConnection>()
+        fun getInstance(): SQLiteConnection {
+            if (instance == null) {
+                throw RuntimeException("Instance never initialized")
+            }
 
-        fun getConnection(userId: UUID) = sync(connections) { connections: IDList<SQLiteConnection> ->
-            connections.find { it.userId == userId } ?:
-                    SQLiteConnection(userId).apply { connections.add(this); start() }
+            return instance!!
         }
 
-        fun getCreateChatSql(chatId: UUID) = "CREATE TABLE '$chatId' (" +
-                "_id         INTEGER PRIMARY KEY AUTOINCREMENT , " +
-                "sender_id   CHAR(36) NOT NULL , " +
-                "receiver_id CHAR(36) NOT NULL , " +
-                "timestamp   BIGINT NOT NULL , " +
-                "body        VARCHAR(200) NOT NULL)"
+        fun createInstance(context: Context): SQLiteConnection {
+            if (instance == null) {
+                instance = SQLiteConnection(context)
 
-        fun getInsertNewChatSql(chatId: UUID, participantId: UUID) =
-            "INSERT INTO chat (chat_id, receiver_id) VALUES ('$chatId', '$participantId')"
-
-        fun getSelectMessageSql(chatId: UUID, endIndex: Int) =
-            "SELECT * FROM '$chatId' LIMIT ${endIndex - SELECT_MESSAGE_LIMIT}, $SELECT_MESSAGE_LIMIT"
-
-        fun getInsertFirstMessageSql(chatId: UUID, senderId: UUID, receiverId: UUID): String {
-            return "INSERT INTO '$chatId' " +
-                    "(sender_id, receiver_id, timestamp, body) VALUES " +
-                    "('$senderId', '$receiverId', ${System.currentTimeMillis()}, '매칭되었습니다.')"
+                return instance!!
+            } else {
+                throw RuntimeException("Instance already initialized")
+            }
         }
+
+        fun isAlive() = instance != null
     }
 
     private val statement: Statement
     private val queries = IDList<Query>()
     private val results = IDList<QueryResult>()
 
-    private var alive: Int = 0
-
     init {
-        val connection = DriverManager.getConnection("$dbHeader/$userId/tables.db")
+        val connection = DriverManager.getConnection("${context.filesDir}/tables.db")
         statement = connection.createStatement()
 
         loop = {
-            if (alive > 60 * 1000) {
-                connections.remove(this)
-                close()
-            }
-
             if (queries.isEmpty()) {
                 sleep()
-                alive += intervalInMillis.toInt()
             } else {
                 val query = sync(queries) { it.removeAt(0) }
 
@@ -109,6 +94,4 @@ class SQLiteConnection private constructor(val userId: UUID): CloseableThread(),
 
         statement.close()
     }
-
-    override fun getUUID() = userId
 }

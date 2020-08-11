@@ -7,7 +7,7 @@ import mbtinder.lib.constant.MBTI
 import mbtinder.lib.util.*
 import mbtinder.server.constant.LocalFile
 import mbtinder.server.io.database.MySQLServer
-import mbtinder.server.io.database.component.Row
+import mbtinder.lib.component.database.Row
 import java.util.*
 
 object UserUtil {

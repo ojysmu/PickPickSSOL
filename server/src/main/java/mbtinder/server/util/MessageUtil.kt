@@ -1,7 +1,7 @@
 package mbtinder.server.util
 
 import mbtinder.lib.component.MessageContent
-import mbtinder.server.io.database.component.Row
+import mbtinder.lib.component.database.Row
 import java.util.*
 
 object MessageUtil {

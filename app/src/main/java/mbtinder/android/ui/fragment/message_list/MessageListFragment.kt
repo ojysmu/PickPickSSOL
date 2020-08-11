@@ -23,7 +23,7 @@ class MessageListFragment: Fragment(R.layout.fragment_message_list) {
         ThreadUtil.runOnBackground {
             if (updateLastMessages()) {
                 ThreadUtil.runOnUiThread {
-                    chatAdapter = ChatAdapter(lastMessages!!)
+                    chatAdapter = ChatAdapter(this, lastMessages!!)
                     message_list_recycler_view.adapter = chatAdapter
                     message_list_recycler_view.visibility = View.VISIBLE
                     message_list_progress_bar.visibility = View.INVISIBLE

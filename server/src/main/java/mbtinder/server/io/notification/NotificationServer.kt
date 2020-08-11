@@ -38,7 +38,8 @@ class NotificationServer private constructor(): CloseableThread() {
 //            println("NotificationServer.loop(): Waiting...")
             val index = waitForConnection()
 //            println("NotificationServer.loop(): Found")
-            val notification = sync(notifications) { it.removeAt(index) }
+//            val notification = sync(notifications) { it.removeAt(index) }
+            val notification = notifications.removeAt(index)
             println("NotificationServer.loop(): " +
                     "receiver=${notification.receiverId}, " +
                     "title=${notification.title}, " +
@@ -63,7 +64,7 @@ class NotificationServer private constructor(): CloseableThread() {
                 "receiver=${notification.receiverId}, " +
                 "title=${notification.title}, " +
                 "content=${notification.content}")
-        return notifications.add(notification)
+        return sync(notifications) { notifications.add(notification) }
     }
 
     private fun waitForConnection(): Int {

@@ -69,7 +69,7 @@ class NotificationServer private constructor(): CloseableThread() {
         block(notifications, intervalInMillis) {
             notifications.isEmpty()
                     || SocketServer.getInstance().getConnectionCount() == 0
-                    || SocketServer.getInstance().containsConnections(notifications.map { it.receiverId })
+                    || !SocketServer.getInstance().containsConnections(notifications.map { it.receiverId })
         }
     }
 }

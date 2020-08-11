@@ -16,7 +16,6 @@ import java.util.*
 class SQLiteConnection private constructor(val userId: UUID): CloseableThread(), IDContent {
     companion object {
         private const val SELECT_MESSAGE_LIMIT = 20
-        private val ADMIN_ID = UUID.fromString("00000000-0000-0000-0000-000000000000")
 
         val dbHeader = "jdbc:sqlite:${LocalFile.userRoot}"
 
@@ -40,10 +39,10 @@ class SQLiteConnection private constructor(val userId: UUID): CloseableThread(),
         fun getSelectMessageSql(chatId: UUID, endIndex: Int) =
             "SELECT * FROM '$chatId' LIMIT ${endIndex - SELECT_MESSAGE_LIMIT}, $SELECT_MESSAGE_LIMIT"
 
-        fun getInsertFirstMessageSql(chatId: UUID, receiverId: UUID): String {
+        fun getInsertFirstMessageSql(chatId: UUID, senderId: UUID, receiverId: UUID): String {
             return "INSERT INTO '$chatId' " +
                     "(sender_id, receiver_id, timestamp, body) VALUES " +
-                    "('00000000-0000-0000-0000-000000000000', '$receiverId', ${System.currentTimeMillis()}, '매칭되었습니다.')"
+                    "('$senderId', '$receiverId', ${System.currentTimeMillis()}, '매칭되었습니다.')"
         }
     }
 

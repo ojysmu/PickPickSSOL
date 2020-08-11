@@ -21,7 +21,7 @@ class Connection(private val socket: Socket): CloseableThread(), IDContent {
         loop = {
             try {
                 val clientMessage = dataInputStream.readUTF()
-                println("message=$clientMessage")
+                println("loop(): message=$clientMessage")
 
                 val parsedMessage = JSONObject(clientMessage)
                 if (parsedMessage.getString("name") == Command.CLOSE.name) {
@@ -52,7 +52,7 @@ class Connection(private val socket: Socket): CloseableThread(), IDContent {
     fun getHostAddress() = socket.inetAddress.hostAddress
 
     private fun send(serverMessage: JSONObject) {
-        println("message=$serverMessage")
+        println("send(): message=$serverMessage")
 
         dataOutputStream.writeUTF(serverMessage.toString())
         dataOutputStream.flush()

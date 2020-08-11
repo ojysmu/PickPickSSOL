@@ -15,7 +15,7 @@ import java.util.*
 
 class SQLiteConnection private constructor(val userId: UUID): CloseableThread(), IDContent {
     companion object {
-        private const val SELECT_MESSAGE_LIMIT = 20
+        const val SELECT_MESSAGE_LIMIT = 20
 
         val dbHeader = "jdbc:sqlite:${LocalFile.userRoot}"
 

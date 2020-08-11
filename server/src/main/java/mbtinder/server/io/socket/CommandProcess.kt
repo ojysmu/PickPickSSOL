@@ -442,17 +442,24 @@ object CommandProcess {
     private fun getMessages(command: CommandContent): JSONObject {
         val userId = UUID.fromString(command.arguments.getString("user_id"))
         val chatId = UUID.fromString(command.arguments.getString("chat_id"))
-        val endIndex = command.arguments.getInt("end_index")
 
-        val sql = SQLiteConnection.getSelectMessageSql(chatId, endIndex)
-        val queryResult = SQLiteConnection.getConnection(userId).let { it.getResult(it.addQuery(sql)) }
-        val messageList: JSONList<MessageContent> = queryResult.content.mapTo(JSONList()) {
-            MessageUtil.buildMessage(it, chatId, userId)
+        val sqlConnection = SQLiteConnection.getConnection(userId)
+        // 채팅 전체 열 수를 가져옴
+        val rows = sqlConnection.getResult(sqlConnection.addQuery("SELECT count(_id) from '$chatId'")).content[0].getInt("count(_id)")
+        val sql = if (rows <= SQLiteConnection.SELECT_MESSAGE_LIMIT) {
+            // 전체가 20보다 작거나 같을 때 전부 읽음
+            "SELECT * FROM '$chatId'"
+        } else {
+            // 전체가 20보다 클 때 마지막부터 20개를 읽음
+            SQLiteConnection.getSelectMessageSql(chatId, rows)
         }
-        val arguments = JSONObject()
-        arguments.put("messages", messageList.toJSONArray())
+        val queryResult = sqlConnection.getResult(sqlConnection.addQuery(sql))
+        val result = queryResult.content
+            .map { MessageUtil.buildMessage(it, chatId, userId) }
+            .sorted()
+            .toJSONArray()
 
-        return Connection.makePositiveResponse(command.uuid, arguments)
+        return Connection.makePositiveResponse(command.uuid, JSONObject().apply { put("messages", result) })
     }
 
     private fun refreshMessages(command: CommandContent): JSONObject {

@@ -1,6 +1,6 @@
 package mbtinder.server.io.notification
 
-import mbtinder.lib.constant.Notification
+import mbtinder.lib.constant.NotificationForm
 import mbtinder.lib.util.CloseableThread
 import mbtinder.lib.util.IDList
 import mbtinder.lib.util.block
@@ -30,7 +30,7 @@ class NotificationServer private constructor(): CloseableThread() {
         }
     }
 
-    private val notifications = IDList<Notification>()
+    private val notifications = IDList<NotificationForm>()
 
     init {
         loop = {
@@ -59,12 +59,12 @@ class NotificationServer private constructor(): CloseableThread() {
         }
     }
 
-    fun addNotification(notification: Notification): Boolean {
+    fun addNotification(form: NotificationForm): Boolean {
         print("NotificationServer.addNotification(): " +
-                "receiver=${notification.receiverId}, " +
-                "title=${notification.title}, " +
-                "content=${notification.content}")
-        val result = sync(notifications) { notifications.add(notification) }
+                "receiver=${form.receiverId}, " +
+                "title=${form.title}, " +
+                "content=${form.content}")
+        val result = sync(notifications) { notifications.add(form) }
         println(", added")
         return result
     }

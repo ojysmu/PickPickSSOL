@@ -1,10 +1,7 @@
 package mbtinder.server.io.socket
 
 import mbtinder.lib.component.*
-import mbtinder.lib.constant.MBTI
-import mbtinder.lib.constant.Notification
-import mbtinder.lib.constant.ServerPath
-import mbtinder.lib.constant.ServerResponse
+import mbtinder.lib.constant.*
 import mbtinder.lib.io.component.CommandContent
 import mbtinder.lib.io.constant.Command
 import mbtinder.lib.util.*
@@ -395,16 +392,18 @@ object CommandProcess {
                 ") VALUES (" +
                 "'$chatId', '$senderId', '$receiverId')")
 
-        NotificationServer.getInstance().addNotification(Notification.MESSAGE_RECEIVED.apply {
-            this.receiverId = senderId
-            this.title = "매칭되었습니다."
-            this.content = "서로 PICK했어요! 메시지를 확인해보세요."
-        })
-        NotificationServer.getInstance().addNotification(Notification.MESSAGE_RECEIVED.apply {
-            this.receiverId = receiverId
-            this.title = "매칭되었습니다."
-            this.content = "내가 PICK한 사용자가 나를 PICK했어요! 메시지를 확인해보세요."
-        })
+        NotificationServer.getInstance().addNotification(NotificationForm(
+            notification = Notification.MESSAGE_RECEIVED,
+            receiverId = senderId,
+            title = "매칭되었습니다.",
+            content = "서로 PICK했어요! 메시지를 확인해보세요."
+        ))
+        NotificationServer.getInstance().addNotification(NotificationForm(
+            notification = Notification.MESSAGE_RECEIVED,
+            receiverId = receiverId,
+            title = "매칭되었습니다.",
+            content = "내가 PICK한 사용자가 나를 PICK했어요! 메시지를 확인해보세요."
+        ))
 
         return Connection.makePositiveResponse(command.uuid, JSONObject().apply { put("chat_id", chatId.toString()) })
     }

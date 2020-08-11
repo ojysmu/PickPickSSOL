@@ -1,14 +1,15 @@
 package mbtinder.server.io.socket
 
 import mbtinder.lib.component.IDContent
-import mbtinder.lib.constant.Notification
+import mbtinder.lib.constant.NotificationForm
 import mbtinder.lib.constant.ServerResponse
 import mbtinder.lib.io.component.CommandContent
 import mbtinder.lib.io.constant.Command
 import mbtinder.lib.util.CloseableThread
 import org.json.JSONObject
-import java.io.*
-import java.lang.Exception
+import java.io.DataInputStream
+import java.io.DataOutputStream
+import java.io.IOException
 import java.net.Socket
 import java.util.*
 
@@ -58,12 +59,12 @@ class Connection(private val socket: Socket): CloseableThread(), IDContent {
         dataOutputStream.flush()
     }
 
-    fun sendNotification(notification: Notification) {
+    fun sendNotification(form: NotificationForm) {
         val serverMessage = JSONObject()
         serverMessage.put("is_notification", true)
-        serverMessage.put("notification_id", notification.notificationId.toString())
-        serverMessage.put("title", notification.title)
-        serverMessage.put("content", notification.content)
+        serverMessage.put("notification_id", form.notification.notificationId.toString())
+        serverMessage.put("title", form.title)
+        serverMessage.put("content", form.content)
 
         send(serverMessage)
     }

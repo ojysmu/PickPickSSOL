@@ -10,6 +10,9 @@ import java.util.*
 
 class CardStackContent: JSONParsable, IDContent, ImageComponent, CloneableContent<CardStackContent>, Comparable<CardStackContent> {
     lateinit var userId: UUID
+    lateinit var userName: String
+    var age = -1
+    lateinit var description: String
     lateinit var mbti: MBTI
     lateinit var contents: JSONList<SignUpQuestionContent>
     var score: Int = -1
@@ -28,6 +31,9 @@ class CardStackContent: JSONParsable, IDContent, ImageComponent, CloneableConten
 
     constructor(userContent: UserContent, mbti: MBTI, contents: JSONList<SignUpQuestionContent>, score: Int = 0) {
         this.userId = userContent.userId
+        this.userName = userContent.name
+        this.age = userContent.age
+        this.description = userContent.description
         this.mbti = mbti
         this.contents = contents
         this.imageName = "profile.png"
@@ -37,8 +43,12 @@ class CardStackContent: JSONParsable, IDContent, ImageComponent, CloneableConten
         updateJSONObject()
     }
 
-    constructor(userId: UUID, mbti: MBTI, contents: JSONList<SignUpQuestionContent>, score: Int = 0) {
+    constructor(userId: UUID, userName: String, age: Int, description: String, mbti: MBTI,
+                contents: JSONList<SignUpQuestionContent>, score: Int = 0) {
         this.userId = userId
+        this.userName = userName
+        this.age = age
+        this.description = description
         this.mbti = mbti
         this.contents = contents
         this.imageName = "profile.png"
@@ -62,7 +72,7 @@ class CardStackContent: JSONParsable, IDContent, ImageComponent, CloneableConten
         this.image = image
     }
 
-    override fun getCloned() = CardStackContent(userId, mbti, contents, score)
+    override fun getCloned() = CardStackContent(userId, userName, age, description, mbti, contents, score)
 
     override fun compareTo(other: CardStackContent) = userId.compareTo(other.userId)
 }

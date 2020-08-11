@@ -13,11 +13,11 @@ object CardStackUtil {
     private var lastUpdate: Long = 0
 
     private fun updateCardStacks(): ImmutableList<CardStackContent> {
-        val userIds = UserUtil.getUserIds()
+        val userIds = UserUtil.getAllUsers()
         val updated = ImmutableList<CardStackContent>()
         userIds.forEach {
-            val mbti = MBTI.findByName(loadJSONObject(LocalFile.getUserMBTIPath(it)).getString("value"))
-            val signUpQuestions = SignUpQuestionUtil.parseFilled(loadJSONList(LocalFile.getUserSignUpQuestionPath(it))).toJSONList()
+            val mbti = MBTI.findByName(loadJSONObject(LocalFile.getUserMBTIPath(it.userId)).getString("value"))
+            val signUpQuestions = SignUpQuestionUtil.parseFilled(loadJSONList(LocalFile.getUserSignUpQuestionPath(it.userId))).toJSONList()
             updated.add(CardStackContent(it, mbti, signUpQuestions))
         }
 

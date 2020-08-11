@@ -42,11 +42,14 @@ class HttpConnection(private val rawUrl: String, private val requestMethod: Requ
         }
 
         val responseCode = connection.responseCode
-        val bufferedReader = BufferedReader(InputStreamReader(if (responseCode == 200) {
-            connection.inputStream
-        } else {
-            connection.errorStream
-        }, "UTF-8"))
+        val bufferedReader = BufferedReader(InputStreamReader(
+            if (responseCode == 200) {
+                connection.inputStream
+            } else {
+                connection.errorStream
+            },
+            "UTF-8"
+        ))
 
         val resultBuilder = StringBuilder()
         var line = bufferedReader.readLine()

@@ -1,6 +1,7 @@
 package mbtinder.lib.component
 
 import mbtinder.lib.component.json.JSONContent
+import mbtinder.lib.constant.ServerPath
 import org.json.JSONObject
 import java.util.*
 
@@ -10,6 +11,13 @@ class UserImageContent: JSONContent, IDContent, ImageComponent {
     private var image: ByteArray? = null
     private var imageName: String
     private var imageUrl: String
+
+    constructor(userId: UUID) {
+        this.userId = userId
+        this.imageId = userId
+        this.imageName = "profile.png"
+        this.imageUrl = ServerPath.getUserImageUrl(userId, imageName)
+    }
 
     constructor(userId: UUID, imageId: UUID, imageName: String, imageUrl: String) {
         this.userId = userId

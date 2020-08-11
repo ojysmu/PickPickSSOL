@@ -22,7 +22,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
-        <ImageView
+        <mbtinder.android.ui.view.AsyncImageView
             android:id="@+id/card_chat_list_image"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

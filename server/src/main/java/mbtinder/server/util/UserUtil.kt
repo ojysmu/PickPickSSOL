@@ -57,6 +57,8 @@ object UserUtil {
 
     fun getUserIds() = users.getCloned().map { it.getUUID() }
 
+    fun getAllUsers() = users.getCloned()
+
     fun getAllCardStacks() = users.getCloned().map { userContent: UserContent ->
         CardStackContent(
             userContent,

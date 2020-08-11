@@ -28,7 +28,7 @@ object CommandProcess {
             Command.GET_USER -> getUser(command)
             Command.UPDATE_USER -> updateUser(command)
             Command.DELETE_USER -> deleteUser(command)
-            Command.GET_USER_IMAGES -> getUserImages(command)
+            Command.GET_USER_IMAGES -> TODO() // getUserImages(command)
             Command.DELETE_USER_IMAGE -> deleteUserImage(command)
             Command.SIGN_IN -> signIn(command, connection)
             Command.FIND_PASSWORD -> findPassword(command)
@@ -170,23 +170,23 @@ object CommandProcess {
      * @param command: 인수는 다음이 포함되어야 함: 사용자 ID
      * @return 이미지 ID 목록. 이미지가 존재하지 않을 때 [ServerResponse.IMAGE_NOT_FOUND]
      */
-    private fun getUserImages(command: CommandContent): JSONObject {
-        val userId = UUID.fromString(command.arguments.getString("user_id"))
-
-        val images = File(LocalFile.getUserImagePath(userId)).list()?.map {
-            val splited = it.split(File.pathSeparator)
-            val imageName = splited[splited.size - 1]
-            val imageId = UUID.fromString(imageName.split(".")[0])
-
-            UserImageContent(userId, imageId, imageName, ServerPath.getUserImageUrl(userId, imageName))
-        }?.toJSONList()
-
-        return if (images != null && images.isNotEmpty()) {
-            Connection.makePositiveResponse(command.uuid, JSONObject().apply { put("images", images.toJSONArray()) })
-        } else {
-            Connection.makeNegativeResponse(command.uuid, ServerResponse.IMAGE_NOT_FOUND)
-        }
-    }
+//    private fun getUserImages(command: CommandContent): JSONObject {
+//        val userId = UUID.fromString(command.arguments.getString("user_id"))
+//
+//        val images = File(LocalFile.getUserImagePath(userId)).list()?.map {
+//            val splited = it.split(File.pathSeparator)
+//            val imageName = splited[splited.size - 1]
+//            val imageId = UUID.fromString(imageName.split(".")[0])
+//
+//            UserImageContent(userId, imageId, imageName, ServerPath.getUserImageUrl(userId, imageName))
+//        }?.toJSONList()
+//
+//        return if (images != null && images.isNotEmpty()) {
+//            Connection.makePositiveResponse(command.uuid, JSONObject().apply { put("images", images.toJSONArray()) })
+//        } else {
+//            Connection.makeNegativeResponse(command.uuid, ServerResponse.IMAGE_NOT_FOUND)
+//        }
+//    }
 
     /**
      * 사용자 프로필 이미지 삭제

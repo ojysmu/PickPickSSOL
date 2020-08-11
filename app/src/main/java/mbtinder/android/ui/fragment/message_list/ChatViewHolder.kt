@@ -4,7 +4,6 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import mbtinder.android.R
-import mbtinder.android.component.StaticComponent
 import mbtinder.android.ui.model.recycler_view.AdaptableViewHolder
 import mbtinder.lib.component.MessageContent
 
@@ -14,7 +13,7 @@ class ChatViewHolder(itemView: View) : AdaptableViewHolder<MessageContent>(itemV
     private val lastMessageTextView: TextView = itemView.findViewById(R.id.card_chat_list_last_message)
 
     override fun adapt(content: MessageContent) {
-        userNameTextView.text = content.getOpponentId(StaticComponent.user.userId).toString()
+        userNameTextView.text = content.opponentName
         lastMessageTextView.text = content.body
     }
 }

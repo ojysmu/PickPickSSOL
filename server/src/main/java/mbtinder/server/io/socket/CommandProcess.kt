@@ -446,7 +446,7 @@ object CommandProcess {
         val sql = SQLiteConnection.getSelectMessageSql(chatId, endIndex)
         val queryResult = SQLiteConnection.getConnection(userId).let { it.getResult(it.addQuery(sql)) }
         val messageList: JSONList<MessageContent> = queryResult.content.mapTo(JSONList()) {
-            MessageUtil.buildMessage(it, chatId)
+            MessageUtil.buildMessage(it, chatId, userId)
         }
         val arguments = JSONObject()
         arguments.put("messages", messageList.toJSONArray())
@@ -462,7 +462,7 @@ object CommandProcess {
         val lastMessages = JSONList<MessageContent>().also { list: JSONList<MessageContent> ->
             chatIds.forEach {
                 val sql = "SELECT * FROM '$it' where _id = (SELECT MAX(_id) FROM '$it')"
-                list.add(MessageUtil.buildMessage(connection.getResult(connection.addQuery(sql)).content[0], it))
+                list.add(MessageUtil.buildMessage(connection.getResult(connection.addQuery(sql)).content[0], it, userId))
             }
         }
 
@@ -471,17 +471,18 @@ object CommandProcess {
 
     private fun sendMessageToServer(command: CommandContent): JSONObject {
         val timestamp = System.currentTimeMillis()
-
         val chatId = UUID.fromString(command.arguments.getString("chat_id"))
         val senderId = UUID.fromString(command.arguments.getString("sender_id"))
         val receiverId = UUID.fromString(command.arguments.getString("receiver_id"))
+        val opponentName = command.arguments.getString("opponentName")
         val body = command.arguments.getString("body")
         val messageContent = MessageContent(
-            chatId,
-            senderId,
-            receiverId,
-            timestamp,
-            body
+            chatId = chatId,
+            senderId = senderId,
+            receiverId = receiverId,
+            opponentName = opponentName,
+            timestamp = timestamp,
+            body = body
         )
 
         val senderConnection = SQLiteConnection.getConnection(senderId)

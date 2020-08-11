@@ -8,15 +8,17 @@ class MessageContent: JSONParsable, Comparable<MessageContent>, IDContent {
     lateinit var chatId: UUID
     lateinit var senderId: UUID
     lateinit var receiverId: UUID
+    lateinit var opponentName: String
     var timestamp: Long = 0
     lateinit var body: String
 
     constructor(jsonObject: JSONObject): super(jsonObject)
 
-    constructor(chatId: UUID, senderId: UUID, receiverId: UUID, timestamp: Long, body: String) {
+    constructor(chatId: UUID, senderId: UUID, receiverId: UUID, opponentName: String, timestamp: Long, body: String) {
         this.chatId = chatId
         this.senderId = senderId
         this.receiverId = receiverId
+        this.opponentName = opponentName
         this.timestamp = timestamp
         this.body = body
 

@@ -16,7 +16,11 @@ class MessageAdapter(private val contents: ArrayList<MessageContent>) : Recycler
 
         val view = LayoutInflater.from(context).inflate(viewType, parent, false)
 
-        return MessageViewHolder(view)
+        return if (viewType == R.layout.card_chat_user) {
+            MessageUserViewHolder(view)
+        } else {
+            MessageOpponentViewHolder(view)
+        }
     }
 
     override fun getItemCount() = contents.size

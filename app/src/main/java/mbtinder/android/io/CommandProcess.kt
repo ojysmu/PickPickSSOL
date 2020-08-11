@@ -129,10 +129,13 @@ object CommandProcess {
         )
     }
 
-    fun getMessages(chatId: UUID): ServerResult<JSONList<MessageContent>> {
+    fun getMessages(userId: UUID, chatId: UUID): ServerResult<JSONList<MessageContent>> {
+        val arguments = JSONObject()
+        arguments.put("user_id", userId.toString())
+        arguments.put("chat_id", chatId.toString())
+
         return SocketUtil.getJSONListResult(
-            SocketUtil.getServerResult(Command.GET_MESSAGES, JSONObject().apply { put("chat_id", chatId.toString()) }),
-            "messages"
+            SocketUtil.getServerResult(Command.GET_MESSAGES, arguments), "messages"
         )
     }
 

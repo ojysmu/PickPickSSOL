@@ -3,6 +3,7 @@ package mbtinder.android.ui.fragment.message_list
 import android.view.View
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.fragment_message_list.*
 import mbtinder.android.R
 import mbtinder.android.component.StaticComponent
@@ -17,6 +18,8 @@ class MessageListFragment: Fragment(R.layout.fragment_message_list) {
     private lateinit var chatAdapter: ChatAdapter
 
     override fun initializeView() {
+        requireActivity().findViewById<BottomNavigationView>(R.id.nav_view).visibility = View.VISIBLE
+
         message_list_recycler_view.layoutManager = LinearLayoutManager(requireContext())
         message_list_recycler_view.itemAnimator = DefaultItemAnimator()
 

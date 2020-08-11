@@ -1,8 +1,10 @@
 package mbtinder.android.ui.fragment.chat
 
 import android.view.View
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.fragment_chat.*
 import mbtinder.android.R
 import mbtinder.android.component.StaticComponent
@@ -19,6 +21,8 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
     private lateinit var adapter: MessageAdapter
 
     override fun initializeView() {
+        requireActivity().findViewById<BottomNavigationView>(R.id.nav_view).visibility = View.GONE
+
         chat_send.isEnabled = false
 
         chat_recycler_view.layoutManager = LinearLayoutManager(requireContext())
@@ -37,15 +41,19 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
                 }
             }
         }
+
+        chat_back.setOnClickListener {
+            findNavController().popBackStack()
+        }
     }
 
     private fun updateMessages(): Boolean {
         if (messages.contains(chatId)) {
             val messages = messages[chatId]
             val refreshResult = CommandProcess.refreshMessage(
-                StaticComponent.user.userId,
-                chatId,
-                messages.last().timestamp
+                userId = StaticComponent.user.userId,
+                chatId = chatId,
+                lastTimestamp = messages.last().timestamp
             )
 
             if (refreshResult.isSucceed) {
@@ -54,9 +62,9 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
 
             return refreshResult.isSucceed
         } else {
-            val getResult = CommandProcess.getMessages(chatId)
+            val getResult = CommandProcess.getMessages(StaticComponent.user.userId, chatId)
             if (getResult.isSucceed) {
-                messages.add(getResult.result!!.toIDList())
+                messages.add(getResult.result!!.toIDList().apply { uuid = chatId })
             }
 
             return getResult.isSucceed

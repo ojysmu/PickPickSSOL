@@ -39,7 +39,10 @@ class NotificationServer private constructor(): CloseableThread() {
             waitForConnection()
 //            println("NotificationServer.loop(): Found")
             val notification = sync(notifications) { it.removeAt(0) }
-//            println("NotificationServer.loop(): receiver=${notification.receiverId}")
+            println("NotificationServer.loop(): " +
+                    "receiver=${notification.receiverId}, " +
+                    "title=${notification.title}, " +
+                    "content=${notification.content}")
             // 연결 수립 여부 확인
             if (SocketServer.getInstance().isAlive(notification.receiverId)) {
 //                println("NotificationServer.loop(): Alive")

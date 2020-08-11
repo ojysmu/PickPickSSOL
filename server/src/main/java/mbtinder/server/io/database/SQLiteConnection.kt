@@ -70,12 +70,14 @@ class SQLiteConnection private constructor(val userId: UUID): CloseableThread(),
                         resultSet.close()
                         results.add(queryResult)
                     } catch (e: SQLException) {
+                        System.err.println("Error occurred while running query: ${query.sql}")
                         e.printStackTrace()
                     }
                 } else {
                     try {
                         statement.executeUpdate(query.sql)
                     } catch (e: SQLException) {
+                        System.err.println("Error occurred while running query: ${query.sql}")
                         e.printStackTrace()
                     }
                 }

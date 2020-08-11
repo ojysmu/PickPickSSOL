@@ -47,6 +47,8 @@ class Connection(private val socket: Socket): CloseableThread(), IDContent {
         this.token = token
     }
 
+    fun getHostAddress() = socket.inetAddress.hostAddress
+
     private fun send(serverMessage: JSONObject) {
         println("message=$serverMessage")
 

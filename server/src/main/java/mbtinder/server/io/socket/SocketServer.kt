@@ -111,7 +111,14 @@ class SocketServer private constructor(private val port: Int): CloseableThread()
      *
      * @param connection: 삭제할 connection
      */
-    fun removeConnection(connection: Connection) = connections.remove(connection)
+    fun removeConnection(connection: Connection): Boolean {
+        val result = connections.remove(connection)
+        println("SocketServer.removeConnection(): " +
+                "token=${connection.getUUID()}, " +
+                "address=${connection.getHostAddress()}, " +
+                "left=${connections.size}")
+        return result
+    }
 
     /**
      * Connection token에 해당하는 저장된 Connection 삭제

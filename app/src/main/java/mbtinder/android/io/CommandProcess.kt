@@ -129,6 +129,25 @@ object CommandProcess {
         )
     }
 
+    fun getMessages(chatId: UUID): ServerResult<JSONList<MessageContent>> {
+        return SocketUtil.getJSONListResult(
+            SocketUtil.getServerResult(Command.GET_MESSAGES, JSONObject().apply { put("chat_id", chatId.toString()) }),
+            "messages"
+        )
+    }
+
+    fun refreshMessage(userId: UUID, chatId: UUID, lastTimestamp: Long): ServerResult<JSONList<MessageContent>> {
+        val arguments = JSONObject()
+        arguments.put("user_id", userId.toString())
+        arguments.put("chat_id", chatId.toString())
+        arguments.put("last_timestamp", lastTimestamp)
+
+        return SocketUtil.getJSONListResult(
+            SocketUtil.getServerResult(Command.REFRESH_MESSAGES, arguments),
+            "messages"
+        )
+    }
+
     fun getLastMessages(userId: UUID): ServerResult<JSONList<MessageContent>> {
         return SocketUtil.getJSONListResult(
             SocketUtil.getServerResult(Command.GET_LAST_MESSAGES, JSONObject().apply { put("user_id", userId.toString()) }),

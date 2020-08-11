@@ -55,3 +55,7 @@ inline fun <reified T: JSONContent> JSONArray.toJSONList() = JSONList(this, T::c
 
 inline fun <reified T: JSONParsable> JSONList<T>.add(element: JSONObject) =
     add(T::class.java.getDeclaredConstructor(JSONObject::class.java).newInstance(element))
+
+fun <T: JSONContent> List<T>.toJSONArray() = JSONArray().also {
+    forEach { element -> it.put(element.toJSONObject()) }
+}

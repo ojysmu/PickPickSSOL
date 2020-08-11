@@ -29,6 +29,7 @@ enum class Command {
     CREATE_CHAT,            // 채팅방 생성 요청
     DELETE_CHAT,            // 채팅방 삭제
     GET_MESSAGES,           // 채팅방 메시지 목록(MessageFragment) 요청
+    REFRESH_MESSAGES,       // 채팅방 메시지 캐시 갱신
     GET_LAST_MESSAGES,      // 채팅방 목록(MessageListFragment) 메시지 목록 요청
     SEND_MESSAGE_TO_SERVER;
 

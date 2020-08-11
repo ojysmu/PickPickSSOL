@@ -42,6 +42,7 @@ object CommandProcess {
             Command.CREATE_CHAT -> createChat(command)
             Command.DELETE_CHAT -> deleteChat(command)
             Command.GET_MESSAGES -> getMessages(command)
+            Command.REFRESH_MESSAGES -> refreshMessages(command)
             Command.GET_LAST_MESSAGES -> getLastMessages(command)
             Command.SEND_MESSAGE_TO_SERVER -> sendMessageToServer(command)
         }
@@ -439,8 +440,8 @@ object CommandProcess {
     }
 
     private fun getMessages(command: CommandContent): JSONObject {
-        val chatId = UUID.fromString(command.arguments.getString("chat_id"))
         val userId = UUID.fromString(command.arguments.getString("user_id"))
+        val chatId = UUID.fromString(command.arguments.getString("chat_id"))
         val endIndex = command.arguments.getInt("end_index")
 
         val sql = SQLiteConnection.getSelectMessageSql(chatId, endIndex)
@@ -452,6 +453,22 @@ object CommandProcess {
         arguments.put("messages", messageList.toJSONArray())
 
         return Connection.makePositiveResponse(command.uuid, arguments)
+    }
+
+    private fun refreshMessages(command: CommandContent): JSONObject {
+        val userId = UUID.fromString(command.arguments.getString("user_id"))
+        val chatId = UUID.fromString(command.arguments.getString("chat_id"))
+        val lastTimestamp = command.arguments.getLong("last_timestamp")
+
+        val sqlConnection = SQLiteConnection.getConnection(userId)
+        val sql = "SELECT * from '$chatId' where timestamp > $lastTimestamp"
+        val queryResult = sqlConnection.getResult(sqlConnection.addQuery(sql))
+        val result = queryResult.content
+            .map { MessageUtil.buildMessage(it, chatId, userId) }
+            .sortedBy { it.timestamp }
+            .toJSONArray()
+
+        return Connection.makePositiveResponse(command.uuid, JSONObject().apply { put("messages", result) })
     }
 
     private fun getLastMessages(command: CommandContent): JSONObject {

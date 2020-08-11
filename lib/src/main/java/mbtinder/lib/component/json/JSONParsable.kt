@@ -38,12 +38,10 @@ abstract class JSONParsable: JSONContent {
         for (field in fields) {
             // 필드 접근 활성화
             field.isAccessible = true
-
             // SkipParsing annotation 있을 떄 파싱하지 않음
             if (containsSkipParsing(field)) {
                 continue
             }
-
             // 변수 이름을 언더스코어 형식으로 변환
             val formatted = toUnderscore(field.name)
             for (key in keys) {
@@ -52,6 +50,7 @@ abstract class JSONParsable: JSONContent {
                         continue
                     }
 
+                    println("key=$key is primitive: ${field.type.isPrimitive}")
                     if (field.type.isPrimitive) {
                         // Int, Long 등의 Primitive 타입은 선처리 후 continue
                         field.set(this, jsonObject.get(key))

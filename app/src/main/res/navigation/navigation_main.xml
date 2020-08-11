@@ -136,6 +136,16 @@
         android:name="mbtinder.android.ui.fragment.message_list.MessageListFragment"
         android:label="@string/message_list_title"
         tools:layout="@layout/fragment_splash">
+
+        <action
+            android:id="@+id/action_to_chat"
+            app:destination="@id/nav_chat" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_chat"
+        android:name="mbtinder.android.ui.fragment.chat.ChatFragment"
+        tools:layout="@layout/fragment_chat">
     </fragment>
 
     <fragment

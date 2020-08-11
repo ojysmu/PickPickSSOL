@@ -4,7 +4,9 @@ import mbtinder.lib.component.IDContent
 import java.util.*
 import kotlin.collections.ArrayList
 
-class IDList<E: IDContent>: ArrayList<E> {
+class IDList<E: IDContent>: ArrayList<E>, IDContent {
+    var uuid: UUID = UUID.randomUUID()
+
     constructor(): super()
 
     constructor(collection: Collection<E>): super(collection)
@@ -24,6 +26,8 @@ class IDList<E: IDContent>: ArrayList<E> {
     fun remove(uuid: UUID) = sync(this) { super.removeAt(indexOf(uuid)) }
 
     fun getIds() = map { it.getUUID() }
+
+    override fun getUUID(): UUID = uuid
 }
 
 fun <E: IDContent> Collection<E>.toIDList() = IDList(this)

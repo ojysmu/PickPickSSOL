@@ -53,12 +53,12 @@ class CardStackViewHolder(private val view: View): AdaptableViewHolder<CardStack
         cardPick.visibility = View.VISIBLE
         cardNope.visibility = View.VISIBLE
 
-        val cardStackItemContents = content.contents.mapTo(ArrayList()) {
-            Log.v("adaptContent(): user_id=${content.userId}, contents=${content.contents}")
-            it.selectable.getString(it.selected)
+        val cardStackItemContents = content.contents.mapTo(ArrayList()) { it.selectable.getString(it.selected) }
+        if (content.description.isNotBlank()) {
+            cardStackItemContents.add(content.description)
         }
-        cardStackItemContents.add(content.description)
-        cardStackItemContents.add(content.userName + " " + content.age)
+        Log.v("age=${content.jsonObject.getInt("age")}")
+        cardStackItemContents.add(content.userName + ", " + content.jsonObject.getInt("age"))
         imageView.setImage(content)
         recyclerView.itemAnimator = DefaultItemAnimator()
         recyclerView.layoutManager = LinearLayoutManager(itemView.context)

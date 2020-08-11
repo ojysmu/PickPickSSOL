@@ -18,7 +18,8 @@
         android:layout_height="wrap_content"
         android:layout_marginVertical="@dimen/card_vertical_margin"
         android:layout_marginHorizontal="@dimen/card_horizontal_margin"
-        android:textSize="@dimen/text_main_name"
+        android:textSize="@dimen/text_large4"
         android:textColor="@android:color/white"
-        android:textStyle="bold" />
+        android:fontFamily="@font/noto_sans_cjk_kr_bold"
+        android:includeFontPadding="false"/>
 </com.google.android.material.card.MaterialCardView>

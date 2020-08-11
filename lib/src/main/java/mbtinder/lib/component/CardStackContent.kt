@@ -11,7 +11,7 @@ import java.util.*
 class CardStackContent: JSONParsable, IDContent, ImageComponent, CloneableContent<CardStackContent>, Comparable<CardStackContent> {
     lateinit var userId: UUID
     lateinit var userName: String
-    var age = -1
+    var age: Int = -1
     lateinit var description: String
     lateinit var mbti: MBTI
     lateinit var contents: JSONList<SignUpQuestionContent>
@@ -25,11 +25,13 @@ class CardStackContent: JSONParsable, IDContent, ImageComponent, CloneableConten
     private var imageUrl: String
 
     constructor(jsonObject: JSONObject): super(jsonObject) {
+        println("CardStackContent(): $jsonObject")
         this.imageName = "profile.png"
         this.imageUrl = ServerPath.getUserImageUrl(userId, imageName)
     }
 
     constructor(userContent: UserContent, mbti: MBTI, contents: JSONList<SignUpQuestionContent>, score: Int = 0) {
+        println("CardStackContent(): 1")
         this.userId = userContent.userId
         this.userName = userContent.name
         this.age = userContent.age
@@ -45,6 +47,7 @@ class CardStackContent: JSONParsable, IDContent, ImageComponent, CloneableConten
 
     constructor(userId: UUID, userName: String, age: Int, description: String, mbti: MBTI,
                 contents: JSONList<SignUpQuestionContent>, score: Int = 0) {
+        println("CardStackContent(): 2")
         this.userId = userId
         this.userName = userName
         this.age = age

@@ -14,7 +14,6 @@ class ThreadService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         return if (flag) {
             flag = false
-            Log.v("ThreadService.onStartCommand()")
             ThreadUtil.runOnBackground {
                 Thread.sleep(1000)
 
@@ -35,9 +34,7 @@ class ThreadService : Service() {
         }
         flag = true
 
-        Log.v("ThreadService.onTaskRemoved()")
         Thread.sleep(1000)
-
         if (!SocketClient.isAlive()) {
             Log.v("Socket Dead")
             SocketClient.createInstance(ServerPath.ADDRESS, ServerPath.PORT_SOCKET, this)

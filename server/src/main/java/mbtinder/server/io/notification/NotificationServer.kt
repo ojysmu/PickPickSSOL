@@ -55,7 +55,10 @@ class NotificationServer private constructor(): CloseableThread() {
     }
 
     fun addNotification(notification: Notification): Boolean {
-        println("NotificationServer.addNotification(): receiver=${notification.receiverId}")
+        println("NotificationServer.addNotification(): " +
+                "receiver=${notification.receiverId}, " +
+                "title=${notification.title}, " +
+                "content=${notification.content}")
         return notifications.add(notification)
     }
 

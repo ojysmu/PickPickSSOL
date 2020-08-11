@@ -22,6 +22,8 @@ class IDList<E: IDContent>: ArrayList<E> {
     override fun remove(element: E): Boolean = sync(this) { super.remove(element) }
 
     fun remove(uuid: UUID) = sync(this) { super.removeAt(indexOf(uuid)) }
+
+    fun getIds() = map { it.getUUID() }
 }
 
 fun <E: IDContent> Collection<E>.toIDList() = IDList(this)

@@ -136,8 +136,8 @@ class SocketServer private constructor(private val port: Int): CloseableThread()
     fun getConnectionCount() = connections.size
 
     fun containsConnections(tokens: List<UUID>): Int {
+        println(tokens)
         for ((index, token) in tokens.withIndex()) {
-            println("SocketServer.containsConnections(): token=$token, connections=$connections")
             if (connections.contains(token)) {
                 println("SocketServer.containsConnections(): token=$token")
                 return index

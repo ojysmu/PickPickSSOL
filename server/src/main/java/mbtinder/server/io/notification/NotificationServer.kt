@@ -76,7 +76,7 @@ class NotificationServer private constructor(): CloseableThread() {
                 .also { if (it) println("Blocked by 1") }
                     || (SocketServer.getInstance().getConnectionCount() == 0)
                 .also { if (it) println("Blocked by 2") }
-                    || (SocketServer.getInstance().containsConnections(notifications.getIds()).also { index = it } == -1)
+                    || (SocketServer.getInstance().containsConnections(notifications.map { it.receiverId }).also { index = it } == -1)
                 .also { if (it) println("Blocked by 3") }
         }
 

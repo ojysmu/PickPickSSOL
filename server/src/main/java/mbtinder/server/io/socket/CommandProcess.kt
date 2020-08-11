@@ -461,7 +461,7 @@ object CommandProcess {
         val chatIds = connection.getResult(connection.addQuery("SELECT chat_id from chat")).content.map { it.getUUID("chat_id") }
         val lastMessages = JSONList<MessageContent>().also { list: JSONList<MessageContent> ->
             chatIds.forEach {
-                val sql = "SELECT * FROM '$it' where _id = (SELECT MAX(_id) FROM '$it'"
+                val sql = "SELECT * FROM '$it' where _id = (SELECT MAX(_id) FROM '$it')"
                 list.add(MessageUtil.buildMessage(connection.getResult(connection.addQuery(sql)).content[0], it))
             }
         }

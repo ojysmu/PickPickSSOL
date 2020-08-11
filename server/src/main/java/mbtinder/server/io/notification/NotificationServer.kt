@@ -35,20 +35,20 @@ class NotificationServer private constructor(): CloseableThread() {
     init {
         loop = {
             // 전송할 알림이 비었거나, 연결이 없거나, 전송가능한 연결이 없을 때 대기
-            println("NotificationServer.loop(): Waiting...")
+//            println("NotificationServer.loop(): Waiting...")
             waitForConnection()
-            println("NotificationServer.loop(): Found")
+//            println("NotificationServer.loop(): Found")
             val notification = sync(notifications) { it.removeAt(0) }
-            println("NotificationServer.loop(): receiver=${notification.receiverId}")
+//            println("NotificationServer.loop(): receiver=${notification.receiverId}")
             // 연결 수립 여부 확인
             if (SocketServer.getInstance().isAlive(notification.receiverId)) {
-                println("NotificationServer.loop(): Alive")
+//                println("NotificationServer.loop(): Alive")
                 // 연결되어 있다면 전송
                 SocketServer.getInstance().getConnection(notification.receiverId).sendNotification(notification)
-                println("NotificationServer.loop(): Sent")
+//                println("NotificationServer.loop(): Sent")
             } else {
                 // 연결되어있지 않다면 맨 뒤로 보냄
-                println("NotificationServer.loop(): Disconnected")
+//                println("NotificationServer.loop(): Disconnected")
                 notifications.add(notification)
             }
         }
@@ -61,9 +61,9 @@ class NotificationServer private constructor(): CloseableThread() {
 
     private fun waitForConnection() {
         block(notifications, intervalInMillis) {
-            notifications.isEmpty() ||
-                    SocketServer.getInstance().getConnectionCount() == 0 ||
-                    SocketServer.getInstance().containsConnections(notifications.map { it.receiverId })
+            notifications.isEmpty()
+                    || SocketServer.getInstance().getConnectionCount() == 0
+                    || SocketServer.getInstance().containsConnections(notifications.map { it.receiverId })
         }
     }
 }

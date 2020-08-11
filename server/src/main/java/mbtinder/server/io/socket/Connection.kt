@@ -32,13 +32,15 @@ class Connection(private val socket: Socket): CloseableThread(), IDContent {
                     send(serverMessage)
                 }
             } catch (e: IOException) {
+                print("Exception From 35: ")
                 e.printStackTrace()
                 try {
                     close()
                 } catch (e: Exception) {
+                    print("Exception from 40: ")
                     e.printStackTrace()
+                    SocketServer.getInstance().removeConnection(this)
                 }
-                SocketServer.getInstance().removeConnection(this)
             }
         }
     }

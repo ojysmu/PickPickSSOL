@@ -60,11 +60,13 @@ class NotificationServer private constructor(): CloseableThread() {
     }
 
     fun addNotification(notification: Notification): Boolean {
-        println("NotificationServer.addNotification(): " +
+        print("NotificationServer.addNotification(): " +
                 "receiver=${notification.receiverId}, " +
                 "title=${notification.title}, " +
                 "content=${notification.content}")
-        return sync(notifications) { notifications.add(notification) }
+        val result = sync(notifications) { notifications.add(notification) }
+        println(", added")
+        return result
     }
 
     private fun waitForConnection(): Int {

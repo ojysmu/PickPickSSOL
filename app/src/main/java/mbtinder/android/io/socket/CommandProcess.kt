@@ -50,9 +50,11 @@ object CommandProcess {
     }
 
     fun updateSearchFilter(searchFilter: SearchFilter) {
-        SocketClient.getInstance().addCommand(
-            CommandContent(UUID.randomUUID(), Command.UPDATE_SEARCH_FILTER.name, searchFilter.toJSONObject())
-        )
+        SocketClient.getInstance().addCommand(CommandContent(
+            UUID.randomUUID(),
+            Command.UPDATE_SEARCH_FILTER.name,
+            JSONObject().apply { put("search_filter", searchFilter.toJSONObject()) }
+        ))
     }
 
     fun updateUserNotification(userId: UUID, isEnabled: Boolean): ServerResult<Void> {

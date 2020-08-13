@@ -174,7 +174,7 @@ object CommandProcess {
 
     private fun updateSearchFilter(command: CommandContent): JSONObject {
         val searchFilter = SearchFilter(command.arguments.getJSONObject("search_filter"))
-        val sql = "UPDATE mbtiner.user SET search_filter='${searchFilter.getSqlBody()}' WHERE user_id='${searchFilter.userId}'"
+        val sql = "UPDATE mbtinder.user SET search_filter='${searchFilter.getSqlBody()}' WHERE user_id='${searchFilter.userId}'"
         MySQLServer.getInstance().addQuery(sql)
 
         return JSONObject()

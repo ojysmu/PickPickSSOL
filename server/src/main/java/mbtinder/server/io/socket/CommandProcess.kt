@@ -273,7 +273,7 @@ object CommandProcess {
         val userId = command.arguments.getString("user_id")
         val coordinator = Coordinator(command.arguments.getJSONObject("coordinator"))
         val sql = "UPDATE mbtinder.user " +
-                "SET longitude=${coordinator.longitude}, latitude=${coordinator.latitude} " +
+                "SET last_location_lng=${coordinator.longitude}, last_location_lat=${coordinator.latitude} " +
                 "WHERE user_id='$userId'"
         MySQLServer.getInstance().addQuery(sql)
 

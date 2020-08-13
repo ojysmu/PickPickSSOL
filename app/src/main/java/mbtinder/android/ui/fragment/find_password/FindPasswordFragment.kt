@@ -12,6 +12,7 @@ import mbtinder.android.R
 import mbtinder.android.io.socket.CommandProcess
 import mbtinder.android.ui.model.ProgressFragment
 import mbtinder.android.util.ViewUtil
+import mbtinder.android.util.getText
 import mbtinder.android.util.runOnBackground
 import mbtinder.android.util.runOnUiThread
 import mbtinder.lib.constant.PasswordQuestion
@@ -29,9 +30,9 @@ class FindPasswordFragment : ProgressFragment(R.layout.fragment_find_password) {
 
         switchable_next.setOnClickListener {
             switchWaitingStatus()
-            val email = ViewUtil.getText(find_password_email)
+            val email = find_password_email.getText()
             val questionId = PasswordQuestion.findQuestion(questionSelector.selectedItem as String)!!.questionId
-            val answer = ViewUtil.getText(find_password_answer)
+            val answer = find_password_answer.getText()
 
             runOnBackground {
                 val findResult = CommandProcess.findPassword(email, questionId, answer)
@@ -62,7 +63,7 @@ class FindPasswordFragment : ProgressFragment(R.layout.fragment_find_password) {
     }
 
     private fun onLeaveEmail() {
-        val email = ViewUtil.getText(find_password_email)
+        val email = find_password_email.getText()
 
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             onEmailIssued()

@@ -67,6 +67,12 @@ object CommandProcess {
         )
     }
 
+    fun deleteUser(userId: UUID): ServerResult<Void> {
+        return SocketUtil.getVoidResult(
+            SocketUtil.getServerResult(Command.DELETE_USER, JSONObject().apply { put("user_id", userId) })
+        )
+    }
+
     fun signIn(email: String, password: String): ServerResult<UserContent> {
         val arguments = JSONObject()
         arguments.put("email", email)

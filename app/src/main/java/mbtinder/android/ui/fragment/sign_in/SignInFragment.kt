@@ -9,6 +9,7 @@ import mbtinder.android.R
 import mbtinder.android.component.StaticComponent
 import mbtinder.android.ui.model.Fragment
 import mbtinder.android.util.ViewUtil
+import mbtinder.android.util.getText
 
 class SignInFragment : Fragment(R.layout.fragment_sign_in) {
     private val formStatus = arrayOf(false, false)
@@ -23,8 +24,8 @@ class SignInFragment : Fragment(R.layout.fragment_sign_in) {
 
         switchable_next.setOnClickListener {
             ViewUtil.switchNextButton(layout_sign_in)
-            val email = ViewUtil.getText(sign_in_email)
-            val password = ViewUtil.getText(sign_in_password)
+            val email = sign_in_email.getText()
+            val password = sign_in_password.getText()
 
             StaticComponent.signIn(this, email, password) {
                 Toast.makeText(requireContext(), R.string.sign_in_failed, Toast.LENGTH_SHORT).show()
@@ -51,7 +52,7 @@ class SignInFragment : Fragment(R.layout.fragment_sign_in) {
     }
 
     private fun onLeaveEmail() {
-        if (!Patterns.EMAIL_ADDRESS.matcher(ViewUtil.getText(sign_in_email)).matches()) {
+        if (!Patterns.EMAIL_ADDRESS.matcher(sign_in_email.getText()).matches()) {
             onEmailIssued()
         }
     }
@@ -76,7 +77,7 @@ class SignInFragment : Fragment(R.layout.fragment_sign_in) {
     }
 
     private fun onLeavePassword() {
-        if (ViewUtil.getText(sign_in_password).length !in 8..16) {
+        if (sign_in_password.getText().length !in 8..16) {
             onPasswordIssued()
         }
     }

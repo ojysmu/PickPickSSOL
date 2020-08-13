@@ -7,6 +7,7 @@ import mbtinder.android.R
 import mbtinder.android.ui.model.Fragment
 import mbtinder.android.util.FormStateChecker
 import mbtinder.android.util.ViewUtil
+import mbtinder.android.util.getText
 
 class SignUp3Fragment : Fragment(R.layout.fragment_sign_up3) {
     private val formStateChecker = FormStateChecker()
@@ -33,9 +34,9 @@ class SignUp3Fragment : Fragment(R.layout.fragment_sign_up3) {
 
         sign_up3_next.setOnClickListener {
             val arguments = requireArguments()
-            arguments.putString("name", ViewUtil.getText(sign_up3_name))
+            arguments.putString("name", sign_up3_name.getText())
             arguments.putInt("gender", gender)
-            arguments.putInt("age", ViewUtil.getText(sign_up3_age).toInt())
+            arguments.putInt("age", sign_up3_age.getText().toInt())
 
             findNavController().navigate(R.id.action_to_sign_up4, arguments)
         }

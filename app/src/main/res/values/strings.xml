@@ -140,8 +140,15 @@
     <string name="account_gender_female">여성</string>
     <string name="account_gender_all">모두</string>
     <string name="account_age_title">선호 나이</string>
+    <string name="account_age_indicator">%d세 ~ %d세</string>
     <string name="account_distance_title">거리 설정</string>
+    <string name="account_distance_indicator">최대 %dkm</string>
     <string name="account_notification_title">알림 허용</string>
     <string name="account_delete_user">회원탈퇴</string>
+    <string name="account_delete_user_alert">정말 탈퇴하시겠어요?</string>
+    <string name="account_delete_succeed">$4d년 %2d월 %2d일 %s 회원을 탈퇴처리하였습니다.</string>
+    <string name="account_delete_failed">회원 탈퇴를 실패했습니다. 잠시 후 다시 시도해주세요.</string>
     <string name="account_sign_out">로그아웃</string>
+    <string name="account_sign_out_alert">로그아웃하시겠어요?</string>
+    <string name="account_sign_out_succeed">로그아웃되었습니다.</string>
 </resources>

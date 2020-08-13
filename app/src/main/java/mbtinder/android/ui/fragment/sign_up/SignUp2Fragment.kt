@@ -10,6 +10,7 @@ import mbtinder.android.R
 import mbtinder.android.ui.model.Fragment
 import mbtinder.android.util.FormStateChecker
 import mbtinder.android.util.ViewUtil
+import mbtinder.android.util.getText
 import mbtinder.lib.constant.PasswordQuestion
 
 class SignUp2Fragment : Fragment(R.layout.fragment_sign_up2) {
@@ -32,7 +33,7 @@ class SignUp2Fragment : Fragment(R.layout.fragment_sign_up2) {
             arguments.putString("email", requireArguments().getString("email")!!)
             arguments.putString("password", requireArguments().getString("password")!!)
             arguments.putInt("password_question_id", questionSelector.selectedItemPosition)
-            arguments.putString("password_answer", ViewUtil.getText(sign_up2_password_answer))
+            arguments.putString("password_answer", sign_up2_password_answer.getText())
 
             findNavController().navigate(R.id.action_to_sign_up3, arguments)
         }

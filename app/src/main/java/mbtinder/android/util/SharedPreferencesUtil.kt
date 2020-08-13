@@ -3,7 +3,6 @@ package mbtinder.android.util
 import android.content.Context
 
 object SharedPreferencesUtil {
-    const val PREF_DEFAULT = "default"
     const val PREF_ACCOUNT = "account"
 
     fun getContext(context: Context, prefName: String) = PreferencesContext(context, prefName)

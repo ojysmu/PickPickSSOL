@@ -162,6 +162,17 @@
                 app:layout_constraintTop_toBottomOf="@id/account_gender_selector"
                 app:layout_constraintStart_toStartOf="parent" />
 
+            <TextView
+                android:id="@+id/account_age_indicator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/activity_horizontal_margin"
+                android:textColor="@android:color/black"
+                android:fontFamily="@font/noto_sans_cjk_kr_regular"
+                android:includeFontPadding="false"
+                app:layout_constraintBaseline_toBaselineOf="@id/account_age_title"
+                app:layout_constraintEnd_toEndOf="parent" />
+
             <com.google.android.material.slider.RangeSlider
                 android:id="@+id/account_age_selector"
                 android:layout_width="match_parent"
@@ -180,6 +191,18 @@
                 android:text="@string/account_distance_title"
                 app:layout_constraintTop_toBottomOf="@id/account_age_selector"
                 app:layout_constraintStart_toStartOf="parent" />
+
+            <TextView
+                android:id="@+id/account_distance_indicator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/activity_horizontal_margin"
+                android:text="@string/account_distance_indicator"
+                android:textColor="@android:color/black"
+                android:fontFamily="@font/noto_sans_cjk_kr_regular"
+                android:includeFontPadding="false"
+                app:layout_constraintBaseline_toBaselineOf="@id/account_distance_title"
+                app:layout_constraintEnd_toEndOf="parent" />
 
             <com.google.android.material.slider.Slider
                 android:id="@+id/account_distance_selector"
@@ -211,6 +234,7 @@
 
             <Button
                 style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:id="@+id/account_delete_user"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/fragment_title_vertical_margin"
@@ -224,6 +248,7 @@
 
             <Button
                 style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:id="@+id/account_sign_out"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/fragment_title_vertical_margin"

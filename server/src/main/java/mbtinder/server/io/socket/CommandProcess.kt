@@ -196,8 +196,31 @@ object CommandProcess {
     private fun deleteUser(command: CommandContent): JSONObject {
         val userId = UUID.fromString(command.arguments.getString("user_id"))
 
-        val sql = "DELETE FROM mbtinder.user WHERE user_id='$userId'"
-        MySQLServer.getInstance().addQuery(sql)
+        // MySQL에서 삭제
+        MySQLServer.getInstance().addQuery("DELETE FROM mbtinder.user WHERE user_id='$userId'")
+
+        val sqLiteConnection = SQLiteConnection.getConnection(userId)
+        // 채팅 목록 불러오기
+        val chatIdsSql = "SELECT * FROM chat"
+        sqLiteConnection.getResult(sqLiteConnection.addQuery(chatIdsSql)).content
+            .map { Pair(it.getUUID("chat_id"), it.getUUID("receiver_id")) }
+            .forEach {
+                // 채팅 상대방 SQLiteConnection 탐색
+                val opponentConnection = SQLiteConnection.getConnection(it.second)
+                // 차단 목록에서 삭제
+                opponentConnection.addQuery("DELETE FROM block where opponent_id='$userId'")
+                // pick 목록에서 삭제
+                opponentConnection.addQuery("DELETE FROM pick where opponent_id='$userId'")
+                // picked 목록에서 삭제
+                opponentConnection.addQuery("DELETE FROM picked where opponent_id='$userId'")
+                // 채팅목록에서 삭제
+                opponentConnection.addQuery("DELETE FROM chat where chat_id='${it.first}'")
+                // 채팅 테이블 삭제
+                opponentConnection.addQuery("DROP TABLE '${it.first}'")
+            }
+        sqLiteConnection.close()
+        // 사용자 모든 파일 삭제
+        File("${LocalFile.userRoot}/$userId").delete()
 
         return Connection.makePositiveResponse(command.uuid)
     }

@@ -2,37 +2,26 @@ package mbtinder.android.util
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.provider.MediaStore
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.EditText
 import android.widget.ProgressBar
-import androidx.annotation.ColorRes
 import androidx.core.view.children
+import com.google.android.material.slider.RangeSlider
 import com.google.android.material.textfield.TextInputLayout
 import mbtinder.android.R
 import mbtinder.android.ui.model.Fragment
 
 object ViewUtil {
-    fun getText(editText: EditText) = editText.text.toString()
-
-    fun getText(textInputLayout: TextInputLayout) = getText(textInputLayout.editText!!)
-
-    fun isBlank(textInputLayout: TextInputLayout) = getText(textInputLayout).isBlank()
-
-    fun hasSameText(textInputLayout1: TextInputLayout, textInputLayout2: TextInputLayout) =
-        getText(textInputLayout1) == getText(textInputLayout2)
-
-    fun enableRecursively(viewGroup: ViewGroup): Unit = viewGroup.children.forEach {
+    private fun enableRecursively(viewGroup: ViewGroup): Unit = viewGroup.children.forEach {
         it.isEnabled = true
         if (it is ViewGroup) {
             enableRecursively(it)
         }
     }
 
-    fun disableRecursively(viewGroup: ViewGroup): Unit = viewGroup.children.forEach {
+    private fun disableRecursively(viewGroup: ViewGroup): Unit = viewGroup.children.forEach {
         it.isEnabled = false
         if (it is ViewGroup) {
             disableRecursively(it)
@@ -78,3 +67,11 @@ object ViewUtil {
 
     fun dp2px(context: Context, dp: Int) = (dp * context.resources.displayMetrics.density + 0.5f)
 }
+
+fun RangeSlider.getStart() = values[0].toInt()
+
+fun RangeSlider.getEnd() = values[1].toInt()
+
+fun TextInputLayout.getText() = editText!!.text.toString()
+
+fun TextInputLayout.isSame(textInputLayout: TextInputLayout) = getText() == textInputLayout.getText()

@@ -8,10 +8,7 @@ import kotlinx.android.synthetic.main.fragment_sign_up1.*
 import mbtinder.android.R
 import mbtinder.android.io.socket.CommandProcess
 import mbtinder.android.ui.model.Fragment
-import mbtinder.android.util.FormStateChecker
-import mbtinder.android.util.ViewUtil
-import mbtinder.android.util.runOnBackground
-import mbtinder.android.util.runOnUiThread
+import mbtinder.android.util.*
 
 class SignUp1Fragment : Fragment(R.layout.fragment_sign_up1) {
     private val formStateChecker = FormStateChecker()
@@ -25,8 +22,8 @@ class SignUp1Fragment : Fragment(R.layout.fragment_sign_up1) {
 
         sign_up1_next.setOnClickListener {
             val arguments = Bundle()
-            arguments.putString("email", ViewUtil.getText(sign_up1_email))
-            arguments.putString("password", ViewUtil.getText(sign_up1_password))
+            arguments.putString("email", sign_up1_email.getText())
+            arguments.putString("password", sign_up1_password.getText())
 
             findNavController().navigate(R.id.action_to_sign_up2, arguments)
         }
@@ -49,7 +46,7 @@ class SignUp1Fragment : Fragment(R.layout.fragment_sign_up1) {
     }
 
     private fun onLeaveEmail() {
-        val email = ViewUtil.getText(sign_up1_email)
+        val email = sign_up1_email.getText()
 
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             onInputIssued(sign_up1_email, R.string.sign_up1_email_error, formStateChecker)
@@ -77,7 +74,7 @@ class SignUp1Fragment : Fragment(R.layout.fragment_sign_up1) {
     }
 
     private fun onLeavePassword() {
-        if (ViewUtil.getText(sign_up1_password).length !in 8..16) {
+        if (sign_up1_password.getText().length !in 8..16) {
             onInputIssued(sign_up1_password, R.string.sign_up1_password_error, formStateChecker)
         }
     }
@@ -85,7 +82,7 @@ class SignUp1Fragment : Fragment(R.layout.fragment_sign_up1) {
     private fun onPasswordRepeatChanged(editable: Editable?) {
         val focusCount = getFocusCount(sign_up1_password_repeat)
 
-        if (ViewUtil.hasSameText(sign_up1_password, sign_up1_password_repeat)) {
+        if (sign_up1_password.isSame(sign_up1_password_repeat)) {
             formStateChecker.setState(sign_up1_password_repeat, true)
             sign_up1_password_repeat.isErrorEnabled = false
         } else if (focusCount > 1) {
@@ -95,7 +92,7 @@ class SignUp1Fragment : Fragment(R.layout.fragment_sign_up1) {
     }
 
     private fun onLeavePasswordRepeat() {
-        if (!ViewUtil.hasSameText(sign_up1_password, sign_up1_password_repeat)) {
+        if (!sign_up1_password.isSame(sign_up1_password_repeat)) {
             onInputIssued(sign_up1_password_repeat, R.string.sign_up1_password_repeat_error, formStateChecker)
         }
     }

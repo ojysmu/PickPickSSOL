@@ -11,6 +11,7 @@ import mbtinder.android.ui.model.Fragment
 import mbtinder.android.util.FormStateChecker
 import mbtinder.android.util.ImageUtil
 import mbtinder.android.util.ViewUtil
+import mbtinder.android.util.getText
 import java.io.FileInputStream
 
 class SignUp4Fragment : Fragment(R.layout.fragment_sign_up4) {
@@ -38,7 +39,7 @@ class SignUp4Fragment : Fragment(R.layout.fragment_sign_up4) {
         sign_up4_next.setOnClickListener {
             val arguments = requireArguments()
             arguments.putByteArray("profile", selectedProfileImage)
-            arguments.putString("description", ViewUtil.getText(sign_up4_description))
+            arguments.putString("description", sign_up4_description.getText())
 
             findNavController().navigate(R.id.action_to_sign_up5, arguments)
         }

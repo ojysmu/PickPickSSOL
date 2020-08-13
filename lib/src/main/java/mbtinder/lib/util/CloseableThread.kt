@@ -33,9 +33,7 @@ open class CloseableThread : Thread(), AutoCloseable {
         status = ThreadConstants.FINISHING
     }
 
-    fun sleep() {
-        sleep(intervalInMillis)
-    }
+    fun sleep() = sleep(intervalInMillis)
 
     open fun pauseThread() {
         status = ThreadConstants.WAITING

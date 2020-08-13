@@ -3,11 +3,12 @@ package mbtinder.android.util
 import android.os.Handler
 import android.os.Looper
 import android.view.View
+import androidx.annotation.MainThread
 import mbtinder.lib.util.BlockWrapper
 import mbtinder.lib.util.block
 import mbtinder.lib.util.blockNull
 
-fun runOnUiThread(process: () -> Unit) {
+fun runOnUiThread(@MainThread process: () -> Unit) {
     Handler(Looper.getMainLooper()).post(process)
 }
 

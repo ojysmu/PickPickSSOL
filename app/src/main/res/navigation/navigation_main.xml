@@ -152,6 +152,11 @@
         android:id="@+id/nav_account"
         android:name="mbtinder.android.ui.fragment.account.AccountFragment"
         android:label="@string/account_title"
-        tools:layout="@layout/fragment_splash">
+        tools:layout="@layout/fragment_account">
+
+        <action
+            android:id="@+id/action_to_splash"
+            app:popUpToInclusive="true"
+            app:destination="@+id/nav_splash" />
     </fragment>
 </navigation>

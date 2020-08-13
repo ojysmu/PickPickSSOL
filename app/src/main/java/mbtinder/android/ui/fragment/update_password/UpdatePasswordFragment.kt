@@ -7,9 +7,7 @@ import kotlinx.android.synthetic.main.fragment_update_password.*
 import mbtinder.android.R
 import mbtinder.android.io.socket.CommandProcess
 import mbtinder.android.ui.model.ProgressFragment
-import mbtinder.android.util.ViewUtil
-import mbtinder.android.util.runOnBackground
-import mbtinder.android.util.runOnUiThread
+import mbtinder.android.util.*
 import java.util.*
 
 class UpdatePasswordFragment : ProgressFragment(R.layout.fragment_update_password) {
@@ -24,7 +22,7 @@ class UpdatePasswordFragment : ProgressFragment(R.layout.fragment_update_passwor
         switchable_next.setOnClickListener {
             switchWaitingStatus()
             runOnBackground {
-                val password = ViewUtil.getText(update_password_password) // TODO: encrypt
+                val password = update_password_password.getText() // TODO: encrypt
                 val updateResult = CommandProcess.updatePassword(userId, password)
                 if (updateResult.isSucceed) {
                     runOnUiThread {
@@ -49,7 +47,7 @@ class UpdatePasswordFragment : ProgressFragment(R.layout.fragment_update_passwor
     }
 
     private fun onLeavePassword() {
-        if (ViewUtil.getText(update_password_password).length !in 8..16) {
+        if (update_password_password.getText().length !in 8..16) {
             onPasswordIssued()
         }
     }
@@ -63,7 +61,7 @@ class UpdatePasswordFragment : ProgressFragment(R.layout.fragment_update_passwor
     private fun onPasswordRepeatChanged(editable: Editable?) {
         val focusCount = getFocusCount(update_password_password_repeat)
 
-        if (ViewUtil.hasSameText(update_password_password, update_password_password_repeat)) {
+        if (update_password_password.isSame(update_password_password_repeat)) {
             setFormStatus(update_password_password_repeat, true)
             update_password_password_repeat.isErrorEnabled = false
         } else if (focusCount > 1) {
@@ -73,7 +71,7 @@ class UpdatePasswordFragment : ProgressFragment(R.layout.fragment_update_passwor
     }
 
     private fun onLeavePasswordRepeat() {
-        if (!ViewUtil.hasSameText(update_password_password, update_password_password_repeat)) {
+        if (!update_password_password.isSame(update_password_password_repeat)) {
             onPasswordRepeatIssued()
         }
     }

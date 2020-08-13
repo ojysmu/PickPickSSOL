@@ -33,7 +33,7 @@ class AccountFragment : Fragment(R.layout.fragment_account) {
             }
         }
 
-        account_gender_selector.addOnButtonCheckedListener { group, checkedId, isChecked ->
+        account_gender_selector.addOnButtonCheckedListener { _, checkedId, isChecked ->
             StaticComponent.user.gender = idToGender(checkedId)
             runOnBackground { CommandProcess.updateSearchFilter(buildSearchFilter()) }
         }

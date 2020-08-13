@@ -70,8 +70,8 @@ class AccountFragment : Fragment(R.layout.fragment_account) {
     private fun buildSearchFilter() = SearchFilter(
         StaticComponent.user.userId,
         StaticComponent.user.gender,
-        account_age_selector.valueFrom.toInt(),
-        account_age_selector.valueTo.toInt(),
+        account_age_selector.values[0].toInt(),
+        account_age_selector.values[1].toInt(),
         account_distance_selector.value.toInt()
     )
 }

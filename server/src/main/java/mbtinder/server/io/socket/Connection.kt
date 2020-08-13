@@ -52,7 +52,7 @@ class Connection(private val socket: Socket): CloseableThread(), IDContent {
     fun getHostAddress() = socket.inetAddress.hostAddress!!
 
     private fun send(serverMessage: JSONObject) {
-        if (serverMessage == emptyMessage) {
+        if (serverMessage.isEmpty) {
             return
         }
 

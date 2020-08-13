@@ -274,7 +274,7 @@ object CommandProcess {
         val coordinator = Coordinator(command.arguments.getJSONObject("coordinator"))
         val sql = "UPDATE mbtinder.user " +
                 "SET longitude=${coordinator.longitude}, latitude=${coordinator.latitude} " +
-                "WHERE user_id='$userId"
+                "WHERE user_id='$userId'"
         MySQLServer.getInstance().addQuery(sql)
 
         return Connection.makePositiveResponse(command.uuid)

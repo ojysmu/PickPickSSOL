@@ -7,7 +7,7 @@ import mbtinder.android.io.http.ImageDownloader
 import mbtinder.android.io.http.SQLiteDownloader
 import mbtinder.android.io.socket.CommandProcess
 import mbtinder.android.ui.model.Fragment
-import mbtinder.lib.util.LocationUtil
+import mbtinder.android.util.LocationUtil
 import mbtinder.android.util.Log
 import mbtinder.android.util.ThreadUtil
 import mbtinder.lib.component.UserContent

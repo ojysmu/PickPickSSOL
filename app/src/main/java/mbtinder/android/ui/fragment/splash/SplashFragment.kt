@@ -9,7 +9,7 @@ import kotlinx.android.synthetic.main.fragment_splash.*
 import mbtinder.android.R
 import mbtinder.android.component.StaticComponent
 import mbtinder.android.ui.model.Fragment
-import mbtinder.lib.util.LocationUtil
+import mbtinder.android.util.LocationUtil
 import mbtinder.android.util.Log
 import mbtinder.android.util.SharedPreferencesUtil
 import mbtinder.android.util.ThreadUtil

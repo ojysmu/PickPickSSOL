@@ -1,4 +1,4 @@
-package mbtinder.lib.util
+package mbtinder.android.util
 
 import android.Manifest
 import android.app.Activity

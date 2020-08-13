@@ -9,7 +9,7 @@ import mbtinder.android.io.socket.SocketClient
 import mbtinder.android.service.ThreadService
 import mbtinder.android.ui.model.Activity
 import mbtinder.android.util.DialogFactory
-import mbtinder.lib.util.LocationUtil
+import mbtinder.android.util.LocationUtil
 import mbtinder.android.util.Log
 import mbtinder.android.util.ThreadUtil
 import mbtinder.lib.component.Coordinator

@@ -1,6 +1,7 @@
 package mbtinder.lib.component.database
 
 import org.json.JSONArray
+import org.json.JSONObject
 import java.sql.Date
 import java.util.*
 import kotlin.collections.HashMap
@@ -17,6 +18,8 @@ class Row : HashMap<String, Any>() {
     fun getBoolean(column: String) = get(column) as Boolean
 
     fun getUUID(column: String) = UUID.fromString(getString(column))
+
+    fun getJSONObject(column: String) = JSONObject(getString(column))
 
     fun getJSONArray(column: String) = JSONArray(getString(column))
 

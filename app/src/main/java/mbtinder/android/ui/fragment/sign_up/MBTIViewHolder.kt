@@ -6,7 +6,7 @@ import android.widget.TextView
 import com.google.android.material.card.MaterialCardView
 import mbtinder.android.R
 import mbtinder.android.ui.model.recycler_view.AdaptableViewHolder
-import mbtinder.lib.component.MBTIContent
+import mbtinder.lib.component.user.MBTIContent
 
 class MBTIViewHolder(itemView: View) : AdaptableViewHolder<MBTIContent>(itemView) {
     lateinit var adapter: MBTIAdapter

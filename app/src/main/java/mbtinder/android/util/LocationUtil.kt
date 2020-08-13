@@ -12,7 +12,7 @@ import androidx.core.app.ActivityCompat.requestPermissions
 import androidx.core.content.ContextCompat
 import mbtinder.android.io.http.HttpConnection
 import mbtinder.android.io.http.RequestMethod
-import mbtinder.lib.component.Coordinator
+import mbtinder.lib.component.user.Coordinator
 import org.json.JSONObject
 
 object LocationUtil {
@@ -82,7 +82,12 @@ object LocationUtil {
             Log.v("LocationUtil.onLocationPermissionGranted(): received")
             location?.let {
                 locationManager.removeUpdates(locationListener)
-                coordinator = Coordinator(location.longitude, location.latitude)
+                if (coordinator == null) {
+                    coordinator = Coordinator(
+                        location.longitude,
+                        location.latitude
+                    )
+                }
                 Log.v("LocationUtil.onLocationPermissionGranted(): coordinator=$coordinator")
             }
         }

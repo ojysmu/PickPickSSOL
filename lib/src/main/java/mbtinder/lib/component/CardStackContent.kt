@@ -2,6 +2,8 @@ package mbtinder.lib.component
 
 import mbtinder.lib.annotation.SkipParsing
 import mbtinder.lib.component.json.JSONParsable
+import mbtinder.lib.component.user.SignUpQuestionContent
+import mbtinder.lib.component.user.UserContent
 import mbtinder.lib.constant.MBTI
 import mbtinder.lib.constant.ServerPath
 import mbtinder.lib.util.JSONList

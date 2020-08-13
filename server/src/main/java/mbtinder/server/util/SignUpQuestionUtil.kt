@@ -1,6 +1,6 @@
 package mbtinder.server.util
 
-import mbtinder.lib.component.SignUpQuestionContent
+import mbtinder.lib.component.user.SignUpQuestionContent
 import mbtinder.lib.util.IDList
 import mbtinder.lib.util.toIDList
 import mbtinder.server.io.database.MySQLServer

@@ -12,15 +12,12 @@ import kotlinx.android.synthetic.main.fragment_sign_up5.*
 import mbtinder.android.R
 import mbtinder.android.WebViewActivity
 import mbtinder.android.component.StaticComponent
-import mbtinder.android.io.database.SQLiteConnection
-import mbtinder.android.io.http.SQLiteDownloader
 import mbtinder.android.io.socket.CommandProcess
 import mbtinder.android.ui.model.Fragment
-import mbtinder.android.util.SharedPreferencesUtil
 import mbtinder.android.util.ThreadUtil
 import mbtinder.android.util.ViewUtil
-import mbtinder.lib.component.MBTIContent
-import mbtinder.lib.component.SignUpQuestionContent
+import mbtinder.lib.component.user.MBTIContent
+import mbtinder.lib.component.user.SignUpQuestionContent
 import mbtinder.lib.constant.MBTI
 import mbtinder.lib.util.JSONList
 

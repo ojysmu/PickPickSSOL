@@ -1,4 +1,4 @@
-package mbtinder.lib.component
+package mbtinder.lib.component.user
 
 import mbtinder.lib.component.json.JSONParsable
 import org.json.JSONObject

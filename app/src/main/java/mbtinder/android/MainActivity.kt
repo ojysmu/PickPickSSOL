@@ -12,7 +12,7 @@ import mbtinder.android.util.DialogFactory
 import mbtinder.android.util.LocationUtil
 import mbtinder.android.util.Log
 import mbtinder.android.util.ThreadUtil
-import mbtinder.lib.component.Coordinator
+import mbtinder.lib.component.user.Coordinator
 import mbtinder.lib.constant.ServerPath
 import java.io.IOException
 import java.lang.RuntimeException
@@ -52,7 +52,8 @@ class MainActivity : Activity() {
                 // 위치 탐색 종료
                 locationManager.removeUpdates(locationListener)
                 // 현재 위치 좌표로부터 Coordinator 생성
-                val coordinator = Coordinator(location.longitude, location.latitude)
+                val coordinator =
+                    Coordinator(location.longitude, location.latitude)
             }
         }
     }

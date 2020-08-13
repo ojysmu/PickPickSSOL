@@ -1,7 +1,6 @@
 package mbtinder.lib.component.json
 
 import mbtinder.lib.annotation.SkipParsing
-import mbtinder.lib.component.SignUpQuestionContent
 import mbtinder.lib.constant.MBTI
 import mbtinder.lib.util.JSONList
 import mbtinder.lib.util.clone

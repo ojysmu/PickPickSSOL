@@ -10,7 +10,7 @@ import com.google.android.material.chip.ChipGroup
 import mbtinder.android.R
 import mbtinder.android.ui.model.recycler_view.AdaptableViewHolder
 import mbtinder.android.util.ViewUtil
-import mbtinder.lib.component.SignUpQuestionContent
+import mbtinder.lib.component.user.SignUpQuestionContent
 
 class SignUpQuestionViewHolder(itemView: View) : AdaptableViewHolder<SignUpQuestionContent>(itemView) {
     private val titleTextView: TextView = itemView.findViewById(R.id.card_sign_up4_question_title)

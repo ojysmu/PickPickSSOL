@@ -1,11 +1,14 @@
-package mbtinder.lib.component
+package mbtinder.lib.component.user
 
+import mbtinder.lib.component.IDContent
+import mbtinder.lib.component.ImageComponent
 import mbtinder.lib.component.json.JSONContent
 import mbtinder.lib.constant.ServerPath
 import org.json.JSONObject
 import java.util.*
 
-class UserImageContent: JSONContent, IDContent, ImageComponent {
+class UserImageContent: JSONContent, IDContent,
+    ImageComponent {
     var userId: UUID
     var imageId: UUID
     private var image: ByteArray? = null

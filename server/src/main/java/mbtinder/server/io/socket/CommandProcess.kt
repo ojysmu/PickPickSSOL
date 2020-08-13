@@ -1,6 +1,10 @@
 package mbtinder.server.io.socket
 
 import mbtinder.lib.component.*
+import mbtinder.lib.component.user.Coordinator
+import mbtinder.lib.component.user.SearchFilter
+import mbtinder.lib.component.user.SignUpQuestionContent
+import mbtinder.lib.component.user.UserContent
 import mbtinder.lib.constant.*
 import mbtinder.lib.io.component.CommandContent
 import mbtinder.lib.io.constant.Command
@@ -84,11 +88,13 @@ object CommandProcess {
             name = name,
             age = age,
             gender = gender,
+            notification = true,
             description = "",
             lastLocationLng = -1.0,
             lastLocationLat = -1.0,
             passwordQuestionId = passwordQuestionId,
-            passwordAnswer = passwordAnswer
+            passwordAnswer = passwordAnswer,
+            searchFilter = SearchFilter(userId)
         )
 
         MySQLServer.getInstance().addQuery(user.getInsertSql())
@@ -271,7 +277,8 @@ object CommandProcess {
 
     private fun setCoordinator(command: CommandContent): JSONObject {
         val userId = command.arguments.getString("user_id")
-        val coordinator = Coordinator(command.arguments.getJSONObject("coordinator"))
+        val coordinator =
+            Coordinator(command.arguments.getJSONObject("coordinator"))
         val sql = "UPDATE mbtinder.user " +
                 "SET last_location_lng=${coordinator.longitude}, last_location_lat=${coordinator.latitude} " +
                 "WHERE user_id='$userId'"

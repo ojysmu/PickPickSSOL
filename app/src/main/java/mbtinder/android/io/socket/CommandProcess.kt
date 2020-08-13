@@ -2,6 +2,9 @@ package mbtinder.android.io.socket
 
 import mbtinder.android.io.component.ServerResult
 import mbtinder.lib.component.*
+import mbtinder.lib.component.user.Coordinator
+import mbtinder.lib.component.user.SignUpQuestionContent
+import mbtinder.lib.component.user.UserContent
 import mbtinder.lib.io.constant.Command
 import mbtinder.lib.util.JSONList
 import org.json.JSONObject

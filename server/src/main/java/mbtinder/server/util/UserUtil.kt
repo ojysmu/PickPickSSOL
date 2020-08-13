@@ -1,13 +1,14 @@
 package mbtinder.server.util
 
 import mbtinder.lib.component.CardStackContent
-import mbtinder.lib.component.SignUpQuestionContent
-import mbtinder.lib.component.UserContent
+import mbtinder.lib.component.user.SignUpQuestionContent
+import mbtinder.lib.component.user.UserContent
 import mbtinder.lib.constant.MBTI
 import mbtinder.lib.util.*
 import mbtinder.server.constant.LocalFile
 import mbtinder.server.io.database.MySQLServer
 import mbtinder.lib.component.database.Row
+import mbtinder.lib.component.user.SearchFilter
 import java.util.*
 
 object UserUtil {
@@ -36,11 +37,19 @@ object UserUtil {
     }
 
     private fun buildUser(row: Row) = UserContent(
-        row.getUUID("user_id"), row.getString("email"), row.getString("password"),
-        row.getString("name"), row.getInt("age"), row.getInt("gender"),
-        row.getString("description"), row.getDouble("last_location_lng"),
-        row.getDouble("last_location_lat"), row.getInt("password_question"),
-        row.getString("password_answer")
+        userId = row.getUUID("user_id"),
+        email = row.getString("email"),
+        password = row.getString("password"),
+        name = row.getString("name"),
+        age = row.getInt("age"),
+        gender = row.getInt("gender"),
+        notification = row.getBoolean("notification"),
+        description = row.getString("description"),
+        lastLocationLng = row.getDouble("last_location_lng"),
+        lastLocationLat = row.getDouble("last_location_lat"),
+        passwordQuestionId = row.getInt("password_question"),
+        passwordAnswer = row.getString("password_answer"),
+        searchFilter = SearchFilter(row.getJSONObject("search_filter"))
     )
 
     fun getUser(userId: UUID, needPassword: Boolean = false): UserContent? {

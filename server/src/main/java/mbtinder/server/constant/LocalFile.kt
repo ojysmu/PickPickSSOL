@@ -1,6 +1,6 @@
 package mbtinder.server.constant
 
-import mbtinder.lib.component.InterestContent
+import mbtinder.lib.component.user.InterestContent
 import mbtinder.lib.util.loadJSONList
 import java.util.*
 

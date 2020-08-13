@@ -1,40 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="common_mbti_titles">
-        <item>@string/common_mbti_intj_title</item>
-        <item>@string/common_mbti_entj_title</item>
-        <item>@string/common_mbti_intp_title</item>
-        <item>@string/common_mbti_entp_title</item>
-        <item>@string/common_mbti_infj_title</item>
-        <item>@string/common_mbti_enfj_title</item>
-        <item>@string/common_mbti_infp_title</item>
-        <item>@string/common_mbti_enfp_title</item>
-        <item>@string/common_mbti_istj_title</item>
-        <item>@string/common_mbti_estj_title</item>
-        <item>@string/common_mbti_isfj_title</item>
-        <item>@string/common_mbti_esfj_title</item>
-        <item>@string/common_mbti_istp_title</item>
-        <item>@string/common_mbti_estp_title</item>
-        <item>@string/common_mbti_isfp_title</item>
-        <item>@string/common_mbti_esfp_title</item>
-    </string-array>
-
-    <string-array name="common_mbti_contents">
-        <item>@string/common_mbti_intj_content</item>
-        <item>@string/common_mbti_entj_content</item>
-        <item>@string/common_mbti_intp_content</item>
-        <item>@string/common_mbti_entp_content</item>
-        <item>@string/common_mbti_infj_content</item>
-        <item>@string/common_mbti_enfj_content</item>
-        <item>@string/common_mbti_infp_content</item>
-        <item>@string/common_mbti_enfp_content</item>
-        <item>@string/common_mbti_istj_content</item>
-        <item>@string/common_mbti_estj_content</item>
-        <item>@string/common_mbti_isfj_content</item>
-        <item>@string/common_mbti_esfj_content</item>
-        <item>@string/common_mbti_istp_content</item>
-        <item>@string/common_mbti_estp_content</item>
-        <item>@string/common_mbti_isfp_content</item>
-        <item>@string/common_mbti_esfp_content</item>
-    </string-array>
+    <array name="account_age_initial">
+        <item>20</item>
+        <item>100</item>
+    </array>
 </resources>

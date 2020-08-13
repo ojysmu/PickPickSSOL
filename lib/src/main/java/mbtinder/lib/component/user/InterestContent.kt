@@ -1,5 +1,6 @@
-package mbtinder.lib.component
+package mbtinder.lib.component.user
 
+import mbtinder.lib.component.IDContent
 import mbtinder.lib.component.json.JSONParsable
 import org.json.JSONObject
 import java.util.*

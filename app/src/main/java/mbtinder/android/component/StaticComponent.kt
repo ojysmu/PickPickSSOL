@@ -10,8 +10,8 @@ import mbtinder.android.ui.model.Fragment
 import mbtinder.android.util.LocationUtil
 import mbtinder.android.util.Log
 import mbtinder.android.util.ThreadUtil
-import mbtinder.lib.component.UserContent
-import mbtinder.lib.component.UserImageContent
+import mbtinder.lib.component.user.UserContent
+import mbtinder.lib.component.user.UserImageContent
 import mbtinder.lib.util.IDList
 import java.util.*
 

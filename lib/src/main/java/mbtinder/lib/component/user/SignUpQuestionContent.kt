@@ -1,11 +1,13 @@
-package mbtinder.lib.component
+package mbtinder.lib.component.user
 
+import mbtinder.lib.component.IDContent
 import mbtinder.lib.component.json.JSONParsable
 import org.json.JSONArray
 import org.json.JSONObject
 import java.util.*
 
-class SignUpQuestionContent: JSONParsable, IDContent, Comparable<SignUpQuestionContent> {
+class SignUpQuestionContent: JSONParsable,
+    IDContent, Comparable<SignUpQuestionContent> {
     lateinit var categoryId: UUID
     lateinit var questionId: UUID
     lateinit var question: String
@@ -35,7 +37,8 @@ class SignUpQuestionContent: JSONParsable, IDContent, Comparable<SignUpQuestionC
 
     fun toConnectionForm() = ConnectionForm(this)
 
-    class ConnectionForm: JSONParsable, IDContent, Comparable<ConnectionForm> {
+    class ConnectionForm: JSONParsable,
+        IDContent, Comparable<ConnectionForm> {
         lateinit var categoryId: UUID
         lateinit var questionId: UUID
         var selected: Int = -1

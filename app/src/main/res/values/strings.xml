@@ -131,5 +131,16 @@
 
     <string name="message_list_title">메시지</string>
 
-    <string name="account_title">계정</string>
+    <string name="account_title">설정</string>
+    <string name="account_description_title">자기 소개</string>
+    <string name="account_description">자기 소개 쓰기(최대 20자)</string>
+    <string name="account_gender_title">선호 성별</string>
+    <string name="account_gender_male">남성</string>
+    <string name="account_gender_female">여성</string>
+    <string name="account_gender_all">모두</string>
+    <string name="account_age_title">선호 나이</string>
+    <string name="account_distance_title">거리 설정</string>
+    <string name="account_notification_title">알림 허용</string>
+    <string name="account_delete_user">회원탈퇴</string>
+    <string name="account_sign_out">로그아웃</string>
 </resources>

@@ -10,6 +10,8 @@ object ServerPath {
     const val PORT_WEB = 80
     const val PORT_SOCKET = 8080
 
+    fun getUserDatabaseUrl(userId: UUID) = "$WEB_PROTOCOL://$ADDRESS:$PORT_WEB/raw/user/$userId/table.db"
+
     fun getUserImageUrl(userId: UUID, imageName: String) =
         "$WEB_PROTOCOL://$ADDRESS:$PORT_WEB/raw/user/$userId/$imageName"
 }

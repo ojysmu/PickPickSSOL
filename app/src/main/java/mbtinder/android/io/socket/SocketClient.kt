@@ -1,4 +1,4 @@
-package mbtinder.android.io
+package mbtinder.android.io.socket
 
 import android.content.Context
 import mbtinder.android.component.CommandResult
@@ -24,7 +24,8 @@ class SocketClient private constructor(private val address: String, private val 
 
         fun createInstance(address: String, port: Int, context: Context): SocketClient {
             if (instance == null) {
-                instance = SocketClient(address, port, context)
+                instance =
+                    SocketClient(address, port, context)
 
                 return instance!!
             } else {
@@ -69,7 +70,10 @@ class SocketClient private constructor(private val address: String, private val 
                 onConnected?.let { it() }
 
                 listeningThread =
-                    ListeningThread(context, dataInputStream, onDisconnected ?: {})
+                    ListeningThread(
+                        context,
+                        dataInputStream,
+                        onDisconnected ?: {})
                 listeningThread.start()
             } catch (e: IOException) {
                 stopThread()

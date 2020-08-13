@@ -2,24 +2,17 @@ package mbtinder.android
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.navigation.Navigation.findNavController
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.NavigationUI.setupActionBarWithNavController
-import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import mbtinder.android.io.SQLiteConnection
-import mbtinder.android.io.SocketClient
+import mbtinder.android.io.socket.SocketClient
 import mbtinder.android.service.ThreadService
-import mbtinder.android.ui.fragment.splash.SplashFragment
 import mbtinder.android.ui.model.Activity
 import mbtinder.android.util.DialogFactory
+import mbtinder.android.util.LocationUtil
 import mbtinder.android.util.Log
-import mbtinder.android.util.SharedPreferencesUtil
-import mbtinder.android.util.SharedPreferencesUtil.PREF_ACCOUNT
 import mbtinder.android.util.ThreadUtil
+import mbtinder.lib.component.Coordinator
 import mbtinder.lib.constant.ServerPath
 import java.io.IOException
 import java.lang.RuntimeException
@@ -34,7 +27,6 @@ class MainActivity : Activity() {
         } catch (e: RuntimeException) {
             SocketClient.releaseInstance()
             initializeSocketClient()
-            initializeSQLiteConnection()
         }
 
         val navView = findViewById<BottomNavigationView>(R.id.nav_view)
@@ -53,8 +45,16 @@ class MainActivity : Activity() {
         socketClient.start()
     }
 
-    private fun initializeSQLiteConnection() {
-        SQLiteConnection.createInstance(this).start()
+    private fun initializeLocation() {
+        LocationUtil.getLocation(this) { location, locationManager, locationListener ->
+            location?.let {
+                // 위치 탐색을 성공했을 때
+                // 위치 탐색 종료
+                locationManager.removeUpdates(locationListener)
+                // 현재 위치 좌표로부터 Coordinator 생성
+                val coordinator = Coordinator(location.longitude, location.latitude)
+            }
+        }
     }
 
     private fun onConnected() {

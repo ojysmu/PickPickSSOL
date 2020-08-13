@@ -1,15 +1,11 @@
 package mbtinder.android.ui.view
 
 import android.content.Context
-import android.os.AsyncTask
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatImageView
-import mbtinder.android.util.ImageDownloader
+import mbtinder.android.io.http.ImageDownloader
 import mbtinder.android.util.ImageUtil
-import mbtinder.android.util.Log
 import mbtinder.lib.component.ImageComponent
-import java.io.FileNotFoundException
-import java.net.URL
 
 class AsyncImageView: AppCompatImageView {
     constructor(context: Context): super(context, null, 0)

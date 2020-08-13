@@ -9,7 +9,7 @@ import com.yuyakaido.android.cardstackview.*
 import kotlinx.android.synthetic.main.fragment_home.*
 import mbtinder.android.R
 import mbtinder.android.component.StaticComponent
-import mbtinder.android.io.CommandProcess
+import mbtinder.android.io.socket.CommandProcess
 import mbtinder.android.ui.model.Fragment
 import mbtinder.android.util.ThreadUtil
 import mbtinder.lib.component.CardStackContent

@@ -1,4 +1,4 @@
-package mbtinder.android.io
+package mbtinder.android.io.socket
 
 import mbtinder.android.io.component.ServerResult
 import mbtinder.lib.component.CardStackContent
@@ -72,9 +72,13 @@ object CommandProcess {
         )
     }
 
-    fun getSignUpQuestion() = SocketUtil.getJSONListResult<SignUpQuestionContent>(
-        SocketUtil.getServerResult(Command.GET_SIGN_UP_QUESTIONS, JSONObject()), "questions"
-    )
+    fun getSignUpQuestion() =
+        SocketUtil.getJSONListResult<SignUpQuestionContent>(
+            SocketUtil.getServerResult(
+                Command.GET_SIGN_UP_QUESTIONS,
+                JSONObject()
+            ), "questions"
+        )
 
     fun setSignUpQuestions(userId: UUID, signUpQuestions: JSONList<SignUpQuestionContent>): ServerResult<Void> {
         val forms: JSONList<SignUpQuestionContent.ConnectionForm> = signUpQuestions.mapTo(JSONList()) {
@@ -85,7 +89,8 @@ object CommandProcess {
         arguments.put("user_id", userId.toString())
         arguments.put("sign_up_questions", forms.toJSONArray())
 
-        val result = SocketUtil.getServerResult(Command.SET_SIGN_UP_QUESTIONS, arguments)
+        val result =
+            SocketUtil.getServerResult(Command.SET_SIGN_UP_QUESTIONS, arguments)
         return SocketUtil.getVoidResult(result)
     }
 
@@ -100,7 +105,8 @@ object CommandProcess {
 
     fun getMatchableUsers(userId: UUID): ServerResult<JSONList<CardStackContent>> {
         val arguments = JSONObject().apply { put("user_id", userId.toString()) }
-        val result = SocketUtil.getServerResult(Command.GET_MATCHABLE_USERS, arguments)
+        val result =
+            SocketUtil.getServerResult(Command.GET_MATCHABLE_USERS, arguments)
 
         return SocketUtil.getJSONListResult(result, "users")
     }
@@ -135,7 +141,8 @@ object CommandProcess {
         arguments.put("chat_id", chatId.toString())
 
         return SocketUtil.getJSONListResult(
-            SocketUtil.getServerResult(Command.GET_MESSAGES, arguments), "messages"
+            SocketUtil.getServerResult(Command.GET_MESSAGES, arguments),
+            "messages"
         )
     }
 
@@ -153,7 +160,9 @@ object CommandProcess {
 
     fun getLastMessages(userId: UUID): ServerResult<JSONList<MessageContent>> {
         return SocketUtil.getJSONListResult(
-            SocketUtil.getServerResult(Command.GET_LAST_MESSAGES, JSONObject().apply { put("user_id", userId.toString()) }),
+            SocketUtil.getServerResult(
+                Command.GET_LAST_MESSAGES,
+                JSONObject().apply { put("user_id", userId.toString()) }),
             "messages"
         )
     }

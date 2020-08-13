@@ -50,7 +50,7 @@ dependencies {
 
     implementation 'org.json:json:20200518'
     implementation "com.yuyakaido.android:card-stack-view:2.3.4"
-    implementation 'org.xerial:sqlite-jdbc:3.32.3.1'
+    implementation 'org.sqldroid:sqldroid:1.0.3'
 
     implementation project(path: ':lib')
 

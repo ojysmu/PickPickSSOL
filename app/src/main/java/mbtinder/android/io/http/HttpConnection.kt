@@ -1,4 +1,4 @@
-package mbtinder.android.io
+package mbtinder.android.io.http
 
 import android.os.AsyncTask
 import java.io.BufferedReader

@@ -1,18 +1,15 @@
-package mbtinder.android.io
+package mbtinder.android.io.database
 
-import android.content.Context
 import mbtinder.lib.component.database.Query
 import mbtinder.lib.component.database.QueryResult
-import mbtinder.lib.util.CloseableThread
-import mbtinder.lib.util.IDList
-import mbtinder.lib.util.block
-import mbtinder.lib.util.sync
+import mbtinder.lib.util.*
+import java.sql.Driver
 import java.sql.DriverManager
 import java.sql.SQLException
 import java.sql.Statement
 import java.util.*
 
-class SQLiteConnection private constructor(context: Context): CloseableThread() {
+class SQLiteConnection private constructor(filesDir: String): CloseableThread() {
     companion object {
         const val SELECT_MESSAGE_LIMIT = 20
 
@@ -26,13 +23,14 @@ class SQLiteConnection private constructor(context: Context): CloseableThread() 
             return instance!!
         }
 
-        fun createInstance(context: Context): SQLiteConnection {
+        fun createInstance(filesDir: String): SQLiteConnection {
             if (instance == null) {
-                instance = SQLiteConnection(context)
-
+                instance = SQLiteConnection(filesDir)
+                instance!!.start()
                 return instance!!
             } else {
-                throw RuntimeException("Instance already initialized")
+//                throw RuntimeException("Instance already initialized")
+                return instance!!
             }
         }
 
@@ -44,7 +42,8 @@ class SQLiteConnection private constructor(context: Context): CloseableThread() 
     private val results = IDList<QueryResult>()
 
     init {
-        val connection = DriverManager.getConnection("${context.filesDir}/tables.db")
+        DriverManager.registerDriver(Class.forName("org.sqldroid.SQLDroidDriver").newInstance() as Driver)
+        val connection = DriverManager.getConnection("jdbc:sqldroid:$filesDir/tables.db")
         statement = connection.createStatement()
 
         loop = {
@@ -84,7 +83,7 @@ class SQLiteConnection private constructor(context: Context): CloseableThread() 
     }
 
     fun getResult(queryId: UUID): QueryResult {
-        block(results, intervalInMillis) { !it.contains(queryId) }
+        block(results) { !it.contains(queryId) }
 
         return sync(results) { it.remove(queryId) }
     }

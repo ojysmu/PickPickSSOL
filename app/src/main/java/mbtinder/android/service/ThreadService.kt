@@ -3,8 +3,8 @@ package mbtinder.android.service
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
-import mbtinder.android.io.SQLiteConnection
-import mbtinder.android.io.SocketClient
+import mbtinder.android.io.database.SQLiteConnection
+import mbtinder.android.io.socket.SocketClient
 import mbtinder.android.util.Log
 import mbtinder.android.util.ThreadUtil
 import mbtinder.lib.constant.ServerPath
@@ -39,10 +39,6 @@ class ThreadService : Service() {
         if (!SocketClient.isAlive()) {
             Log.v("Socket Dead")
             SocketClient.createInstance(ServerPath.ADDRESS, ServerPath.PORT_SOCKET, this).start()
-        }
-        if (!SQLiteConnection.isAlive()) {
-            Log.v("Database Dead")
-            SQLiteConnection.createInstance(this).start()
         }
 
         val restartIntent = Intent(applicationContext, this::class.java)

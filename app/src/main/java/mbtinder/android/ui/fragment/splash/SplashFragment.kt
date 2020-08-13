@@ -8,35 +8,24 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.fragment_splash.*
 import mbtinder.android.R
 import mbtinder.android.component.StaticComponent
-import mbtinder.android.io.CommandProcess
-import mbtinder.android.io.SocketUtil
 import mbtinder.android.ui.model.Fragment
+import mbtinder.android.util.LocationUtil
 import mbtinder.android.util.Log
 import mbtinder.android.util.SharedPreferencesUtil
 import mbtinder.android.util.ThreadUtil
 
 class SplashFragment : Fragment(R.layout.fragment_splash) {
     override fun initializeView() {
-//        requireActivity().window.statusBarColor = requireContext().getColor(android.R.color.black)
         requireActivity().findViewById<BottomNavigationView>(R.id.nav_view).visibility = View.GONE
 
-        ThreadUtil.runOnBackground {
-            if (hasAccountInfo()) {
-                val (email, password) = getAccountInfo()
-                val signInResult = CommandProcess.signIn(email, password)
-                if (signInResult.isSucceed) {
-                    StaticComponent.user = signInResult.result!!
-                    findNavController().navigate(R.id.action_to_home)
-                } else {
-                    ThreadUtil.runOnUiThread {
-                        Toast.makeText(requireContext(), R.string.splash_failed_to_sign_in, Toast.LENGTH_SHORT).show()
-                    }
-                    removeAccountInfo()
-                    loadAnimation()
-                }
-            } else {
-                loadAnimation()
+        if (hasAccountInfo()) {
+            val (email, password) = getAccountInfo()
+            StaticComponent.signIn(this, email, password) {
+                Toast.makeText(requireContext(), R.string.splash_failed_to_sign_in, Toast.LENGTH_SHORT).show()
+                ThreadUtil.runOnBackground { removeAccountInfo(); loadAnimation() }
             }
+        } else {
+            ThreadUtil.runOnBackground { loadAnimation() }
         }
     }
 
@@ -91,8 +80,11 @@ class SplashFragment : Fragment(R.layout.fragment_splash) {
         }
     }
 
-    private fun initializeHome() {
-
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        if (LocationUtil.isLocationPermissionGranted(requestCode, grantResults)) {
+            val coordinator = LocationUtil.onLocationPermissionGranted(requireContext())
+            Log.v("StaticComponent.signIn(): coordinator=$coordinator")
+        }
     }
 
     companion object {

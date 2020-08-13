@@ -5,8 +5,7 @@ import android.widget.Toast
 import androidx.navigation.fragment.findNavController
 import kotlinx.android.synthetic.main.fragment_update_password.*
 import mbtinder.android.R
-import mbtinder.android.io.CommandProcess
-import mbtinder.android.io.SocketUtil
+import mbtinder.android.io.socket.CommandProcess
 import mbtinder.android.ui.model.ProgressFragment
 import mbtinder.android.util.ThreadUtil
 import mbtinder.android.util.ViewUtil

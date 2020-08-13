@@ -1,4 +1,4 @@
-package mbtinder.android.io
+package mbtinder.android.io.socket
 
 import android.content.Context
 import mbtinder.android.component.CommandResult

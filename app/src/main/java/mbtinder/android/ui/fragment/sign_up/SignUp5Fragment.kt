@@ -12,7 +12,9 @@ import kotlinx.android.synthetic.main.fragment_sign_up5.*
 import mbtinder.android.R
 import mbtinder.android.WebViewActivity
 import mbtinder.android.component.StaticComponent
-import mbtinder.android.io.CommandProcess
+import mbtinder.android.io.database.SQLiteConnection
+import mbtinder.android.io.http.SQLiteDownloader
+import mbtinder.android.io.socket.CommandProcess
 import mbtinder.android.ui.model.Fragment
 import mbtinder.android.util.SharedPreferencesUtil
 import mbtinder.android.util.ThreadUtil
@@ -99,26 +101,10 @@ class SignUp5Fragment : Fragment(R.layout.fragment_sign_up5) {
         }
     }
 
-    private fun signIn(): Boolean {
-        val signInResult = CommandProcess.signIn(
-            email = requireArguments().getString("email")!!,
-            password = requireArguments().getString("password")!!
-        )
-
-        return if (signInResult.isSucceed) {
-            SharedPreferencesUtil
-                .getContext(requireContext(), SharedPreferencesUtil.PREF_ACCOUNT)
-                .put("email", requireArguments().getString("email")!!)
-                .put("password", requireArguments().getString("password")!!)
-            StaticComponent.user = signInResult.result!!
-            true
-        } else {
-            ThreadUtil.runOnUiThread {
-                Toast.makeText(requireContext(), R.string.sign_up3_sign_in_failed, Toast.LENGTH_SHORT).show()
-            }
-            false
+    private fun signIn() =
+        StaticComponent.signIn(this, requireArguments().getString("email")!!, requireArguments().getString("password")!!) {
+            Toast.makeText(requireContext(), R.string.sign_up3_sign_in_failed, Toast.LENGTH_SHORT).show()
         }
-    }
 
     private fun setMBTI() = CommandProcess.setMBTI(
         userId = StaticComponent.user.userId,

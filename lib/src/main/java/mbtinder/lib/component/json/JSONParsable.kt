@@ -50,7 +50,6 @@ abstract class JSONParsable: JSONContent {
                         continue
                     }
 
-                    println("key=$key is primitive: ${field.type.isPrimitive}")
                     if (field.type.isPrimitive) {
                         // Int, Long 등의 Primitive 타입은 선처리 후 continue
                         field.set(this, jsonObject.get(key))

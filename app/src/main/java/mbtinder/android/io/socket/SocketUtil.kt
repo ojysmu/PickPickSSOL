@@ -1,8 +1,7 @@
-package mbtinder.android.io
+package mbtinder.android.io.socket
 
 import mbtinder.android.io.component.ServerResult
 import mbtinder.android.util.Log
-import mbtinder.lib.component.UserContent
 import mbtinder.lib.component.json.JSONParsable
 import mbtinder.lib.io.component.CommandContent
 import mbtinder.lib.io.constant.Command

@@ -1,7 +1,7 @@
-package mbtinder.android.util
+package mbtinder.android.io.http
 
 import android.os.AsyncTask
-import androidx.appcompat.widget.AppCompatImageView
+import mbtinder.android.util.Log
 import mbtinder.lib.component.ImageComponent
 import java.io.FileNotFoundException
 import java.net.URL

@@ -31,6 +31,7 @@ object CommandProcess {
             Command.GET_USER_IMAGES -> TODO() // getUserImages(command)
             Command.DELETE_USER_IMAGE -> deleteUserImage(command)
             Command.SIGN_IN -> signIn(command, connection)
+            Command.SET_COORDINATOR -> setCoordinator(command)
             Command.FIND_PASSWORD -> findPassword(command)
             Command.UPDATE_PASSWORD -> updatePassword(command)
             Command.GET_SIGN_UP_QUESTIONS -> getSignUpQuestion(command)
@@ -266,6 +267,17 @@ object CommandProcess {
         } ?:let {
             Connection.makeNegativeResponse(command.uuid, ServerResponse.EMAIL_NOT_FOUND)
         }
+    }
+
+    private fun setCoordinator(command: CommandContent): JSONObject {
+        val userId = command.arguments.getString("user_id")
+        val coordinator = Coordinator(command.arguments.getJSONObject("coordinator"))
+        val sql = "UPDATE FROM mbtinder.coordinator " +
+                "SET longitude=${coordinator.longitude}, latitude=${coordinator.latitude} " +
+                "WHERE user_id='$userId"
+        MySQLServer.getInstance().addQuery(sql)
+
+        return Connection.makePositiveResponse(command.uuid)
     }
 
     /**

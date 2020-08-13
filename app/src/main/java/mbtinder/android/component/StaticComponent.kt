@@ -7,7 +7,7 @@ import mbtinder.android.io.http.ImageDownloader
 import mbtinder.android.io.http.SQLiteDownloader
 import mbtinder.android.io.socket.CommandProcess
 import mbtinder.android.ui.model.Fragment
-import mbtinder.android.util.LocationUtil
+import mbtinder.lib.util.LocationUtil
 import mbtinder.android.util.Log
 import mbtinder.android.util.ThreadUtil
 import mbtinder.lib.component.UserContent
@@ -27,8 +27,11 @@ object StaticComponent {
                 SQLiteConnection.createInstance(fragment.requireContext().filesDir.toString())
 
                 if (LocationUtil.checkLocationPermission(fragment.requireContext())) {
-                    val coordinator = LocationUtil.onLocationPermissionGranted(fragment.requireContext())
-                    Log.v("StaticComponent.signIn(): coordinator=$coordinator")
+                    ThreadUtil.runOnBackground {
+                        val coordinator = LocationUtil.onLocationPermissionGranted(fragment.requireContext())
+                        Log.v("StaticComponent.signIn(): coordinator=$coordinator")
+                        CommandProcess.setCoordinator(user.userId, coordinator)
+                    }
                 } else {
                     LocationUtil.requestLocationPermission(fragment.requireActivity())
                 }

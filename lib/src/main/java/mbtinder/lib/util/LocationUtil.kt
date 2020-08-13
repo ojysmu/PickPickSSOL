@@ -1,4 +1,4 @@
-package mbtinder.android.util
+package mbtinder.lib.util
 
 import android.Manifest
 import android.app.Activity
@@ -13,9 +13,6 @@ import androidx.core.content.ContextCompat
 import mbtinder.android.io.http.HttpConnection
 import mbtinder.android.io.http.RequestMethod
 import mbtinder.lib.component.Coordinator
-import mbtinder.lib.util.BlockWrapper
-import mbtinder.lib.util.block
-import mbtinder.lib.util.blockNull
 import org.json.JSONObject
 
 object LocationUtil {
@@ -69,7 +66,9 @@ object LocationUtil {
         ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
 
     fun requestLocationPermission(activity: Activity) =
-        requestPermissions(activity, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_REQUEST_CODE)
+        requestPermissions(activity, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+            LOCATION_REQUEST_CODE
+        )
 
     fun isLocationPermissionGranted(requestCode: Int, grantResults: IntArray) =
         requestCode == LOCATION_REQUEST_CODE && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED
@@ -88,6 +87,10 @@ object LocationUtil {
             }
         }
 
-        return blockNull(BlockWrapper(coordinator)) { it == null }!!
+        while (coordinator == null) {
+            Thread.sleep(100)
+        }
+
+        return coordinator!!
     }
 }

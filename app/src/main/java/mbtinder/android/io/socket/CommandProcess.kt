@@ -1,10 +1,7 @@
 package mbtinder.android.io.socket
 
 import mbtinder.android.io.component.ServerResult
-import mbtinder.lib.component.CardStackContent
-import mbtinder.lib.component.MessageContent
-import mbtinder.lib.component.SignUpQuestionContent
-import mbtinder.lib.component.UserContent
+import mbtinder.lib.component.*
 import mbtinder.lib.io.constant.Command
 import mbtinder.lib.util.JSONList
 import org.json.JSONObject
@@ -45,6 +42,16 @@ object CommandProcess {
         return SocketUtil.getSingleResult(
             SocketUtil.getServerResult(Command.SIGN_IN, arguments),
             "user"
+        )
+    }
+
+    fun setCoordinator(userId: UUID, coordinator: Coordinator): ServerResult<Void> {
+        val arguments = JSONObject()
+        arguments.put("user_id", userId.toString())
+        arguments.put("coordinator", coordinator.toJSONObject())
+
+        return SocketUtil.getVoidResult(
+            SocketUtil.getServerResult(Command.SET_COORDINATOR, arguments)
         )
     }
 

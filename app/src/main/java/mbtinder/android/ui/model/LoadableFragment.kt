@@ -9,19 +9,20 @@ import androidx.annotation.LayoutRes
 import androidx.constraintlayout.widget.ConstraintLayout
 import kotlinx.android.synthetic.main.fragment_loadable.*
 import mbtinder.android.R
-import mbtinder.android.util.ThreadUtil
+import mbtinder.android.util.runOnBackground
+import mbtinder.android.util.runOnUiThread
 
 abstract class LoadableFragment(@LayoutRes private val layout: Int): Fragment(layout) {
     private lateinit var innerLayout: ViewGroup
 
     override fun initializeView() {
         initializeOnUiThread()
-        ThreadUtil.runOnBackground {
+        runOnBackground {
             isBackgroundLoading = true
             initializeOnBackground()
             isBackgroundLoading = false
 
-            ThreadUtil.runOnUiThread {
+            runOnUiThread {
                 attachToRoot()
                 loadable_progress_bar.visibility = View.GONE
                 innerLayout.visibility = View.VISIBLE

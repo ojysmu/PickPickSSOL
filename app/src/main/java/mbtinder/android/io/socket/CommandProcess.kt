@@ -3,8 +3,10 @@ package mbtinder.android.io.socket
 import mbtinder.android.io.component.ServerResult
 import mbtinder.lib.component.*
 import mbtinder.lib.component.user.Coordinator
+import mbtinder.lib.component.user.SearchFilter
 import mbtinder.lib.component.user.SignUpQuestionContent
 import mbtinder.lib.component.user.UserContent
+import mbtinder.lib.io.component.CommandContent
 import mbtinder.lib.io.constant.Command
 import mbtinder.lib.util.JSONList
 import org.json.JSONObject
@@ -34,6 +36,32 @@ object CommandProcess {
 
         return SocketUtil.getVoidResult(
             SocketUtil.getServerResult(Command.ADD_USER, arguments)
+        )
+    }
+
+    fun updateUserDescription(userId: UUID, description: String): ServerResult<Void> {
+        val arguments = JSONObject()
+        arguments.put("user_id", userId.toString())
+        arguments.put("description", description)
+
+        return SocketUtil.getVoidResult(
+            SocketUtil.getServerResult(Command.UPDATE_USER_DESCRIPTION, arguments)
+        )
+    }
+
+    fun updateSearchFilter(searchFilter: SearchFilter) {
+        SocketClient.getInstance().addCommand(
+            CommandContent(UUID.randomUUID(), Command.UPDATE_SEARCH_FILTER.name, searchFilter.toJSONObject())
+        )
+    }
+
+    fun updateUserNotification(userId: UUID, isEnabled: Boolean): ServerResult<Void> {
+        val arguments = JSONObject()
+        arguments.put("user_id", userId.toString())
+        arguments.put("is_enabled", isEnabled)
+
+        return SocketUtil.getVoidResult(
+            SocketUtil.getServerResult(Command.UPDATE_USER_NOTIFICATION, arguments)
         )
     }
 

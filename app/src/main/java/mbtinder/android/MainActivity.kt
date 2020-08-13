@@ -11,7 +11,7 @@ import mbtinder.android.ui.model.Activity
 import mbtinder.android.util.DialogFactory
 import mbtinder.android.util.LocationUtil
 import mbtinder.android.util.Log
-import mbtinder.android.util.ThreadUtil
+import mbtinder.android.util.runOnBackground
 import mbtinder.lib.component.user.Coordinator
 import mbtinder.lib.constant.ServerPath
 import java.io.IOException
@@ -75,7 +75,7 @@ class MainActivity : Activity() {
         Log.e("onDisconnected", e)
 
         SocketClient.releaseInstance()
-        ThreadUtil.runOnBackground {
+        runOnBackground {
             val result = retryConnection(0)
             if (result) {
                 SocketClient.getInstance().onConnectionFailed = this::onConnectionFailed

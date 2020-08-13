@@ -32,7 +32,7 @@ object LocationUtil {
                 onLocationChangedListener.invoke(location, locationManager, this)
         }
 
-        ThreadUtil.runOnUiThread {
+        runOnUiThread {
             if (checkLocationPermission(context)) {
                 locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0L, 0f, locationListener)
                 locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0L, 0f, locationListener)

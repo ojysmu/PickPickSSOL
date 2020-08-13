@@ -9,8 +9,9 @@ import mbtinder.android.R
 import mbtinder.android.io.socket.CommandProcess
 import mbtinder.android.ui.model.Fragment
 import mbtinder.android.util.FormStateChecker
-import mbtinder.android.util.ThreadUtil
 import mbtinder.android.util.ViewUtil
+import mbtinder.android.util.runOnBackground
+import mbtinder.android.util.runOnUiThread
 
 class SignUp1Fragment : Fragment(R.layout.fragment_sign_up1) {
     private val formStateChecker = FormStateChecker()
@@ -53,9 +54,9 @@ class SignUp1Fragment : Fragment(R.layout.fragment_sign_up1) {
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             onInputIssued(sign_up1_email, R.string.sign_up1_email_error, formStateChecker)
         } else {
-            ThreadUtil.runOnBackground {
+            runOnBackground {
                 if (!CommandProcess.checkEmailDuplicated(email).isSucceed) {
-                    ThreadUtil.runOnUiThread {
+                    runOnUiThread {
                         onInputIssued(sign_up1_email, R.string.sign_up1_email_duplicated, formStateChecker)
                     }
                 }

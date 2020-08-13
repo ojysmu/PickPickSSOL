@@ -20,6 +20,8 @@ object ViewUtil {
 
     fun getText(textInputLayout: TextInputLayout) = getText(textInputLayout.editText!!)
 
+    fun isBlank(textInputLayout: TextInputLayout) = getText(textInputLayout).isBlank()
+
     fun hasSameText(textInputLayout1: TextInputLayout, textInputLayout2: TextInputLayout) =
         getText(textInputLayout1) == getText(textInputLayout2)
 

@@ -30,5 +30,12 @@ class SearchFilter: JSONParsable, IDContent {
         updateJSONObject()
     }
 
+    fun getSqlBody() = JSONObject().apply {
+        put("gender", gender)
+        put("age_start", ageStart)
+        put("age_end", ageEnd)
+        put("distance", distance)
+    }
+
     override fun getUUID() = userId
 }

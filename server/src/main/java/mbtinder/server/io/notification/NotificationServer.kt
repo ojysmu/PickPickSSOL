@@ -6,6 +6,7 @@ import mbtinder.lib.util.IDList
 import mbtinder.lib.util.block
 import mbtinder.lib.util.sync
 import mbtinder.server.io.socket.SocketServer
+import mbtinder.server.util.UserUtil
 
 class NotificationServer private constructor(): CloseableThread() {
     companion object {
@@ -50,7 +51,12 @@ class NotificationServer private constructor(): CloseableThread() {
      * @param form: 전송할 알림의 제목과 내용이 포함된 형식
      * @return 추가 성공 여부
      */
-    fun addNotification(form: NotificationForm) = sync(notifications) { notifications.add(form) }
+    fun addNotification(form: NotificationForm) =
+        if (!UserUtil.getUser(form.receiverId)!!.notification) {
+            false
+        } else {
+            sync(notifications) { notifications.add(form) }
+        }
 
     /**
      * 알림 대기

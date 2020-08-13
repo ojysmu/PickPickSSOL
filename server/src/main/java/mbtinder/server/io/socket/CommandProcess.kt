@@ -31,6 +31,9 @@ object CommandProcess {
             Command.ADD_USER -> addUser(command)
             Command.GET_USER -> getUser(command)
             Command.UPDATE_USER -> updateUser(command)
+            Command.UPDATE_USER_DESCRIPTION -> updateUserDescription(command)
+            Command.UPDATE_SEARCH_FILTER -> updateSearchFilter(command)
+            Command.UPDATE_USER_NOTIFICATION -> updateUserNotification(command)
             Command.DELETE_USER -> deleteUser(command)
             Command.GET_USER_IMAGES -> TODO() // getUserImages(command)
             Command.DELETE_USER_IMAGE -> deleteUserImage(command)
@@ -160,6 +163,32 @@ object CommandProcess {
         return Connection.makePositiveResponse(command.uuid)
     }
 
+    private fun updateUserDescription(command: CommandContent): JSONObject {
+        val userId = command.arguments.getString("user_id")
+        val description = command.arguments.getString("description")
+        val sql = "UPDATE mbtinder.user SET description='$description' WHERE user_id='$userId'"
+        MySQLServer.getInstance().addQuery(sql)
+
+        return Connection.makePositiveResponse(command.uuid)
+    }
+
+    private fun updateSearchFilter(command: CommandContent): JSONObject {
+        val searchFilter = SearchFilter(command.arguments.getJSONObject("search_filter"))
+        val sql = "UPDATE mbtiner.user SET search_filter='${searchFilter.getSqlBody()}' WHERE user_id='${searchFilter.userId}'"
+        MySQLServer.getInstance().addQuery(sql)
+
+        return JSONObject()
+    }
+
+    private fun updateUserNotification(command: CommandContent): JSONObject {
+        val userId = command.arguments.getString("user_id")
+        val isEnabled = command.arguments.getBoolean("is_enabled")
+        val sql = "UPDATE mbtiner.user SET notification=$isEnabled WHERE user_id='$userId'"
+        MySQLServer.getInstance().addQuery(sql)
+
+        return Connection.makePositiveResponse(command.uuid)
+    }
+
     /**
      * 사용자 삭제 (회원탈퇴)
      * @param command: 인수는 다음이 포함되어야 함: 삭제할 사용자 ID
@@ -173,11 +202,11 @@ object CommandProcess {
         return Connection.makePositiveResponse(command.uuid)
     }
 
-    /**
-     * 사용자 프로필 이미지 경로 반환
-     * @param command: 인수는 다음이 포함되어야 함: 사용자 ID
-     * @return 이미지 ID 목록. 이미지가 존재하지 않을 때 [ServerResponse.IMAGE_NOT_FOUND]
-     */
+//    /**
+//     * 사용자 프로필 이미지 경로 반환
+//     * @param command: 인수는 다음이 포함되어야 함: 사용자 ID
+//     * @return 이미지 ID 목록. 이미지가 존재하지 않을 때 [ServerResponse.IMAGE_NOT_FOUND]
+//     */
 //    private fun getUserImages(command: CommandContent): JSONObject {
 //        val userId = UUID.fromString(command.arguments.getString("user_id"))
 //

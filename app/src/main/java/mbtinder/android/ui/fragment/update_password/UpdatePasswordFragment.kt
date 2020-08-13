@@ -7,8 +7,9 @@ import kotlinx.android.synthetic.main.fragment_update_password.*
 import mbtinder.android.R
 import mbtinder.android.io.socket.CommandProcess
 import mbtinder.android.ui.model.ProgressFragment
-import mbtinder.android.util.ThreadUtil
 import mbtinder.android.util.ViewUtil
+import mbtinder.android.util.runOnBackground
+import mbtinder.android.util.runOnUiThread
 import java.util.*
 
 class UpdatePasswordFragment : ProgressFragment(R.layout.fragment_update_password) {
@@ -22,11 +23,11 @@ class UpdatePasswordFragment : ProgressFragment(R.layout.fragment_update_passwor
 
         switchable_next.setOnClickListener {
             switchWaitingStatus()
-            ThreadUtil.runOnBackground {
+            runOnBackground {
                 val password = ViewUtil.getText(update_password_password) // TODO: encrypt
                 val updateResult = CommandProcess.updatePassword(userId, password)
                 if (updateResult.isSucceed) {
-                    ThreadUtil.runOnUiThread {
+                    runOnUiThread {
                         Toast.makeText(requireContext(), R.string.update_password_succeed, Toast.LENGTH_SHORT).show()
                         findNavController().popBackStack()
                     }

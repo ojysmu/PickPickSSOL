@@ -9,7 +9,8 @@ import mbtinder.android.R
 import mbtinder.android.component.StaticComponent
 import mbtinder.android.io.socket.CommandProcess
 import mbtinder.android.ui.model.Fragment
-import mbtinder.android.util.ThreadUtil
+import mbtinder.android.util.runOnBackground
+import mbtinder.android.util.runOnUiThread
 import mbtinder.lib.component.MessageContent
 import mbtinder.lib.util.IDList
 import mbtinder.lib.util.toIDList
@@ -23,9 +24,9 @@ class MessageListFragment: Fragment(R.layout.fragment_message_list) {
         message_list_recycler_view.layoutManager = LinearLayoutManager(requireContext())
         message_list_recycler_view.itemAnimator = DefaultItemAnimator()
 
-        ThreadUtil.runOnBackground {
+        runOnBackground {
             if (updateLastMessages()) {
-                ThreadUtil.runOnUiThread {
+                runOnUiThread {
                     chatAdapter = ChatAdapter(this, lastMessages!!)
                     message_list_recycler_view.adapter = chatAdapter
                     message_list_recycler_view.visibility = View.VISIBLE

@@ -14,6 +14,7 @@ import java.net.Socket
 import java.util.*
 
 class Connection(private val socket: Socket): CloseableThread(), IDContent {
+    private val emptyMessage = JSONObject()
     private val dataInputStream = DataInputStream(socket.getInputStream())
     private val dataOutputStream = DataOutputStream(socket.getOutputStream())
     private var token = UUID.randomUUID()
@@ -51,6 +52,10 @@ class Connection(private val socket: Socket): CloseableThread(), IDContent {
     fun getHostAddress() = socket.inetAddress.hostAddress!!
 
     private fun send(serverMessage: JSONObject) {
+        if (serverMessage == emptyMessage) {
+            return
+        }
+
         println("send(): message=$serverMessage")
 
         dataOutputStream.writeUTF(serverMessage.toString())

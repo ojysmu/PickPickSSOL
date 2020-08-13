@@ -3,10 +3,9 @@ package mbtinder.android.service
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
-import mbtinder.android.io.database.SQLiteConnection
 import mbtinder.android.io.socket.SocketClient
 import mbtinder.android.util.Log
-import mbtinder.android.util.ThreadUtil
+import mbtinder.android.util.runOnBackground
 import mbtinder.lib.constant.ServerPath
 
 class ThreadService : Service() {
@@ -15,7 +14,7 @@ class ThreadService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         return if (flag) {
             flag = false
-            ThreadUtil.runOnBackground {
+            runOnBackground {
                 Thread.sleep(1000)
 
                 onTaskRemoved(intent)

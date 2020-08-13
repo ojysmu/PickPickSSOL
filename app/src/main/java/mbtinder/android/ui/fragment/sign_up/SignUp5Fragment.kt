@@ -14,8 +14,9 @@ import mbtinder.android.WebViewActivity
 import mbtinder.android.component.StaticComponent
 import mbtinder.android.io.socket.CommandProcess
 import mbtinder.android.ui.model.Fragment
-import mbtinder.android.util.ThreadUtil
 import mbtinder.android.util.ViewUtil
+import mbtinder.android.util.runOnBackground
+import mbtinder.android.util.runOnUiThread
 import mbtinder.lib.component.user.MBTIContent
 import mbtinder.lib.component.user.SignUpQuestionContent
 import mbtinder.lib.constant.MBTI
@@ -55,7 +56,7 @@ class SignUp5Fragment : Fragment(R.layout.fragment_sign_up5) {
             }
 
             ViewUtil.switchNextButton(layout_sign_up5)
-            ThreadUtil.runOnBackground {
+            runOnBackground {
                 if (isSignInDone || signUp()) {
                     isSignInDone = true
 
@@ -66,7 +67,7 @@ class SignUp5Fragment : Fragment(R.layout.fragment_sign_up5) {
                     if (mbtiResult && questionResult) {
                         findNavController().navigate(R.id.action_to_home)
                     } else {
-                        ThreadUtil.runOnUiThread {
+                        runOnUiThread {
                             ViewUtil.switchNextButton(layout_sign_up5)
                             Toast.makeText(requireContext(), R.string.sign_up5_failed, Toast.LENGTH_SHORT).show()
                         }
@@ -90,7 +91,7 @@ class SignUp5Fragment : Fragment(R.layout.fragment_sign_up5) {
         return if (signUpResult.isSucceed) {
             signIn()
         } else {
-            ThreadUtil.runOnUiThread {
+            runOnUiThread {
                 ViewUtil.switchNextButton(layout_sign_up3)
                 Toast.makeText(requireContext(), R.string.sign_up3_sign_up_failed, Toast.LENGTH_SHORT).show()
             }

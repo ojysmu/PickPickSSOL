@@ -7,12 +7,7 @@ import androidx.navigation.fragment.findNavController
 import kotlinx.android.synthetic.main.fragment_sign_in.*
 import mbtinder.android.R
 import mbtinder.android.component.StaticComponent
-import mbtinder.android.io.database.SQLiteConnection
-import mbtinder.android.io.http.SQLiteDownloader
-import mbtinder.android.io.socket.CommandProcess
 import mbtinder.android.ui.model.Fragment
-import mbtinder.android.util.SharedPreferencesUtil
-import mbtinder.android.util.ThreadUtil
 import mbtinder.android.util.ViewUtil
 
 class SignInFragment : Fragment(R.layout.fragment_sign_in) {

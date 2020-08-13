@@ -9,10 +9,7 @@ import kotlinx.android.synthetic.main.fragment_splash.*
 import mbtinder.android.R
 import mbtinder.android.component.StaticComponent
 import mbtinder.android.ui.model.Fragment
-import mbtinder.android.util.LocationUtil
-import mbtinder.android.util.Log
-import mbtinder.android.util.SharedPreferencesUtil
-import mbtinder.android.util.ThreadUtil
+import mbtinder.android.util.*
 
 class SplashFragment : Fragment(R.layout.fragment_splash) {
     override fun initializeView() {
@@ -22,10 +19,10 @@ class SplashFragment : Fragment(R.layout.fragment_splash) {
             val (email, password) = getAccountInfo()
             StaticComponent.signIn(this, email, password) {
                 Toast.makeText(requireContext(), R.string.splash_failed_to_sign_in, Toast.LENGTH_SHORT).show()
-                ThreadUtil.runOnBackground { removeAccountInfo(); loadAnimation() }
+                runOnBackground { removeAccountInfo(); loadAnimation() }
             }
         } else {
-            ThreadUtil.runOnBackground { loadAnimation() }
+            runOnBackground { loadAnimation() }
         }
     }
 
@@ -37,17 +34,17 @@ class SplashFragment : Fragment(R.layout.fragment_splash) {
             500L
         }
 
-        ThreadUtil.runOnUiThread {
+        runOnUiThread {
             ObjectAnimator.ofFloat(splash_logo, "translationY", -1000f).apply {
                 duration = animationDuration
                 Log.v("duration=$duration")
             }.start()
 
-            ThreadUtil.runOnBackground {
+            runOnBackground {
                 Thread.sleep(animationDuration)
                 isAnimated = true
                 Log.v("true")
-                ThreadUtil.runOnUiThread(this::initializeSignUp)
+                runOnUiThread(this::initializeSignUp)
             }
         }
     }

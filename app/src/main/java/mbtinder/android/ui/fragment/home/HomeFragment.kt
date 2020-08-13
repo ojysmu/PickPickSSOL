@@ -11,7 +11,8 @@ import mbtinder.android.R
 import mbtinder.android.component.StaticComponent
 import mbtinder.android.io.socket.CommandProcess
 import mbtinder.android.ui.model.Fragment
-import mbtinder.android.util.ThreadUtil
+import mbtinder.android.util.runOnBackground
+import mbtinder.android.util.runOnUiThread
 import mbtinder.lib.component.CardStackContent
 
 class HomeFragment : Fragment(R.layout.fragment_home) {
@@ -50,19 +51,19 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     }
 
     fun updateCardStack(onUpdateFinished: ((isSucceed: Boolean, content: CardStackContent?) -> Unit)? = null) {
-        ThreadUtil.runOnBackground {
+        runOnBackground {
             val getResult = CommandProcess.getMatchableUsers(StaticComponent.user.userId)
             if (getResult.isSucceed) {
                 val contents = getResult.result!!
 
-                ThreadUtil.runOnUiThread {
+                runOnUiThread {
                     cardStackAdapter.addContents(contents)
 
                     home_waiting.visibility = View.INVISIBLE
                     home_card_stack_view.visibility = View.VISIBLE
                 }
             } else {
-                ThreadUtil.runOnUiThread {
+                runOnUiThread {
                     Toast.makeText(requireContext(), R.string.home_stack_update_failed, Toast.LENGTH_SHORT).show()
                     onUpdateFinished?.invoke(false, null)
                 }
@@ -93,7 +94,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         }
 
         override fun onCardSwiped(direction: Direction?) {
-            ThreadUtil.runOnBackground {
+            runOnBackground {
                 val opponentId = cardStackAdapter.contents[currentPosition].userId
 
                 val isPicked = CommandProcess.pick(

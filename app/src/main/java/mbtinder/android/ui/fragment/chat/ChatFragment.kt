@@ -10,7 +10,8 @@ import mbtinder.android.R
 import mbtinder.android.component.StaticComponent
 import mbtinder.android.io.socket.CommandProcess
 import mbtinder.android.ui.model.Fragment
-import mbtinder.android.util.ThreadUtil
+import mbtinder.android.util.runOnBackground
+import mbtinder.android.util.runOnUiThread
 import mbtinder.lib.component.MessageContent
 import mbtinder.lib.util.IDList
 import mbtinder.lib.util.toIDList
@@ -28,10 +29,10 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
         chat_recycler_view.layoutManager = LinearLayoutManager(requireContext())
         chat_recycler_view.itemAnimator = DefaultItemAnimator()
 
-        ThreadUtil.runOnBackground {
+        runOnBackground {
             val result = updateMessages()
             if (result) {
-                ThreadUtil.runOnUiThread {
+                runOnUiThread {
                     adapter = MessageAdapter(messages[chatId])
 
                     chat_send.isEnabled = true

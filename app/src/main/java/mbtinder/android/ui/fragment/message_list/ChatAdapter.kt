@@ -11,6 +11,7 @@ import java.util.*
 class ChatAdapter(private val fragment: MessageListFragment, private val contents: MutableList<MessageContent>)
     : Adapter<MessageContent>(R.layout.card_chat_list, contents, ChatViewHolder::class.java) {
 
+
     override fun onBindViewHolder(holder: AdaptableViewHolder<MessageContent>, position: Int) {
         (holder as ChatViewHolder).adapter = this
         holder.adapt(contents[position])
@@ -21,5 +22,9 @@ class ChatAdapter(private val fragment: MessageListFragment, private val content
         arguments.putString("chat_id", chatId.toString())
 
         fragment.findNavController().navigate(R.id.action_to_chat, arguments)
+    }
+
+    fun updateFilter(string: String) {
+        updateContents(contents.filter { it.opponentName.contains(string) }.toMutableList())
     }
 }

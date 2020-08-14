@@ -154,6 +154,7 @@ class AccountFragment : Fragment(R.layout.fragment_account) {
                     val result = CommandProcess.uploadProfileImage(StaticComponent.user.userId, selectedProfileImage)
                     Log.v("AccountFragment.onActivityResult(): result=$result")
                     if (result.isSucceed) {
+                        StaticComponent.setUserImage(StaticComponent.user.userId, selectedProfileImage)
                         runOnUiThread {
                             account_profile.setImageBitmap(ImageUtil.byteArrayToBitmap(selectedProfileImage))
                         }

@@ -67,12 +67,16 @@ abstract class Fragment(@LayoutRes private val layout: Int) : Fragment(), View.O
 
     protected fun getFocusCount(v: View): Int = focusCount.getOrDefault(ViewUtil.filterEditText(v), 0)
 
-    protected fun initializeFocusableEditText(textInputLayout: TextInputLayout, afterTextChanged: (Editable?) -> Unit, leaveEvent: (() -> Unit)? = null) {
-        textInputLayout.editText!!.onFocusChangeListener = this
-        textInputLayout.editText!!.addTextChangedListener(afterTextChanged = afterTextChanged)
+    protected fun initializeFocusableEditText(editText: EditText, afterTextChanged: (Editable?) -> Unit, leaveEvent: (() -> Unit)? = null) {
+        editText.onFocusChangeListener = this
+        editText.addTextChangedListener(afterTextChanged = afterTextChanged)
         if (leaveEvent != null) {
-            addFocusEvent(textInputLayout, leaveEvent)
+            addFocusEvent(editText, leaveEvent)
         }
+    }
+
+    protected fun initializeFocusableEditText(textInputLayout: TextInputLayout, afterTextChanged: (Editable?) -> Unit, leaveEvent: (() -> Unit)? = null) {
+        initializeFocusableEditText(textInputLayout.editText!!, afterTextChanged, leaveEvent)
     }
 
     protected fun onInputIssued(input: TextInputLayout, @StringRes message: Int, formStateChecker: FormStateChecker?) {

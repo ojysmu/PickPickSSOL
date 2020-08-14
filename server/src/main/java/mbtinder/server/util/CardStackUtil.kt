@@ -59,9 +59,9 @@ object CardStackUtil {
         val finderSignUpQuestionContents = findSignUpQuestion(finderId)
 
         return cardStacks!!.clone()
-            .filter { it.userId != finderId && !metList.contains(it.userId) }
-            .filter { filter.isInRange(finderCoordinator, it) }
-            .filter { UserUtil.getMatchingScore(finderMBTI, finderSignUpQuestionContents, it) >= 30 }
+            .filter { val x = it.userId != finderId && !metList.contains(it.userId); println("F1: id=${it.userId}, $x"); x }
+            .filter { val x = filter.isInRange(finderCoordinator, it); println("F2: id=${it.userId}, $x"); x }
+            .filter { val x = UserUtil.getMatchingScore(finderMBTI, finderSignUpQuestionContents, it) >= 30; println("F2: id=${it.userId}, $x"); x }
             .sorted()
     }
 

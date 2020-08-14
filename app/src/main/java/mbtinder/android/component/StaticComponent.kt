@@ -33,13 +33,15 @@ object StaticComponent {
                     runOnBackground {
                         val coordinator = LocationUtil.onLocationPermissionGranted(fragment.requireContext())
                         Log.v("StaticComponent.signIn(): coordinator=$coordinator")
+                        user.lastLocationLng = coordinator.longitude
+                        user.lastLocationLat = coordinator.latitude
                         CommandProcess.setCoordinator(user.userId, coordinator)
+
+                        fragment.findNavController().navigate(R.id.action_to_home)
                     }
                 } else {
                     LocationUtil.requestLocationPermission(fragment.requireActivity())
                 }
-
-                fragment.findNavController().navigate(R.id.action_to_home)
             } else {
                 runOnUiThread { onFailed?.invoke() }
             }
@@ -60,5 +62,9 @@ object StaticComponent {
         } else {
             found
         }
+    }
+
+    fun setUserImage(userId: UUID, rawImage: ByteArray) {
+        userImages.find { it.userId == userId }?.setImage(rawImage)
     }
 }

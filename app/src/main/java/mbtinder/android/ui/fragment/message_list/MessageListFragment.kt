@@ -1,5 +1,6 @@
 package mbtinder.android.ui.fragment.message_list
 
+import android.text.Editable
 import android.view.View
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -20,6 +21,8 @@ class MessageListFragment: Fragment(R.layout.fragment_message_list) {
 
     override fun initializeView() {
         requireActivity().findViewById<BottomNavigationView>(R.id.nav_view).visibility = View.VISIBLE
+
+        initializeFocusableEditText(message_list_search, this::onSearchChanged)
 
         message_list_recycler_view.layoutManager = LinearLayoutManager(requireContext())
         message_list_recycler_view.itemAnimator = DefaultItemAnimator()
@@ -44,6 +47,16 @@ class MessageListFragment: Fragment(R.layout.fragment_message_list) {
         }
 
         return getResult.isSucceed
+    }
+
+    private fun onSearchChanged(editable: Editable?) {
+        editable?.let {
+            if (editable.isNotBlank()) {
+                chatAdapter.updateFilter(editable.toString())
+            } else {
+                chatAdapter.updateContents(lastMessages!!)
+            }
+        }
     }
 
     companion object {

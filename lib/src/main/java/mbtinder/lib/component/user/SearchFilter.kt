@@ -34,8 +34,12 @@ class SearchFilter: JSONParsable, IDContent {
     override fun getUUID() = userId
 
     fun isInRange(userCoordinator: Coordinator, cardStackContent: CardStackContent) =
+        // 모두 또는 해당하는 성별
         (gender == 2 || gender == cardStackContent.gender)
-                && ageStart < cardStackContent.age
-                && ageEnd > cardStackContent.age
-                && distance > userCoordinator.getDistance(cardStackContent.coordinator)
+                // 최소 나이 이상인지
+                && ageStart <= cardStackContent.age
+                // 최대 나이 이하인지
+                && ageEnd >= cardStackContent.age
+                // 설정한 거리 이내인지
+                && distance > (userCoordinator.getDistance(cardStackContent.coordinator) / 1000)
 }

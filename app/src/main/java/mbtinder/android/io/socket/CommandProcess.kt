@@ -1,6 +1,7 @@
 package mbtinder.android.io.socket
 
 import mbtinder.android.io.component.ServerResult
+import mbtinder.android.io.http.ImageUploader
 import mbtinder.lib.component.*
 import mbtinder.lib.component.user.Coordinator
 import mbtinder.lib.component.user.SearchFilter
@@ -37,6 +38,18 @@ object CommandProcess {
         return SocketUtil.getVoidResult(
             SocketUtil.getServerResult(Command.ADD_USER, arguments)
         )
+    }
+
+    fun uploadProfileImage(userId: UUID, rawImage: ByteArray): ServerResult<Void> {
+        val uploader = ImageUploader(userId, rawImage)
+        uploader.start()
+
+        val result = uploader.getResult()
+        return if (result.getBoolean("result")) {
+            ServerResult(true)
+        } else {
+            ServerResult(false, result.getInt("code"))
+        }
     }
 
     fun updateUserDescription(userId: UUID, description: String): ServerResult<Void> {
@@ -118,13 +131,9 @@ object CommandProcess {
         )
     }
 
-    fun getSignUpQuestion() =
-        SocketUtil.getJSONListResult<SignUpQuestionContent>(
-            SocketUtil.getServerResult(
-                Command.GET_SIGN_UP_QUESTIONS,
-                JSONObject()
-            ), "questions"
-        )
+    fun getSignUpQuestion() = SocketUtil.getJSONListResult<SignUpQuestionContent>(
+        SocketUtil.getServerResult(Command.GET_SIGN_UP_QUESTIONS, JSONObject()), "questions"
+    )
 
     fun setSignUpQuestions(userId: UUID, signUpQuestions: JSONList<SignUpQuestionContent>): ServerResult<Void> {
         val forms: JSONList<SignUpQuestionContent.ConnectionForm> = signUpQuestions.mapTo(JSONList()) {
@@ -135,8 +144,7 @@ object CommandProcess {
         arguments.put("user_id", userId.toString())
         arguments.put("sign_up_questions", forms.toJSONArray())
 
-        val result =
-            SocketUtil.getServerResult(Command.SET_SIGN_UP_QUESTIONS, arguments)
+        val result = SocketUtil.getServerResult(Command.SET_SIGN_UP_QUESTIONS, arguments)
         return SocketUtil.getVoidResult(result)
     }
 
@@ -145,8 +153,9 @@ object CommandProcess {
         arguments.put("user_id", userId.toString())
         arguments.put("mbti", mbti)
 
-        val result = SocketUtil.getServerResult(Command.SET_MBTI, arguments)
-        return SocketUtil.getVoidResult(result)
+        return SocketUtil.getVoidResult(
+            SocketUtil.getServerResult(Command.SET_MBTI, arguments)
+        )
     }
 
     fun getMatchableUsers(userId: UUID, coordinator: Coordinator, searchFilter: SearchFilter): ServerResult<JSONList<CardStackContent>> {

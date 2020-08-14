@@ -1,5 +1,8 @@
 package mbtinder.android.ui.fragment.account
 
+import android.Manifest
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.widget.Toast
 import androidx.annotation.IdRes
 import kotlinx.android.synthetic.main.fragment_account.*
@@ -9,8 +12,12 @@ import mbtinder.android.io.socket.CommandProcess
 import mbtinder.android.ui.model.Fragment
 import mbtinder.android.util.*
 import mbtinder.lib.component.user.SearchFilter
+import java.io.FileInputStream
 
 class AccountFragment : Fragment(R.layout.fragment_account) {
+    private val requestCodeReadExternalStorage = 0x00
+    private val resultCodeAlbum = 0x00
+
     override fun initializeView() {
         account_profile.setImage(StaticComponent.getUserImage(StaticComponent.user.userId))
         account_description.editText!!.setText(StaticComponent.user.description)
@@ -22,6 +29,10 @@ class AccountFragment : Fragment(R.layout.fragment_account) {
         account_distance_indicator.text = getString(R.string.account_distance_indicator, account_distance_selector.value.toInt())
         account_notification_selector.isChecked = StaticComponent.user.notification
 
+        account_profile_edit.setOnClickListener {
+            requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), requestCodeReadExternalStorage)
+        }
+
         account_description_edit.setOnClickListener {
             val description = account_description.getText()
 
@@ -29,7 +40,9 @@ class AccountFragment : Fragment(R.layout.fragment_account) {
                 account_description.error = getString(R.string.account_description_error)
                 account_description.isErrorEnabled = true
             } else {
+                hideIme()
                 account_description.isErrorEnabled = false
+                account_description.clearFocus()
                 runOnBackground { CommandProcess.updateUserDescription(StaticComponent.user.userId, description) }
             }
         }
@@ -110,4 +123,41 @@ class AccountFragment : Fragment(R.layout.fragment_account) {
         account_age_selector.getEnd(),
         account_distance_selector.value.toInt()
     )
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        when (requestCode) {
+            requestCodeReadExternalStorage -> {
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    ViewUtil.callAlbum(this, resultCodeAlbum)
+                }
+            }
+            else -> super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        when (requestCode) {
+            resultCodeAlbum -> {
+                if (data == null || data.data == null) {
+                    return
+                }
+
+                val uri = data.data!!
+                val parcelFileDescriptor = requireContext().contentResolver.openFileDescriptor(uri, "r")!!
+                val selectedProfileImage: ByteArray
+
+                FileInputStream(parcelFileDescriptor.fileDescriptor).apply {
+                    selectedProfileImage = ImageUtil.resizeByteArray(readBytes())
+                    close()
+                }
+
+                account_profile.setImageBitmap(ImageUtil.byteArrayToBitmap(selectedProfileImage))
+                runOnBackground {
+                    val result = CommandProcess.uploadProfileImage(StaticComponent.user.userId, selectedProfileImage)
+                    Log.v("AccountFragment.onActivityResult(): result=$result")
+                }
+            }
+            else -> super.onActivityResult(requestCode, resultCode, data)
+        }
+    }
 }

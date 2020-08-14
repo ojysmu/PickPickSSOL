@@ -12,7 +12,7 @@ object SignUpQuestionUtil {
 
     private fun initializeQuestions() {
         if (questions == null) {
-            val sql = "SELECT * FROM mbtinder.sign_up_question"
+            val sql = "SELECT * FROM pickpick.sign_up_question"
             val rows = MySQLServer.getInstance().getResult(MySQLServer.getInstance().addQuery(sql)).content
             questions = rows.map { buildSignUpQuestion(it) }.sorted().toIDList()
         }

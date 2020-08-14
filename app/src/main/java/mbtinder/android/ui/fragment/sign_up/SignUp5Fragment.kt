@@ -89,7 +89,12 @@ class SignUp5Fragment : Fragment(R.layout.fragment_sign_up5) {
         )
 
         return if (signUpResult.isSucceed) {
-            signIn()
+            return if (signIn()) {
+                CommandProcess.uploadProfileImage(StaticComponent.user.userId, requireArguments().getByteArray("profile")!!)
+                true
+            } else {
+                false
+            }
         } else {
             runOnUiThread {
                 ViewUtil.switchNextButton(layout_sign_up3)

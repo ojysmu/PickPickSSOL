@@ -7,11 +7,9 @@ import android.text.Editable
 import androidx.navigation.fragment.findNavController
 import kotlinx.android.synthetic.main.fragment_sign_up4.*
 import mbtinder.android.R
+import mbtinder.android.io.socket.CommandProcess
 import mbtinder.android.ui.model.Fragment
-import mbtinder.android.util.FormStateChecker
-import mbtinder.android.util.ImageUtil
-import mbtinder.android.util.ViewUtil
-import mbtinder.android.util.getText
+import mbtinder.android.util.*
 import java.io.FileInputStream
 
 class SignUp4Fragment : Fragment(R.layout.fragment_sign_up4) {

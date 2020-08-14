@@ -10,12 +10,16 @@ import androidx.annotation.DrawableRes
 import androidx.core.app.NotificationCompat
 import mbtinder.android.R
 import mbtinder.android.component.NotificationContent.Companion.makeNotification
+import mbtinder.android.io.database.SQLiteConnection
+import mbtinder.android.ui.fragment.chat.ChatFragment
 import mbtinder.lib.component.IDContent
+import mbtinder.lib.component.MessageContent
 import mbtinder.lib.constant.Notification
 import mbtinder.lib.util.idListOf
+import org.json.JSONObject
 
 val notifications = idListOf(
-    NotificationContent(Notification.MESSAGE_RECEIVED) { context, title, content ->
+    NotificationContent(Notification.MATCHED) { context, title, content, _ ->
         val builder = makeNotification(
             context,
             R.mipmap.ic_launcher,
@@ -27,11 +31,25 @@ val notifications = idListOf(
             NotificationManager.IMPORTANCE_HIGH
         )
         (context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).notify(0, builder.build())
+    },
+    NotificationContent(Notification.MESSAGE_RECEIVED) { context, title, content, extra ->
+        val builder = makeNotification(
+            context,
+            R.mipmap.ic_launcher,
+            title,
+            content,
+            NotificationCompat.PRIORITY_HIGH,
+            null,
+            true,
+            NotificationManager.IMPORTANCE_HIGH
+        )
+        (context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).notify(0, builder.build())
+        ChatFragment.addMessage(MessageContent(extra!!))
     }
 )
 
 data class NotificationContent(val notification: Notification,
-                               val perform: (context: Context, title: String, content: String) -> Unit): IDContent {
+                               val perform: (context: Context, title: String, content: String, extra: JSONObject?) -> Unit): IDContent {
     override fun getUUID() = notification.notificationId
 
     companion object {

@@ -471,14 +471,14 @@ object CommandProcess {
 
         // 사용자 알림 보내기
         NotificationServer.getInstance().addNotification(NotificationForm(
-            notification = Notification.MESSAGE_RECEIVED,
+            notification = Notification.MATCHED,
             receiverId = senderId,
             title = "매칭되었습니다.",
             content = "서로 PICK했어요! 메시지를 확인해보세요."
         ))
         // 상대방 알림 보내기
         NotificationServer.getInstance().addNotification(NotificationForm(
-            notification = Notification.MESSAGE_RECEIVED,
+            notification = Notification.MATCHED,
             receiverId = receiverId,
             title = "매칭되었습니다.",
             content = "내가 PICK한 사용자가 나를 PICK했어요! 메시지를 확인해보세요."
@@ -580,7 +580,8 @@ object CommandProcess {
             notification = Notification.MESSAGE_RECEIVED,
             receiverId = receiverId,
             title = "메시지가 도착했습니다.",
-            content = "메시지를 확인해보세요."
+            content = "메시지를 확인해보세요.",
+            extra = messageContent.toJSONObject()
         ))
 
         return Connection.makePositiveResponse(command.uuid, JSONObject().apply { put("timestamp", timestamp) })

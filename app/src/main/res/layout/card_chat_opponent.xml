@@ -23,6 +23,7 @@
     </com.google.android.material.card.MaterialCardView>
 
     <com.google.android.material.card.MaterialCardView
+        android:id="@+id/card_chat_content_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginVertical="@dimen/card_vertical_margin"
@@ -44,4 +45,16 @@
             android:fontFamily="@font/noto_sans_cjk_kr_regular"
             android:includeFontPadding="false"/>
     </com.google.android.material.card.MaterialCardView>
+
+    <TextView
+        android:id="@+id/card_chat_timestamp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/card_horizontal_margin"
+        android:text="@string/chat_timestamp_format"
+        android:textSize="@dimen/text_small2"
+        android:fontFamily="@font/noto_sans_cjk_kr_regular"
+        android:includeFontPadding="false"
+        app:layout_constraintStart_toEndOf="@id/card_chat_content_container"
+        app:layout_constraintBottom_toBottomOf="@id/card_chat_content_container" />
 </androidx.constraintlayout.widget.ConstraintLayout>

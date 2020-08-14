@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import mbtinder.android.R
 import mbtinder.android.component.StaticComponent
+import mbtinder.android.util.Log
 import mbtinder.lib.component.MessageContent
 
 class MessageAdapter(private val contents: ArrayList<MessageContent>) : RecyclerView.Adapter<MessageViewHolder>() {
@@ -42,13 +43,27 @@ class MessageAdapter(private val contents: ArrayList<MessageContent>) : Recycler
     }
 
     private fun bindUser(holder: MessageUserViewHolder, position: Int) {
-        holder.contentTextView.text = contents[position].body
+        holder.contentTextView.text = addNewLine(contents[position].body)
     }
 
     private fun bindOpponent(holder: MessageOpponentViewHolder, position: Int) {
         val content = contents[position]
         holder.opponentImageView.setImage(StaticComponent.getUserImage(content.senderId))
-        holder.contentTextView.text = content.body
+        holder.contentTextView.text = addNewLine(content.body)
+    }
+
+    private fun addNewLine(body: String, width: Int = 20): String {
+        var original = StringBuilder(body)
+        val added = StringBuilder()
+
+        while (original.length > width) {
+            val formatted = String.format("%.${width}s", original.toString()).trim()
+            added.append(formatted).append('\n')
+            original = original.delete(0, width)
+        }
+
+        added.append(original)
+        return added.toString()
     }
 
     companion object {

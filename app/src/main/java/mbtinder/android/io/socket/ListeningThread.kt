@@ -23,8 +23,9 @@ internal class ListeningThread(private val context: Context,
                     val id = UUID.fromString(response.getString("notification_id"))
                     val title = response.getString("title")
                     val content = response.getString("content")
+                    val extra = hasNotificationExtra(response)
 
-                    notifications[id].perform(context, title, content)
+                    notifications[id].perform(context, title, content, extra)
                 } else {
                     SocketClient.getInstance().addResult(CommandResult(response))
                 }
@@ -39,5 +40,11 @@ internal class ListeningThread(private val context: Context,
         response.getBoolean("is_notification")
     } catch (e: JSONException) {
         false
+    }
+
+    private fun hasNotificationExtra(response: JSONObject) = try {
+        response.getJSONObject("extra")
+    } catch (e: JSONException) {
+        null
     }
 }

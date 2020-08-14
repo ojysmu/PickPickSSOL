@@ -6,15 +6,17 @@
     android:layout_height="wrap_content">
 
     <com.google.android.material.card.MaterialCardView
+        android:id="@+id/card_chat_content_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginVertical="@dimen/card_vertical_margin"
-        android:layout_marginHorizontal="@dimen/card_horizontal_margin"
+        android:layout_marginEnd="@dimen/activity_horizontal_margin"
         android:backgroundTint="@color/colorPrimary"
         app:cardCornerRadius="8dp"
         app:cardElevation="0dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@id/card_chat_timestamp"
         app:layout_constraintEnd_toEndOf="parent">
 
         <TextView
@@ -23,8 +25,26 @@
             android:layout_height="wrap_content"
             android:layout_marginVertical="@dimen/card_vertical_margin"
             android:layout_marginHorizontal="@dimen/card_horizontal_margin"
+            android:textAlignment="textEnd"
             android:textColor="@android:color/white"
+            android:ellipsize="none"
+            android:scrollHorizontally="false"
             android:fontFamily="@font/noto_sans_cjk_kr_regular"
             android:includeFontPadding="false"/>
     </com.google.android.material.card.MaterialCardView>
+
+    <TextView
+        android:id="@+id/card_chat_timestamp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/activity_horizontal_margin"
+        android:layout_marginEnd="@dimen/card_horizontal_margin"
+        android:text="@string/chat_timestamp_format"
+        android:textSize="@dimen/text_small2"
+        android:textAlignment="textEnd"
+        android:fontFamily="@font/noto_sans_cjk_kr_regular"
+        android:includeFontPadding="false"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/card_chat_content_container"
+        app:layout_constraintBottom_toBottomOf="@id/card_chat_content_container" />
 </androidx.constraintlayout.widget.ConstraintLayout>

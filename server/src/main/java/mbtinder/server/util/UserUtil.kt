@@ -1,41 +1,15 @@
 package mbtinder.server.util
 
 import mbtinder.lib.component.CardStackContent
+import mbtinder.lib.component.database.Row
+import mbtinder.lib.component.user.SearchFilter
 import mbtinder.lib.component.user.SignUpQuestionContent
 import mbtinder.lib.component.user.UserContent
 import mbtinder.lib.constant.MBTI
-import mbtinder.lib.util.*
-import mbtinder.server.constant.LocalFile
 import mbtinder.server.io.database.MySQLServer
-import mbtinder.lib.component.database.Row
-import mbtinder.lib.component.user.SearchFilter
 import java.util.*
 
 object UserUtil {
-    private const val UPDATE_DURATION = 60 * 1000
-
-    private var users: ImmutableList<UserContent> = updateUsers()
-    private var lastUpdate: Long = 0
-
-    private fun updateUsers(): ImmutableList<UserContent> {
-        println("UserUtil.updateUsers() START")
-
-        val sql = "SELECT * FROM mbtinder.user"
-        val queryId = MySQLServer.getInstance().addQuery(sql)
-        val queryResult = MySQLServer.getInstance().getResult(queryId)
-
-        lastUpdate = System.currentTimeMillis()
-        users = queryResult.content.map { buildUser(it) }.sorted().toImmutableList()
-
-        return users
-    }
-
-    private fun ensureUpdate() {
-        if (lastUpdate < System.currentTimeMillis() - UPDATE_DURATION) {
-            users = updateUsers()
-        }
-    }
-
     private fun buildUser(row: Row) = UserContent(
         userId = row.getUUID("user_id"),
         email = row.getString("email"),
@@ -53,30 +27,37 @@ object UserUtil {
     )
 
     fun getUser(userId: UUID, needPassword: Boolean = false): UserContent? {
-        ensureUpdate()
+        val sql = "SELECT * FROM pickpick.user WHERE user_id='$userId'"
+        val queryId = MySQLServer.getInstance().addQuery(sql)
+        val queryResult = MySQLServer.getInstance().getResult(queryId)
+        if (queryResult.content.isEmpty()) {
+            return null
+        }
 
-        return findBinaryTwice(users, this::updateUsers) { it.userId.compareTo(userId) }?.withPassword(needPassword)
+        val user = buildUser(queryResult.content[0])
+        if (!needPassword) {
+            user.password = ""
+            user.passwordAnswer = ""
+        }
+
+        return user
     }
 
     fun getUserByEmail(email: String, needPassword: Boolean = false): UserContent? {
-        ensureUpdate()
+        val sql = "SELECT * FROM pickpick.user WHERE email='$email'"
+        val queryId = MySQLServer.getInstance().addQuery(sql)
+        val queryResult = MySQLServer.getInstance().getResult(queryId)
+        if (queryResult.content.isEmpty()) {
+            return null
+        }
 
-        return findAllTwice(users, this::updateUsers) { it.email == email }?.withPassword(needPassword)
-    }
+        val user = buildUser(queryResult.content[0])
+        if (!needPassword) {
+            user.password = ""
+            user.passwordAnswer = ""
+        }
 
-    fun getUserIds() = users.getCloned().map { it.getUUID() }
-
-    fun getAllUsers() = users.getCloned()
-
-    fun getAllCardStacks() = users.getCloned().map { userContent: UserContent ->
-        CardStackContent(
-            userContent,
-            MBTI.findByName(loadJSONObject(LocalFile.getUserMBTIPath(userContent.userId)).getString("value")),
-            loadJSONList<SignUpQuestionContent.ConnectionForm>(LocalFile.getUserSignUpQuestionPath(userContent.userId))
-                .mapTo(JSONList()) { form: SignUpQuestionContent.ConnectionForm ->
-                    SignUpQuestionUtil.findByQuestionId(form.questionId)
-                }
-        )
+        return user
     }
 
     fun getMatchingScore(
@@ -104,11 +85,4 @@ object UserUtil {
 fun UserContent.hidePassword() = getCloned().apply {
     password = ""
     passwordAnswer = ""
-}
-
-fun UserContent.withPassword(needPassword: Boolean) = getCloned().apply {
-    if (!needPassword) {
-        password = ""
-        passwordAnswer = ""
-    }
 }

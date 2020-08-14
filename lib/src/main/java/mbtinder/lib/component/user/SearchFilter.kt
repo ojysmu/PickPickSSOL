@@ -1,5 +1,6 @@
 package mbtinder.lib.component.user
 
+import mbtinder.lib.component.CardStackContent
 import mbtinder.lib.component.IDContent
 import mbtinder.lib.component.json.JSONParsable
 import org.json.JSONObject
@@ -30,12 +31,11 @@ class SearchFilter: JSONParsable, IDContent {
         updateJSONObject()
     }
 
-    fun getSqlBody() = JSONObject().apply {
-        put("gender", gender)
-        put("age_start", ageStart)
-        put("age_end", ageEnd)
-        put("distance", distance)
-    }
-
     override fun getUUID() = userId
+
+    fun isInRange(userCoordinator: Coordinator, cardStackContent: CardStackContent) =
+        gender == cardStackContent.gender
+                && ageStart < cardStackContent.age
+                && ageEnd > cardStackContent.age
+                && distance > userCoordinator.getDistance(cardStackContent.coordinator)
 }

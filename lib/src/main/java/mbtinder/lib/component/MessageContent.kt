@@ -39,7 +39,7 @@ class MessageContent: JSONParsable, Comparable<MessageContent>, IDContent {
                 "'$senderId', '$receiverId', $timestamp, '$body')"
 
     fun getServerInsertMessageSql(): String {
-        return "INSERT INTO mbtinder.message (" +
+        return "INSERT INTO pickpick.message (" +
                 "chat_id,    sender_id,   receiver_id,  timestamp,   body" +
                 ") VALUES (" +
                 "'$chatId', '$senderId', '$receiverId', $timestamp, '$body')"

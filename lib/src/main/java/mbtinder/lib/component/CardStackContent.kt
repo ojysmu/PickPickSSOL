@@ -2,6 +2,7 @@ package mbtinder.lib.component
 
 import mbtinder.lib.annotation.SkipParsing
 import mbtinder.lib.component.json.JSONParsable
+import mbtinder.lib.component.user.Coordinator
 import mbtinder.lib.component.user.SignUpQuestionContent
 import mbtinder.lib.component.user.UserContent
 import mbtinder.lib.constant.MBTI
@@ -14,6 +15,8 @@ class CardStackContent: JSONParsable, IDContent, ImageComponent, CloneableConten
     lateinit var userId: UUID
     lateinit var userName: String
     var age: Int = -1
+    var gender: Int = -1
+    lateinit var coordinator: Coordinator
     lateinit var description: String
     lateinit var mbti: MBTI
     lateinit var contents: JSONList<SignUpQuestionContent>
@@ -47,12 +50,14 @@ class CardStackContent: JSONParsable, IDContent, ImageComponent, CloneableConten
         updateJSONObject()
     }
 
-    constructor(userId: UUID, userName: String, age: Int, description: String, mbti: MBTI,
-                contents: JSONList<SignUpQuestionContent>, score: Int = 0) {
+    constructor(userId: UUID, userName: String, age: Int, gender: Int, coordinator: Coordinator, description: String,
+                mbti: MBTI, contents: JSONList<SignUpQuestionContent>, score: Int = 0) {
         println("CardStackContent(): 2")
         this.userId = userId
         this.userName = userName
         this.age = age
+        this.gender = gender
+        this.coordinator = coordinator
         this.description = description
         this.mbti = mbti
         this.contents = contents
@@ -77,7 +82,22 @@ class CardStackContent: JSONParsable, IDContent, ImageComponent, CloneableConten
         this.image = image
     }
 
-    override fun getCloned() = CardStackContent(userId, userName, age, description, mbti, contents, score)
+    override fun getCloned() = CardStackContent(
+        userId = userId,
+        userName = userName,
+        age = age,
+        gender = gender,
+        coordinator = coordinator,
+        description = description,
+        mbti = mbti,
+        contents = contents,
+        score = score
+    )
 
     override fun compareTo(other: CardStackContent) = userId.compareTo(other.userId)
+
+    companion object {
+        fun getSelectAllSql() =
+            "SELECT user_id, name, age, gender, last_location_lng, last_location_lat, description FROM pickpick.user"
+    }
 }

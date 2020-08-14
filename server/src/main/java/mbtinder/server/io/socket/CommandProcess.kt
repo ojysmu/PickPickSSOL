@@ -166,7 +166,7 @@ object CommandProcess {
     private fun updateUserDescription(command: CommandContent): JSONObject {
         val userId = command.arguments.getString("user_id")
         val description = command.arguments.getString("description")
-        val sql = "UPDATE mbtinder.user SET description='$description' WHERE user_id='$userId'"
+        val sql = "UPDATE pickpick.user SET description='$description' WHERE user_id='$userId'"
         MySQLServer.getInstance().addQuery(sql)
 
         return Connection.makePositiveResponse(command.uuid)
@@ -174,7 +174,12 @@ object CommandProcess {
 
     private fun updateSearchFilter(command: CommandContent): JSONObject {
         val searchFilter = SearchFilter(command.arguments.getJSONObject("search_filter"))
-        val sql = "UPDATE mbtinder.user SET search_filter='${searchFilter.getSqlBody()}' WHERE user_id='${searchFilter.userId}'"
+        val sql = "UPDATE pickpick.user SET " +
+                "filter_gender=${searchFilter.gender}, " +
+                "filter_age_start=${searchFilter.ageStart}, " +
+                "filter_age_end=${searchFilter.ageEnd}, " +
+                "filter_distance=${searchFilter.distance} " +
+                "WHERE user_id='${searchFilter.userId}'"
         MySQLServer.getInstance().addQuery(sql)
 
         return JSONObject()
@@ -197,7 +202,7 @@ object CommandProcess {
         val userId = UUID.fromString(command.arguments.getString("user_id"))
 
         // MySQL에서 삭제
-        MySQLServer.getInstance().addQuery("DELETE FROM mbtinder.user WHERE user_id='$userId'")
+        MySQLServer.getInstance().addQuery("DELETE FROM pickpick.user WHERE user_id='$userId'")
 
         val sqLiteConnection = SQLiteConnection.getConnection(userId)
         // 채팅 목록 불러오기
@@ -331,7 +336,7 @@ object CommandProcess {
         val userId = command.arguments.getString("user_id")
         val coordinator =
             Coordinator(command.arguments.getJSONObject("coordinator"))
-        val sql = "UPDATE mbtinder.user " +
+        val sql = "UPDATE pickpick.user " +
                 "SET last_location_lng=${coordinator.longitude}, last_location_lat=${coordinator.latitude} " +
                 "WHERE user_id='$userId'"
         MySQLServer.getInstance().addQuery(sql)
@@ -369,7 +374,7 @@ object CommandProcess {
         val userId = command.arguments.getString("user_id")
         // TODO: Encrypt
         val password = command.arguments.getString("password")
-        val sql = "UPDATE mbtinder.user SET `password`='$password' WHERE `user_id`='$userId'"
+        val sql = "UPDATE pickpick.user SET `password`='$password' WHERE `user_id`='$userId'"
         MySQLServer.getInstance().addQuery(sql)
 
         return Connection.makePositiveResponse(command.uuid)
@@ -383,13 +388,10 @@ object CommandProcess {
     private fun getMatchableUsers(command: CommandContent): JSONObject {
         // 탐색을 시도하는 사용자 ID
         val userId = UUID.fromString(command.arguments.getString("user_id"))
-        // 사용자 MBTI
-        val userMBTI = MBTI.findByName(
-            loadJSONObject(LocalFile.getUserMBTIPath(userId)).getString("value")
-        )
-        // 가입 시 입력한 취향
-        val userSignUpQuestions = loadJSONArray(LocalFile.getUserSignUpQuestionPath(userId))
-            .toJSONList<SignUpQuestionContent.ConnectionForm>()
+        // 사용자 위치
+        val userCoordinator = Coordinator(command.arguments.getJSONObject("coordinator"))
+        // 탐색 필터
+        val searchFilter = SearchFilter(command.arguments.getJSONObject("search_filter"))
 
         val sqLiteConnection = SQLiteConnection.getConnection(userId)
         val sql = "SELECT opponent_id FROM pick"
@@ -398,27 +400,12 @@ object CommandProcess {
         // 이미 목록에 나타났던 사용자 목록
         val metList = queryResult.content.map { it.getUUID("opponent_id") }
 
-        val filteredUsers = UserUtil.getUserIds()
-            // 본인과 이미 목록이 표시되었던 사용자 제외
-            .filter { it != userId && !metList.contains(it) }
-            // 가변인자 전달을 위한 배열 변환
-            .toTypedArray()
-        var length = 0
-        val filteredCards = CardStackUtil.findByUserIds(*filteredUsers)
-            // 매칭 점수가 30점 미만인 사용자 제외
-            .filter {
-                val score = UserUtil.getMatchingScore(userMBTI, userSignUpQuestions, it)
-                it.score = score
-                score >= 30
-            }
-            // 점수로 정렬
-            .sortedBy { it.score }
-            // 10개가 넘는 카드 제외
-            .filter { length++ < 10 }
-            .toJSONList()
-            .toJSONArray()
+        val filteredCardStackContent = CardStackUtil.findAll(userId, metList, userCoordinator, searchFilter).toJSONArray()
 
-        return Connection.makePositiveResponse(command.uuid, JSONObject().apply { put("users", filteredCards) })
+        return Connection.makePositiveResponse(
+            command.uuid,
+            JSONObject().apply { put("card_stack_contents", filteredCardStackContent) }
+        )
     }
 
     /**
@@ -475,7 +462,7 @@ object CommandProcess {
         receiverConnection.addQuery(SQLiteConnection.getInsertFirstMessageSql(chatId, senderId, receiverId))
 
         // MySQL 채팅 정보 삽입
-        MySQLServer.getInstance().addQuery("INSERT INTO mbtinder.chat (" +
+        MySQLServer.getInstance().addQuery("INSERT INTO pickpick.chat (" +
                 "chat_id, participant1, participant2" +
                 ") VALUES (" +
                 "'$chatId', '$senderId', '$receiverId')")
@@ -501,7 +488,7 @@ object CommandProcess {
     private fun deleteChat(command: CommandContent): JSONObject {
         val chatContent = ChatContent(command.arguments.getJSONObject("chat_content"))
         val dropSql = "DROP TABLE ${chatContent.chatId}"
-        val deleteSql = "DELETE FROM mbtinder.chat WHERE chat_id='${chatContent.chatId}'"
+        val deleteSql = "DELETE FROM pickpick.chat WHERE chat_id='${chatContent.chatId}'"
 
         SQLiteConnection.getConnection(chatContent.participant1).addQuery(dropSql)
         SQLiteConnection.getConnection(chatContent.participant2).addQuery(dropSql)

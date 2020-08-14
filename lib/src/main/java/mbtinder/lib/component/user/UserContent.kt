@@ -45,14 +45,14 @@ class UserContent: JSONParsable,
         updateJSONObject()
     }
 
-    fun getInsertSql() = "INSERT INTO mbtinder.user (" +
+    fun getInsertSql() = "INSERT INTO pickpick.user (" +
             "user_id, email, password, name, age, gender, description, last_location_lng, " +
             "last_location_lat, password_question, password_answer" +
             ") VALUES (" +
             "'$userId', '$email', '$password', '$name', '$age', $gender, '$description', $lastLocationLng, " +
             "$lastLocationLng, $passwordQuestionId, '$passwordAnswer')"
 
-    fun getUpdateSql() = "UPDATE mbtinder.user SET " +
+    fun getUpdateSql() = "UPDATE pickpick.user SET " +
             "password='$password', " +
             "name='$name', " +
             "description='$description', " +

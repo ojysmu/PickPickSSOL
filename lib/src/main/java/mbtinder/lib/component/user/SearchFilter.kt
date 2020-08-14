@@ -2,6 +2,7 @@ package mbtinder.lib.component.user
 
 import mbtinder.lib.component.CardStackContent
 import mbtinder.lib.component.IDContent
+import mbtinder.lib.component.database.Row
 import mbtinder.lib.component.json.JSONParsable
 import org.json.JSONObject
 import java.util.*
@@ -31,7 +32,15 @@ class SearchFilter: JSONParsable, IDContent {
         updateJSONObject()
     }
 
-    override fun getUUID() = userId
+    constructor(row: Row) {
+        this.userId = row.getUUID("user_id")
+        this.gender = row.getInt("filter_gender")
+        this.ageStart = row.getInt("filter_age_start")
+        this.ageEnd = row.getInt("filter_age_end")
+        this.distance = row.getInt("filter_distance")
+
+        updateJSONObject()
+    }
 
     fun isInRange(userCoordinator: Coordinator, cardStackContent: CardStackContent) =
         // 모두 또는 해당하는 성별
@@ -42,4 +51,10 @@ class SearchFilter: JSONParsable, IDContent {
                 && ageEnd >= cardStackContent.age
                 // 설정한 거리 이내인지
                 && distance > (userCoordinator.getDistance(cardStackContent.coordinator) / 1000)
+
+    fun getUpdateSql() = "UPDATE pickpick.user " +
+            "SET filter_gender=$gender, filter_age_start=$ageStart, filter_age_end=$ageEnd, filter_distance=$distance " +
+            "WHERE user_id='$userId'"
+
+    override fun getUUID() = userId
 }

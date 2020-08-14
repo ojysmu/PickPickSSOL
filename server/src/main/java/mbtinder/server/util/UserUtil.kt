@@ -23,7 +23,7 @@ object UserUtil {
         lastLocationLat = row.getDouble("last_location_lat"),
         passwordQuestionId = row.getInt("password_question"),
         passwordAnswer = row.getString("password_answer"),
-        searchFilter = SearchFilter(row.getJSONObject("search_filter"))
+        searchFilter = SearchFilter(row)
     )
 
     fun getUser(userId: UUID, needPassword: Boolean = false): UserContent? {

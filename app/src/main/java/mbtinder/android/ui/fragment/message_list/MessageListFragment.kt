@@ -2,6 +2,7 @@ package mbtinder.android.ui.fragment.message_list
 
 import android.text.Editable
 import android.view.View
+import android.widget.Toast
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -10,6 +11,7 @@ import mbtinder.android.R
 import mbtinder.android.component.StaticComponent
 import mbtinder.android.io.socket.CommandProcess
 import mbtinder.android.ui.model.Fragment
+import mbtinder.android.util.Log
 import mbtinder.android.util.runOnBackground
 import mbtinder.android.util.runOnUiThread
 import mbtinder.lib.component.MessageContent
@@ -28,12 +30,21 @@ class MessageListFragment: Fragment(R.layout.fragment_message_list) {
         message_list_recycler_view.itemAnimator = DefaultItemAnimator()
 
         runOnBackground {
+            Log.v("MessageListFragment.initializeView(): 1")
             if (updateLastMessages()) {
+                Log.v("MessageListFragment.initializeView(): 2-1")
+                chatAdapter = ChatAdapter(this, lastMessages!!)
+
                 runOnUiThread {
-                    chatAdapter = ChatAdapter(this, lastMessages!!)
+                    Log.v("MessageListFragment.initializeView(): 3-1")
                     message_list_recycler_view.adapter = chatAdapter
                     message_list_recycler_view.visibility = View.VISIBLE
                     message_list_progress_bar.visibility = View.INVISIBLE
+                }
+            } else {
+                Log.v("MessageListFragment.initializeView(): 2-2")
+                runOnUiThread {
+                    Toast.makeText(requireContext(), "Failed to load last messages.", Toast.LENGTH_SHORT).show()
                 }
             }
         }

@@ -11,38 +11,34 @@ import mbtinder.android.R
 import mbtinder.android.component.StaticComponent
 import mbtinder.android.io.socket.CommandProcess
 import mbtinder.android.ui.model.Fragment
-import mbtinder.android.util.ViewUtil
 import mbtinder.android.util.getUUID
 import mbtinder.android.util.runOnBackground
 import mbtinder.android.util.runOnUiThread
 import mbtinder.lib.component.MessageContent
 import mbtinder.lib.util.IDList
 import mbtinder.lib.util.toIDList
-import java.util.*
 
 class ChatFragment : Fragment(R.layout.fragment_chat) {
     private val chatId by lazy { requireArguments().getUUID("chat_id")!! }
     private val opponentId by lazy { requireArguments().getUUID("opponent_id")!! }
     private val opponentName by lazy { requireArguments().getString("opponent_name")!! }
 
-    private lateinit var adapter: MessageAdapter
-
     override fun initializeView() {
         requireActivity().findViewById<BottomNavigationView>(R.id.nav_view).visibility = View.GONE
 
         chat_send.isEnabled = false
 
-        chat_recycler_view.layoutManager = LinearLayoutManager(requireContext())
+        chat_recycler_view.layoutManager = LinearLayoutManager(requireContext()).apply { stackFromEnd = true }
         chat_recycler_view.itemAnimator = DefaultItemAnimator()
 
         runOnBackground {
             val result = updateMessages()
             if (result) {
                 runOnUiThread {
-                    adapter = MessageAdapter(messages[chatId])
+                    aliveAdapter = MessageAdapter(messages[chatId])
 
                     chat_send.isEnabled = true
-                    chat_recycler_view.adapter = adapter
+                    chat_recycler_view.adapter = aliveAdapter!!
                     chat_recycler_view.visibility = View.VISIBLE
                     chat_progress_bar.visibility = View.INVISIBLE
                 }
@@ -69,7 +65,7 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
             }
 
             if (isSucceed) {
-                adapter.addContent(MessageContent(
+                aliveAdapter!!.addContent(MessageContent(
                     chatId = chatId,
                     senderId = StaticComponent.user.userId,
                     receiverId = opponentId,
@@ -85,6 +81,12 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
         chat_back.setOnClickListener {
             findNavController().popBackStack()
         }
+    }
+
+    override fun onStop() {
+        super.onStop()
+
+        aliveAdapter = null
     }
 
     private fun updateMessages(): Boolean {
@@ -114,16 +116,21 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
     companion object {
         // Chat ID 단위로 구별되는 cache
         private val messages = IDList<IDList<MessageContent>>()
+        private var aliveAdapter: MessageAdapter? = null
 
-        fun addMessage(messageContent: MessageContent) {
-            if (messages.contains(messageContent.chatId)) {
-                messages[messageContent.chatId].add(messageContent)
-            } else {
-                val newChat = IDList<MessageContent>()
-                newChat.uuid = messageContent.chatId
-                newChat.add(messageContent)
-                messages.add(newChat)
+        fun addMessage(messageContent: MessageContent): Boolean {
+            aliveAdapter?.addContent(messageContent) ?: let {
+                if (messages.contains(messageContent.chatId)) {
+                    messages[messageContent.chatId].add(messageContent)
+                } else {
+                    val newChat = IDList<MessageContent>()
+                    newChat.uuid = messageContent.chatId
+                    newChat.add(messageContent)
+                    messages.add(newChat)
+                }
             }
+
+            return aliveAdapter != null
         }
     }
 }

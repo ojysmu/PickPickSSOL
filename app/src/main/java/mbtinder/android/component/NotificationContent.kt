@@ -10,8 +10,8 @@ import androidx.annotation.DrawableRes
 import androidx.core.app.NotificationCompat
 import mbtinder.android.R
 import mbtinder.android.component.NotificationContent.Companion.makeNotification
-import mbtinder.android.io.database.SQLiteConnection
 import mbtinder.android.ui.fragment.chat.ChatFragment
+import mbtinder.android.util.runOnUiThread
 import mbtinder.lib.component.IDContent
 import mbtinder.lib.component.MessageContent
 import mbtinder.lib.constant.Notification
@@ -33,18 +33,21 @@ val notifications = idListOf(
         (context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).notify(0, builder.build())
     },
     NotificationContent(Notification.MESSAGE_RECEIVED) { context, title, content, extra ->
-        val builder = makeNotification(
-            context,
-            R.mipmap.ic_launcher,
-            title,
-            content,
-            NotificationCompat.PRIORITY_HIGH,
-            null,
-            true,
-            NotificationManager.IMPORTANCE_HIGH
-        )
-        (context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).notify(0, builder.build())
-        ChatFragment.addMessage(MessageContent(extra!!))
+        runOnUiThread {
+            if (ChatFragment.addMessage(MessageContent(extra!!))) {
+                val builder = makeNotification(
+                    context,
+                    R.mipmap.ic_launcher,
+                    title,
+                    content,
+                    NotificationCompat.PRIORITY_HIGH,
+                    null,
+                    true,
+                    NotificationManager.IMPORTANCE_HIGH
+                )
+                (context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).notify(0, builder.build())
+            }
+        }
     }
 )
 

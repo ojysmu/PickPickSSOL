@@ -42,6 +42,8 @@ class MessageAdapter(private val contents: ArrayList<MessageContent>) : Recycler
         notifyItemInserted(contents.size - 1)
     }
 
+    fun getLastIndex() = contents.size - 1
+
     private fun bindUser(holder: MessageUserViewHolder, position: Int) {
         holder.contentTextView.text = addNewLine(contents[position].body)
     }

@@ -19,7 +19,7 @@ object CardStackUtil {
     private var lastUpdate: Long = 0
 
     private fun updateCardStacks(): ImmutableList<CardStackContent> {
-        val sql = CardStackContent.getSelectAllSql()
+        val sql = "SELECT user_id, name, age, gender, last_location_lng, last_location_lat, description FROM pickpick.user"
         val queryId = MySQLServer.getInstance().addQuery(sql)
         val queryResult = MySQLServer.getInstance().getResult(queryId)
         cardStacks = queryResult.content

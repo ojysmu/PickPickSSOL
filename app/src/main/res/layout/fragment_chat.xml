@@ -21,7 +21,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/activity_horizontal_margin"
         android:src="@drawable/baseline_arrow_back_ios_24"
-        android:tint="@android:color/black"
+        app:tint="@android:color/black"
         app:layout_constraintTop_toTopOf="@id/chat_title"
         app:layout_constraintBottom_toBottomOf="@id/chat_title"
         app:layout_constraintStart_toStartOf="parent" />
@@ -32,7 +32,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/activity_horizontal_margin"
         android:src="@drawable/baseline_block_24"
-        android:tint="@android:color/black"
+        app:tint="@android:color/black"
         app:layout_constraintTop_toTopOf="@id/chat_title"
         app:layout_constraintBottom_toBottomOf="@id/chat_title"
         app:layout_constraintEnd_toEndOf="parent" />
@@ -83,7 +83,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/activity_horizontal_margin"
-        android:src="@drawable/baseline_send_black_36"
+        android:src="@drawable/baseline_send_24"
         android:tint="@android:color/black"
         android:backgroundTint="@android:color/transparent"
         app:layout_constraintTop_toTopOf="@id/chat_content"

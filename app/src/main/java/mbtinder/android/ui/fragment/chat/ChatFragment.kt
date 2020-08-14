@@ -1,6 +1,7 @@
 package mbtinder.android.ui.fragment.chat
 
 import android.view.View
+import android.widget.Toast
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -10,6 +11,8 @@ import mbtinder.android.R
 import mbtinder.android.component.StaticComponent
 import mbtinder.android.io.socket.CommandProcess
 import mbtinder.android.ui.model.Fragment
+import mbtinder.android.util.ViewUtil
+import mbtinder.android.util.getUUID
 import mbtinder.android.util.runOnBackground
 import mbtinder.android.util.runOnUiThread
 import mbtinder.lib.component.MessageContent
@@ -18,7 +21,10 @@ import mbtinder.lib.util.toIDList
 import java.util.*
 
 class ChatFragment : Fragment(R.layout.fragment_chat) {
-    private val chatId by lazy { UUID.fromString(requireArguments().getString("chat_id")) }
+    private val chatId by lazy { requireArguments().getUUID("chat_id")!! }
+    private val opponentId by lazy { requireArguments().getUUID("opponent_id")!! }
+    private val opponentName by lazy { requireArguments().getString("opponent_name")!! }
+
     private lateinit var adapter: MessageAdapter
 
     override fun initializeView() {
@@ -40,6 +46,41 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
                     chat_recycler_view.visibility = View.VISIBLE
                     chat_progress_bar.visibility = View.INVISIBLE
                 }
+            }
+        }
+
+        chat_send.setOnClickListener {
+            val body = chat_content.text.toString()
+            if (body.isBlank()) {
+                return@setOnClickListener
+            } else {
+                chat_content.setText("")
+            }
+
+            val (isSucceed, result) = runOnBackground<Pair<Boolean, Long?>> {
+                val result = CommandProcess.sendMessage(
+                    chatId = chatId,
+                    senderId = StaticComponent.user.userId,
+                    receiverId = opponentId,
+                    opponentName = opponentName,
+                    body = body
+                )
+                Pair(result.isSucceed, result.result)
+            }
+
+            if (isSucceed) {
+                val content = MessageContent(
+                    chatId = chatId,
+                    senderId = StaticComponent.user.userId,
+                    receiverId = opponentId,
+                    opponentName = opponentName,
+                    timestamp = result!!,
+                    body = body
+                )
+                messages[chatId].add(content)
+                adapter.addContent(content)
+            } else {
+                Toast.makeText(requireContext(), R.string.chat_failed_to_send, Toast.LENGTH_SHORT).show()
             }
         }
 

@@ -35,7 +35,7 @@ enum class Command {
     GET_MESSAGES,           // 채팅방 메시지 목록(MessageFragment) 요청
     REFRESH_MESSAGES,       // 채팅방 메시지 캐시 갱신
     GET_LAST_MESSAGES,      // 채팅방 목록(MessageListFragment) 메시지 목록 요청
-    SEND_MESSAGE_TO_SERVER; // 메시지 전송
+    SEND_MESSAGE;           // 메시지 전송
 
     companion object {
         private val commands = values()

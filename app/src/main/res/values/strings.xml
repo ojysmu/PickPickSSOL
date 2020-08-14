@@ -131,6 +131,8 @@
 
     <string name="message_list_title">메시지</string>
 
+    <string name="chat_failed_to_send">전송을 실패했습니다.</string>
+
     <string name="account_title">설정</string>
     <string name="account_description_title">자기 소개</string>
     <string name="account_description">자기 소개 쓰기(최대 20자)</string>

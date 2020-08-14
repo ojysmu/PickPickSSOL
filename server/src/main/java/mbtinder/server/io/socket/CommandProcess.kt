@@ -1,11 +1,13 @@
 package mbtinder.server.io.socket
 
-import mbtinder.lib.component.*
+import mbtinder.lib.component.ChatContent
+import mbtinder.lib.component.MessageContent
 import mbtinder.lib.component.user.Coordinator
 import mbtinder.lib.component.user.SearchFilter
-import mbtinder.lib.component.user.SignUpQuestionContent
 import mbtinder.lib.component.user.UserContent
-import mbtinder.lib.constant.*
+import mbtinder.lib.constant.Notification
+import mbtinder.lib.constant.NotificationForm
+import mbtinder.lib.constant.ServerResponse
 import mbtinder.lib.io.component.CommandContent
 import mbtinder.lib.io.constant.Command
 import mbtinder.lib.util.*
@@ -52,7 +54,7 @@ object CommandProcess {
             Command.GET_MESSAGES -> getMessages(command)
             Command.REFRESH_MESSAGES -> refreshMessages(command)
             Command.GET_LAST_MESSAGES -> getLastMessages(command)
-            Command.SEND_MESSAGE_TO_SERVER -> sendMessageToServer(command)
+            Command.SEND_MESSAGE -> sendMessage(command)
         }
     }
 
@@ -551,12 +553,12 @@ object CommandProcess {
         return Connection.makePositiveResponse(command.uuid, JSONObject().apply { put("messages", lastMessages.toJSONArray()) })
     }
 
-    private fun sendMessageToServer(command: CommandContent): JSONObject {
+    private fun sendMessage(command: CommandContent): JSONObject {
         val timestamp = System.currentTimeMillis()
         val chatId = UUID.fromString(command.arguments.getString("chat_id"))
         val senderId = UUID.fromString(command.arguments.getString("sender_id"))
         val receiverId = UUID.fromString(command.arguments.getString("receiver_id"))
-        val opponentName = command.arguments.getString("opponentName")
+        val opponentName = command.arguments.getString("opponent_name")
         val body = command.arguments.getString("body")
         val messageContent = MessageContent(
             chatId = chatId,
@@ -573,6 +575,13 @@ object CommandProcess {
         senderConnection.addQuery(messageContent.getLocalInsertMessageSql())
         receiveConnection.addQuery(messageContent.getLocalInsertMessageSql())
         MySQLServer.getInstance().addQuery(messageContent.getServerInsertMessageSql())
+
+        NotificationServer.getInstance().addNotification(NotificationForm(
+            notification = Notification.MESSAGE_RECEIVED,
+            receiverId = receiverId,
+            title = "메시지가 도착했습니다.",
+            content = "메시지를 확인해보세요."
+        ))
 
         return Connection.makePositiveResponse(command.uuid, JSONObject().apply { put("timestamp", timestamp) })
     }

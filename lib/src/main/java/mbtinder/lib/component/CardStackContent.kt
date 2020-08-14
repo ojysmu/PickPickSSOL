@@ -92,9 +92,4 @@ class CardStackContent: JSONParsable, IDContent, ImageComponent, CloneableConten
     )
 
     override fun compareTo(other: CardStackContent) = userId.compareTo(other.userId)
-
-    companion object {
-        fun getSelectAllSql() =
-            "SELECT user_id, name, age, gender, last_location_lng, last_location_lat, description FROM pickpick.user"
-    }
 }

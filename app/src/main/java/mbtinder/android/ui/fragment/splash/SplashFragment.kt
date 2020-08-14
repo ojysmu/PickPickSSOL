@@ -10,6 +10,7 @@ import mbtinder.android.R
 import mbtinder.android.component.StaticComponent
 import mbtinder.android.ui.model.Fragment
 import mbtinder.android.util.*
+import mbtinder.lib.util.ifValue
 
 class SplashFragment : Fragment(R.layout.fragment_splash) {
     override fun initializeView() {
@@ -28,11 +29,7 @@ class SplashFragment : Fragment(R.layout.fragment_splash) {
 
     private fun loadAnimation() {
         Thread.sleep(1000)
-        val animationDuration = if (isAnimated) {
-            0L
-        } else {
-            500L
-        }
+        val animationDuration = ifValue(isAnimated, 0L, 500L)
 
         runOnUiThread {
             ObjectAnimator.ofFloat(splash_logo, "translationY", -1000f).apply {

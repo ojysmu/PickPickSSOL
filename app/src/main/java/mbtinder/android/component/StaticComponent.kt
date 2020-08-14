@@ -37,7 +37,7 @@ object StaticComponent {
                         user.lastLocationLat = coordinator.latitude
                         CommandProcess.setCoordinator(user.userId, coordinator)
 
-                        fragment.findNavController().navigate(R.id.action_to_home)
+                        runOnUiThread { fragment.findNavController().navigate(R.id.action_to_home) }
                     }
                 } else {
                     LocationUtil.requestLocationPermission(fragment.requireActivity())

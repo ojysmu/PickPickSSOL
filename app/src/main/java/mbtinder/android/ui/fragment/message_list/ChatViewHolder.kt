@@ -18,12 +18,12 @@ class ChatViewHolder(itemView: View) : AdaptableViewHolder<MessageContent>(itemV
     private val lastMessageTextView: TextView = itemView.findViewById(R.id.card_chat_list_last_message)
 
     override fun adapt(content: MessageContent) {
-        userImageView.setImage(StaticComponent.getUserImage(content.getOpponentId(StaticComponent.user.userId)))
+        val opponentId = content.getOpponentId(StaticComponent.user.userId)
+
+        userImageView.setImage(StaticComponent.getUserImage(opponentId))
         userNameTextView.text = content.opponentName
         lastMessageTextView.text = content.body
 
-        cardView.setOnClickListener {
-            adapter.requestNavigate(content.chatId)
-        }
+        cardView.setOnClickListener { adapter.requestNavigate(content.chatId, opponentId, content.opponentName) }
     }
 }

@@ -225,4 +225,20 @@ object CommandProcess {
             "messages"
         )
     }
+
+    fun sendMessage(chatId: UUID, senderId: UUID, receiverId: UUID, opponentName: String, body: String): ServerResult<Long> {
+        val arguments = JSONObject()
+        arguments.put("chat_id", chatId.toString())
+        arguments.put("sender_id", senderId.toString())
+        arguments.put("receiver_id", receiverId.toString())
+        arguments.put("opponent_name", opponentName)
+        arguments.put("body", body)
+
+        val result = SocketUtil.getServerResult(Command.SEND_MESSAGE, arguments)
+        return if (result.getBoolean("result")) {
+            ServerResult(true, 0, result.getLong("timestamp"))
+        } else {
+            ServerResult(false, result.getInt("code"))
+        }
+    }
 }

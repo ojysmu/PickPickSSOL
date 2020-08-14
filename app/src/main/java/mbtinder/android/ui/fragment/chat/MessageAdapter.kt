@@ -36,6 +36,11 @@ class MessageAdapter(private val contents: ArrayList<MessageContent>) : Recycler
     override fun getItemViewType(position: Int) =
         if (contents[position].senderId == StaticComponent.user.userId) { TYPE_USER } else { TYPE_OPPONENT }
 
+    fun addContent(messageContent: MessageContent) {
+        contents.add(messageContent)
+        notifyItemInserted(contents.size - 1)
+    }
+
     private fun bindUser(holder: MessageUserViewHolder, position: Int) {
         holder.contentTextView.text = contents[position].body
     }

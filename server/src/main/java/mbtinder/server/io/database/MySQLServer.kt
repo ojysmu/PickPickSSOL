@@ -65,7 +65,7 @@ class MySQLServer private constructor(url: String, database: String, id: String,
         private fun getConnection(url: String, database: String, id: String, password: String): Connection {
             Class.forName("com.mysql.cj.jdbc.Driver")
 
-            return DriverManager.getConnection("jdbc:mysql://$url/$database?useLegacyDatetimeCode=false&serverTimezone=Asia/Seoul&useSSL=false&autoReconnect=true", id, password)
+            return DriverManager.getConnection("jdbc:mysql://$url/$database?useLegacyDatetimeCode=false&serverTimezone=Asia/Seoul&useSSL=false&autoReconnect=true&allowPublicKeyRetrieval=true", id, password)
         }
     }
 

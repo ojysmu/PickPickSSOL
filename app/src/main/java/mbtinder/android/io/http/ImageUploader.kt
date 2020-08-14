@@ -1,5 +1,6 @@
 package mbtinder.android.io.http
 
+import mbtinder.android.util.Log
 import mbtinder.lib.constant.ServerPath
 import mbtinder.lib.util.BlockWrapper
 import mbtinder.lib.util.blockNull
@@ -44,6 +45,7 @@ class ImageUploader(private val userId: UUID, private val rawImage: ByteArray, p
         if (needResult) {
             DataInputStream(connection.inputStream).apply {
                 result = JSONObject(String(readBytes()))
+                Log.v("ImageUploader.run(): result=$result")
             }
         }
     }

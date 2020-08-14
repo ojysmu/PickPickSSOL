@@ -8,9 +8,10 @@ if (move_uploaded_file($_FILES["image"]["tmp_name"], $target_path)) {
     )));
 } else {
     echo(json_encode(array(
-        'result'    => false,
-        'code'      => 1,
-        'target_path'   => $target_path
+        'result'        => false,
+        'code'          => 1,
+        'target_path'   => $target_path,
+        'filename'      => $_FILES["image"]["tmp_name"]
     )));
 }
 ?>

@@ -35,7 +35,7 @@ class ImageUploader(private val userId: UUID, private val rawImage: ByteArray, p
 
         DataOutputStream(connection.outputStream).apply {
             writeBytes(twoHyphens + boundary + lineEnd)
-            writeBytes("""Content-Disposition: form-data; name="uploaded_file"; filename="$userId"$lineEnd""")
+            writeBytes("""Content-Disposition: form-data; name="uploaded_file"; filename="$userId.png"$lineEnd""")
             writeBytes(lineEnd)
             write(rawImage)
             writeBytes(lineEnd)

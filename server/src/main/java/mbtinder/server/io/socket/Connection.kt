@@ -68,6 +68,7 @@ class Connection(private val socket: Socket): CloseableThread(), IDContent {
         serverMessage.put("notification_id", form.notification.notificationId.toString())
         serverMessage.put("title", form.title)
         serverMessage.put("content", form.content)
+        form.extra?.let { serverMessage.put("extra", it) }
 
         send(serverMessage)
     }

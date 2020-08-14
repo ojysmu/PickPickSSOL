@@ -57,12 +57,17 @@ object CardStackUtil {
         val finderMBTI = findMBTI(finderId)
         // 가입 시 입력한 취향
         val finderSignUpQuestionContents = findSignUpQuestion(finderId)
+        // 최대 10개 index
+        var index = 0
 
         return cardStacks!!.clone()
-            .filter { val x = it.userId != finderId && !metList.contains(it.userId); println("F1: id=${it.userId}, $x"); x }
-            .filter { val x = filter.isInRange(finderCoordinator, it); println("F2: id=${it.userId}, $x"); x }
-            .filter { val x = UserUtil.getMatchingScore(finderMBTI, finderSignUpQuestionContents, it) >= 30; println("F2: id=${it.userId}, $x"); x }
+            .asSequence()
+            .filter { it.userId != finderId && !metList.contains(it.userId) }
+            .filter { filter.isInRange(finderCoordinator, it) }
+            .filter { UserUtil.getMatchingScore(finderMBTI, finderSignUpQuestionContents, it) >= 30 }
+            .filter { index++ < 10 }
             .sorted()
+            .toList()
     }
 
     fun buildCardStackContent(row: Row) = CardStackContent(

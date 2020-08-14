@@ -47,10 +47,12 @@ class UserContent: JSONParsable,
 
     fun getInsertSql() = "INSERT INTO pickpick.user (" +
             "user_id, email, password, name, age, gender, notification, description, last_location_lng, " +
-            "last_location_lat, password_question, password_answer" +
+            "last_location_lat, password_question, password_answer, filter_gender, filter_age_start, filter_age_end, " +
+            "filter_distance" +
             ") VALUES (" +
             "'$userId', '$email', '$password', '$name', '$age', $gender, $notification, '$description', $lastLocationLng, " +
-            "$lastLocationLng, $passwordQuestionId, '$passwordAnswer')"
+            "$lastLocationLng, $passwordQuestionId, '$passwordAnswer', ${searchFilter.gender}, ${searchFilter.ageStart}, " +
+            "${searchFilter.ageEnd}, ${searchFilter.distance})"
 
     fun getUpdateSql() = "UPDATE pickpick.user SET " +
             "password='$password', " +

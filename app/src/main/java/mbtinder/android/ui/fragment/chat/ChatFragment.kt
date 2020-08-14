@@ -69,16 +69,14 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
             }
 
             if (isSucceed) {
-                val content = MessageContent(
+                adapter.addContent(MessageContent(
                     chatId = chatId,
                     senderId = StaticComponent.user.userId,
                     receiverId = opponentId,
                     opponentName = opponentName,
                     timestamp = result!!,
                     body = body
-                )
-                messages[chatId].add(content)
-                adapter.addContent(content)
+                ))
             } else {
                 Toast.makeText(requireContext(), R.string.chat_failed_to_send, Toast.LENGTH_SHORT).show()
             }

@@ -33,7 +33,7 @@ class MessageContent: JSONParsable, Comparable<MessageContent>, IDContent {
 
     override fun compareTo(other: MessageContent) = timestamp.compareTo(other.timestamp)
 
-    fun getLocalInsertMessageSql() = "INSERT INTO $chatId (" +
+    fun getLocalInsertMessageSql() = "INSERT INTO '$chatId' (" +
                 "sender_id,    receiver_Id,  timestamp,   body" +
                 ") VALUES (" +
                 "'$senderId', '$receiverId', $timestamp, '$body')"

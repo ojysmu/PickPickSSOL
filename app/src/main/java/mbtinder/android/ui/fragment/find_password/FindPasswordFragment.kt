@@ -39,7 +39,7 @@ class FindPasswordFragment : ProgressFragment(R.layout.fragment_find_password) {
 
                 if (findResult.isSucceed) {
                     val bundle = Bundle().apply { putString("user_id", findResult.result!!.toString()) }
-                    findNavController().navigate(R.id.action_to_update_password, bundle)
+                    runOnUiThread { findNavController().navigate(R.id.action_to_update_password, bundle) }
                 } else {
                     runOnUiThread {
                         switchWaitingStatus()

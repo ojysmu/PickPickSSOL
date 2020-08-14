@@ -12,7 +12,7 @@ class SearchFilter: JSONParsable, IDContent {
     var gender: Int = 2
     var ageStart: Int = 20
     var ageEnd: Int = 100
-    var distance: Int = 0
+    var distance: Int = 100
 
     constructor(jsonObject: JSONObject): super(jsonObject)
 

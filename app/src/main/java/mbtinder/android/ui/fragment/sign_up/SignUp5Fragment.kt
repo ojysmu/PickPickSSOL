@@ -65,7 +65,7 @@ class SignUp5Fragment : Fragment(R.layout.fragment_sign_up5) {
                     val questionResult = setSignUpQuestion()
 
                     if (mbtiResult && questionResult) {
-                        findNavController().navigate(R.id.action_to_home)
+                        runOnUiThread { findNavController().navigate(R.id.action_to_home) }
                     } else {
                         runOnUiThread {
                             ViewUtil.switchNextButton(layout_sign_up5)

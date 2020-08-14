@@ -9,7 +9,7 @@ class Main {
         @JvmStatic
         fun main(args: Array<String>) {
             SocketServer.createInstance(8080).start()
-            MySQLServer.createInstance("localhost", "mbtinder", "root", "kimju888").start()
+            MySQLServer.createInstance("localhost", "pickpick", "PickPick", "pickpick").start()
             NotificationServer.createInstance().start()
         }
     }

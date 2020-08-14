@@ -143,9 +143,8 @@ class AccountFragment : Fragment(R.layout.fragment_account) {
                 }
 
                 val uri = data.data!!
-                val parcelFileDescriptor = requireContext().contentResolver.openFileDescriptor(uri, "r")!!
                 val selectedProfileImage: ByteArray
-
+                val parcelFileDescriptor = requireContext().contentResolver.openFileDescriptor(uri, "r")!!
                 FileInputStream(parcelFileDescriptor.fileDescriptor).apply {
                     selectedProfileImage = ImageUtil.resizeByteArray(readBytes())
                     close()

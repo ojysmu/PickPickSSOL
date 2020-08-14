@@ -19,7 +19,7 @@ class ImageUploader(private val userId: UUID, private val rawImage: ByteArray, p
         val lineEnd = "\r\n"
         val twoHyphens = "--"
         val boundary = "*****"
-        val url = URL("${ServerPath.WEB_PROTOCOL}://${ServerPath.ADDRESS}:${ServerPath.PORT_WEB}/upload_image.php" +
+        val url = URL("${ServerPath.WEB_PROTOCOL}://${ServerPath.ADDRESS}:${ServerPath.PORT_WEB}/upload_user_profile.php" +
                 "?user_id=${URLEncoder.encode(userId.toString(), "UTF-8")}")
 
         val connection = (url.openConnection() as HttpURLConnection).apply {
@@ -50,5 +50,11 @@ class ImageUploader(private val userId: UUID, private val rawImage: ByteArray, p
 
     fun getResultCode() = blockNull(BlockWrapper(resultCode)) { it == -1 }!!
 
-    fun getResult() = blockNull(BlockWrapper(result)) { it == null }!!
+    fun getResult(): JSONObject {
+        while (result == null) {
+            sleep(100)
+        }
+
+        return result!!
+    }
 }

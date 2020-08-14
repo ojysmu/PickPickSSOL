@@ -41,7 +41,7 @@ object CommandProcess {
     }
 
     fun uploadProfileImage(userId: UUID, rawImage: ByteArray): ServerResult<Void> {
-        val uploader = ImageUploader(userId, rawImage)
+        val uploader = ImageUploader(userId, rawImage, true)
         uploader.start()
 
         val result = uploader.getResult()

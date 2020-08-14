@@ -43,7 +43,9 @@ class AccountFragment : Fragment(R.layout.fragment_account) {
 
         account_distance_selector.addOnChangeListener { _, _, _ -> updateSearchFilter() }
 
-        account_notification_selector.setOnCheckedChangeListener { _, _ -> updateSearchFilter() }
+        account_notification_selector.setOnCheckedChangeListener { _, isChecked ->
+            runOnBackground { CommandProcess.updateUserNotification(StaticComponent.user.userId, isChecked) }
+        }
 
         account_delete_user.setOnClickListener {
             DialogFactory.getContentedDialog(requireContext(), R.string.account_delete_user_alert, onPositive = {

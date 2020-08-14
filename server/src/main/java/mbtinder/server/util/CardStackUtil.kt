@@ -73,7 +73,7 @@ object CardStackUtil {
         Coordinator(row.getDouble("last_location_lng"), row.getDouble("last_location_lat")),
         row.getString("description"),
         findMBTI(row.getUUID("user_id")),
-        SignUpQuestionUtil.parseFilled(findSignUpQuestion(row.getUUID("user_Id"))).toJSONList()
+        SignUpQuestionUtil.parseFilled(findSignUpQuestion(row.getUUID("user_id"))).toJSONList()
     )
 
     private fun findMBTI(userId: UUID) =

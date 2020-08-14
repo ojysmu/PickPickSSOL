@@ -149,12 +149,16 @@ object CommandProcess {
         return SocketUtil.getVoidResult(result)
     }
 
-    fun getMatchableUsers(userId: UUID): ServerResult<JSONList<CardStackContent>> {
-        val arguments = JSONObject().apply { put("user_id", userId.toString()) }
-        val result =
-            SocketUtil.getServerResult(Command.GET_MATCHABLE_USERS, arguments)
+    fun getMatchableUsers(userId: UUID, coordinator: Coordinator, searchFilter: SearchFilter): ServerResult<JSONList<CardStackContent>> {
+        val arguments = JSONObject()
+        arguments.put("user_id", userId.toString())
+        arguments.put("coordinator", coordinator.toJSONObject())
+        arguments.put("search_filter", searchFilter.toJSONObject())
 
-        return SocketUtil.getJSONListResult(result, "users")
+        return SocketUtil.getJSONListResult(
+            SocketUtil.getServerResult(Command.GET_MATCHABLE_USERS, arguments),
+            "card_stack_contents"
+        )
     }
 
     fun pick(userId: UUID, opponentId: UUID, isPick: Boolean): ServerResult<Boolean> {

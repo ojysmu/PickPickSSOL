@@ -14,6 +14,7 @@ import mbtinder.android.ui.model.Fragment
 import mbtinder.android.util.runOnBackground
 import mbtinder.android.util.runOnUiThread
 import mbtinder.lib.component.CardStackContent
+import mbtinder.lib.component.user.Coordinator
 
 class HomeFragment : Fragment(R.layout.fragment_home) {
     private lateinit var cardStackLayoutManager: CardStackLayoutManager
@@ -52,7 +53,12 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
     fun updateCardStack(onUpdateFinished: ((isSucceed: Boolean, content: CardStackContent?) -> Unit)? = null) {
         runOnBackground {
-            val getResult = CommandProcess.getMatchableUsers(StaticComponent.user.userId)
+            val getResult = CommandProcess.getMatchableUsers(
+                userId = StaticComponent.user.userId,
+                coordinator = Coordinator(StaticComponent.user.lastLocationLng, StaticComponent.user.lastLocationLat),
+                searchFilter = StaticComponent.user.searchFilter
+            )
+
             if (getResult.isSucceed) {
                 val contents = getResult.result!!
 

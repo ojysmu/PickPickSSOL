@@ -15,6 +15,8 @@ class IDList<E: IDContent>: ArrayList<E>, IDContent {
 
     operator fun get(uuid: UUID) = super.get(indexOf(uuid))
 
+    operator fun set(uuid: UUID, element: E) = sync(this) { super.set(indexOf(uuid), element) }
+
     operator fun contains(uuid: UUID) = indexOf(uuid) != -1
 
     override fun add(element: E) = sync(this) { super.add(element) }

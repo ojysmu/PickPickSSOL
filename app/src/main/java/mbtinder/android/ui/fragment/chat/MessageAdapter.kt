@@ -9,7 +9,7 @@ import mbtinder.android.component.StaticComponent
 import mbtinder.android.util.Log
 import mbtinder.lib.component.MessageContent
 
-class MessageAdapter(private val contents: ArrayList<MessageContent>) : RecyclerView.Adapter<MessageViewHolder>() {
+class MessageAdapter(val recyclerView: RecyclerView, private val contents: ArrayList<MessageContent>) : RecyclerView.Adapter<MessageViewHolder>() {
     private lateinit var context: Context
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MessageViewHolder {

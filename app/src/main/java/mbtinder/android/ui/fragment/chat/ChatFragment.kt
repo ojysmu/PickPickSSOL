@@ -26,6 +26,7 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
     override fun initializeView() {
         requireActivity().findViewById<BottomNavigationView>(R.id.nav_view).visibility = View.GONE
 
+        chat_title.text = opponentName
         chat_send.isEnabled = false
 
         chat_recycler_view.layoutManager = LinearLayoutManager(requireContext()).apply { stackFromEnd = true }
@@ -35,10 +36,11 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
             val result = updateMessages()
             if (result) {
                 runOnUiThread {
-                    aliveAdapter = MessageAdapter(messages[chatId])
+                    aliveAdapter = MessageAdapter(chat_recycler_view, messages[chatId])
 
                     chat_send.isEnabled = true
                     chat_recycler_view.adapter = aliveAdapter!!
+                    chat_recycler_view.scrollToPosition(aliveAdapter!!.getLastIndex())
                     chat_recycler_view.visibility = View.VISIBLE
                     chat_progress_bar.visibility = View.INVISIBLE
                 }
@@ -73,6 +75,7 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
                     timestamp = result!!,
                     body = body
                 ))
+                chat_recycler_view.scrollToPosition(aliveAdapter!!.getLastIndex())
             } else {
                 Toast.makeText(requireContext(), R.string.chat_failed_to_send, Toast.LENGTH_SHORT).show()
             }
@@ -119,7 +122,10 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
         private var aliveAdapter: MessageAdapter? = null
 
         fun addMessage(messageContent: MessageContent): Boolean {
-            aliveAdapter?.addContent(messageContent) ?: let {
+            aliveAdapter?.let {
+                it.addContent(messageContent)
+                it.recyclerView.scrollToPosition(it.getLastIndex())
+            } ?: let {
                 if (messages.contains(messageContent.chatId)) {
                     messages[messageContent.chatId].add(messageContent)
                 } else {
@@ -130,7 +136,7 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
                 }
             }
 
-            return aliveAdapter != null
+            return aliveAdapter == null
         }
     }
 }

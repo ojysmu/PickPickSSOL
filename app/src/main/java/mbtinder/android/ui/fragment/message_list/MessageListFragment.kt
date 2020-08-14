@@ -19,8 +19,6 @@ import mbtinder.lib.util.IDList
 import mbtinder.lib.util.toIDList
 
 class MessageListFragment: Fragment(R.layout.fragment_message_list) {
-    private lateinit var chatAdapter: ChatAdapter
-
     override fun initializeView() {
         requireActivity().findViewById<BottomNavigationView>(R.id.nav_view).visibility = View.VISIBLE
 
@@ -33,11 +31,11 @@ class MessageListFragment: Fragment(R.layout.fragment_message_list) {
             Log.v("MessageListFragment.initializeView(): 1")
             if (updateLastMessages()) {
                 Log.v("MessageListFragment.initializeView(): 2-1")
-                chatAdapter = ChatAdapter(this, lastMessages!!)
+                aliveAdapter = ChatAdapter(this, lastMessages!!)
 
                 runOnUiThread {
                     Log.v("MessageListFragment.initializeView(): 3-1")
-                    message_list_recycler_view.adapter = chatAdapter
+                    message_list_recycler_view.adapter = aliveAdapter
                     message_list_recycler_view.visibility = View.VISIBLE
                     message_list_progress_bar.visibility = View.INVISIBLE
                 }
@@ -63,14 +61,29 @@ class MessageListFragment: Fragment(R.layout.fragment_message_list) {
     private fun onSearchChanged(editable: Editable?) {
         editable?.let {
             if (editable.isNotBlank()) {
-                chatAdapter.updateFilter(editable.toString())
+                aliveAdapter!!.updateFilter(editable.toString())
             } else {
-                chatAdapter.updateContents(lastMessages!!)
+                aliveAdapter!!.updateContents(lastMessages!!)
             }
         }
     }
 
     companion object {
         var lastMessages: IDList<MessageContent>? = null
+        private var aliveAdapter: ChatAdapter? = null
+
+        fun setLastMessage(messageContent: MessageContent) {
+            if (lastMessages != null) {
+                val found = lastMessages!!.find { it.chatId == messageContent.chatId }
+                if (found != null) {
+                    lastMessages!!.remove(found)
+                    lastMessages!!.add(messageContent)
+                    aliveAdapter?.notifyDataSetChanged()
+                } else {
+                    lastMessages!!.add(messageContent)
+                    aliveAdapter?.notifyItemInserted(lastMessages!!.size - 1)
+                }
+            }
+        }
     }
 }

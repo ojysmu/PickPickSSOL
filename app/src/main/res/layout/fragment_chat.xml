@@ -52,6 +52,7 @@
         android:visibility="invisible"
         app:layout_constraintTop_toBottomOf="@id/chat_separator"
         app:layout_constraintBottom_toTopOf="@id/chat_content"
+        app:stackFromEnd="true"
         tools:listitem="@layout/card_chat_user" />
 
     <ProgressBar

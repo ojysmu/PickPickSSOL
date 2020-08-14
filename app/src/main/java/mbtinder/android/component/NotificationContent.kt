@@ -11,6 +11,7 @@ import androidx.core.app.NotificationCompat
 import mbtinder.android.R
 import mbtinder.android.component.NotificationContent.Companion.makeNotification
 import mbtinder.android.ui.fragment.chat.ChatFragment
+import mbtinder.android.ui.fragment.message_list.MessageListFragment
 import mbtinder.android.util.runOnUiThread
 import mbtinder.lib.component.IDContent
 import mbtinder.lib.component.MessageContent
@@ -34,7 +35,9 @@ val notifications = idListOf(
     },
     NotificationContent(Notification.MESSAGE_RECEIVED) { context, title, content, extra ->
         runOnUiThread {
-            if (ChatFragment.addMessage(MessageContent(extra!!))) {
+            val messageContent = MessageContent(extra!!)
+            // 현재 채팅방이 실행중일 경우 알림을 보내지 않음
+            if (ChatFragment.addMessage(messageContent)) {
                 val builder = makeNotification(
                     context,
                     R.mipmap.ic_launcher,
@@ -47,6 +50,8 @@ val notifications = idListOf(
                 )
                 (context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).notify(0, builder.build())
             }
+            // 채팅 목록 마지막 채팅 갱신
+            MessageListFragment.setLastMessage(messageContent)
         }
     }
 )

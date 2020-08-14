@@ -31,6 +31,7 @@ class ImageUploader(private val userId: UUID, private val rawImage: ByteArray, p
             addRequestProperty("Connection", "Keep-Alive")
             addRequestProperty("ENCTYPE", "multipart/form-data")
             addRequestProperty("Content-Type", "multipart/form-data; boundary=$boundary")
+            addRequestProperty("uploaded_file", userId.toString())
         }
 
         DataOutputStream(connection.outputStream).apply {

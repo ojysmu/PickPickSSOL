@@ -108,7 +108,6 @@ object CommandProcess {
         val userRoot = "${LocalFile.userRoot}/$userId"
         val userRootDirectory = File(userRoot)
         userRootDirectory.mkdir()
-        Runtime.getRuntime().exec("chmod 0777 -R ${LocalFile.userRoot}").waitFor()
 
         JSONArray().saveJSONArray(LocalFile.getUserInterestPath(userId))
 

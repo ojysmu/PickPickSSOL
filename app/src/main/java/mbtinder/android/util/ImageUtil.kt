@@ -9,7 +9,7 @@ import android.graphics.drawable.Drawable
 import java.io.ByteArrayOutputStream
 
 object ImageUtil {
-    const val RESIZE_DEFAULT = 320
+    private const val RESIZE_DEFAULT = 640
 
     fun drawableToByteArray(drawable: Drawable): ByteArray {
         val bitmap = (drawable as BitmapDrawable).bitmap

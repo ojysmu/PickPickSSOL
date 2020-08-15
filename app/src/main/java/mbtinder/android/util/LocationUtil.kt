@@ -12,6 +12,7 @@ import androidx.core.app.ActivityCompat.requestPermissions
 import androidx.core.content.ContextCompat
 import mbtinder.android.io.http.HttpConnection
 import mbtinder.android.io.http.RequestMethod
+import mbtinder.android.ui.model.Fragment
 import mbtinder.lib.component.user.Coordinator
 import org.json.JSONObject
 
@@ -65,10 +66,8 @@ object LocationUtil {
     fun checkLocationPermission(context: Context) =
         ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
 
-    fun requestLocationPermission(activity: Activity) =
-        requestPermissions(activity, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-            LOCATION_REQUEST_CODE
-        )
+    fun requestLocationPermission(fragment: Fragment) =
+        fragment.requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_REQUEST_CODE)
 
     fun isLocationPermissionGranted(requestCode: Int, grantResults: IntArray) =
         requestCode == LOCATION_REQUEST_CODE && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED

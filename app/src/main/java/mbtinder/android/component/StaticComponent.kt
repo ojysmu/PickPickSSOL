@@ -40,7 +40,7 @@ object StaticComponent {
                         runOnUiThread { fragment.findNavController().navigate(R.id.action_to_home) }
                     }
                 } else {
-                    LocationUtil.requestLocationPermission(fragment.requireActivity())
+                    LocationUtil.requestLocationPermission(fragment)
                 }
             } else {
                 runOnUiThread { onFailed?.invoke() }

@@ -8,6 +8,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.fragment_splash.*
 import mbtinder.android.R
 import mbtinder.android.component.StaticComponent
+import mbtinder.android.io.socket.CommandProcess
 import mbtinder.android.ui.model.Fragment
 import mbtinder.android.util.*
 import mbtinder.lib.util.ifValue
@@ -76,8 +77,18 @@ class SplashFragment : Fragment(R.layout.fragment_splash) {
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         if (LocationUtil.isLocationPermissionGranted(requestCode, grantResults)) {
-            val coordinator = LocationUtil.onLocationPermissionGranted(requireContext())
-            Log.v("StaticComponent.signIn(): coordinator=$coordinator")
+            runOnBackground {
+                val coordinator = LocationUtil.onLocationPermissionGranted(requireContext())
+                Log.v("SignInFragment.onRequestPermissionsResult(): coordinator=$coordinator")
+                StaticComponent.user.lastLocationLng = coordinator.longitude
+                StaticComponent.user.lastLocationLat = coordinator.latitude
+                CommandProcess.setCoordinator(StaticComponent.user.userId, coordinator)
+
+                runOnUiThread { findNavController().navigate(R.id.action_to_home) }
+            }
+        } else {
+            Toast.makeText(requireContext(), R.string.common_require_location_permission, Toast.LENGTH_SHORT).show()
+            requireActivity().finish()
         }
     }
 

@@ -7,9 +7,9 @@ import androidx.navigation.fragment.findNavController
 import kotlinx.android.synthetic.main.fragment_sign_in.*
 import mbtinder.android.R
 import mbtinder.android.component.StaticComponent
+import mbtinder.android.io.socket.CommandProcess
 import mbtinder.android.ui.model.Fragment
-import mbtinder.android.util.ViewUtil
-import mbtinder.android.util.getText
+import mbtinder.android.util.*
 
 class SignInFragment : Fragment(R.layout.fragment_sign_in) {
     private val formStatus = arrayOf(false, false)
@@ -86,5 +86,22 @@ class SignInFragment : Fragment(R.layout.fragment_sign_in) {
         formStatus[1] = false
         sign_in_password.isErrorEnabled = true
         sign_in_password.error = getString(R.string.sign_in_password_error)
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        if (LocationUtil.isLocationPermissionGranted(requestCode, grantResults)) {
+            runOnBackground {
+                val coordinator = LocationUtil.onLocationPermissionGranted(requireContext())
+                Log.v("SignInFragment.onRequestPermissionsResult(): coordinator=$coordinator")
+                StaticComponent.user.lastLocationLng = coordinator.longitude
+                StaticComponent.user.lastLocationLat = coordinator.latitude
+                CommandProcess.setCoordinator(StaticComponent.user.userId, coordinator)
+
+                runOnUiThread { findNavController().navigate(R.id.action_to_home) }
+            }
+        } else {
+            Toast.makeText(requireContext(), R.string.common_require_location_permission, Toast.LENGTH_SHORT).show()
+            requireActivity().finish()
+        }
     }
 }

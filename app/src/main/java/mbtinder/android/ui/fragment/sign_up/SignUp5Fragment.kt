@@ -14,9 +14,7 @@ import mbtinder.android.WebViewActivity
 import mbtinder.android.component.StaticComponent
 import mbtinder.android.io.socket.CommandProcess
 import mbtinder.android.ui.model.Fragment
-import mbtinder.android.util.ViewUtil
-import mbtinder.android.util.runOnBackground
-import mbtinder.android.util.runOnUiThread
+import mbtinder.android.util.*
 import mbtinder.lib.component.user.MBTIContent
 import mbtinder.lib.component.user.SignUpQuestionContent
 import mbtinder.lib.constant.MBTI
@@ -84,6 +82,7 @@ class SignUp5Fragment : Fragment(R.layout.fragment_sign_up5) {
             name = requireArguments().getString("name")!!,
             age = requireArguments().getInt("age"),
             gender = requireArguments().getInt("gender"),
+            description = requireArguments().getString("description")!!,
             passwordQuestionId = requireArguments().getInt("password_question_id"),
             passwordAnswer = requireArguments().getString("password_answer")!!
         )
@@ -118,6 +117,23 @@ class SignUp5Fragment : Fragment(R.layout.fragment_sign_up5) {
         userId = StaticComponent.user.userId,
         signUpQuestions = signUpQuestions
     ).isSucceed
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        if (LocationUtil.isLocationPermissionGranted(requestCode, grantResults)) {
+            runOnBackground {
+                val coordinator = LocationUtil.onLocationPermissionGranted(requireContext())
+                Log.v("SignInFragment.onRequestPermissionsResult(): coordinator=$coordinator")
+                StaticComponent.user.lastLocationLng = coordinator.longitude
+                StaticComponent.user.lastLocationLat = coordinator.latitude
+                CommandProcess.setCoordinator(StaticComponent.user.userId, coordinator)
+
+                runOnUiThread { findNavController().navigate(R.id.action_to_home) }
+            }
+        } else {
+            Toast.makeText(requireContext(), R.string.common_require_location_permission, Toast.LENGTH_SHORT).show()
+            requireActivity().finish()
+        }
+    }
 
     private companion object {
         const val URL_MBTI_TEST = "https://www.16personalities.com/ko/%EB%AC%B4%EB%A3%8C-%EC%84%B1%EA%B2%A9-%EC%9C%A0%ED%98%95-%EA%B2%80%EC%82%AC"

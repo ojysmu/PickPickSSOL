@@ -135,6 +135,7 @@
     <string name="chat_timestamp_format">%2d:%2d</string>
 
     <string name="account_title">설정</string>
+    <string name="account_name_format">%s  %d</string>
     <string name="account_description_title">자기 소개</string>
     <string name="account_description">자기 소개 쓰기(최대 20자)</string>
     <string name="account_description_error">자기 소개를 입력해주세요.</string>

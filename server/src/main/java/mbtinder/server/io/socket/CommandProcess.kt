@@ -138,7 +138,7 @@ object CommandProcess {
             sqLiteConnection.addQuery(createTableSql)
         }
 
-        return Connection.makePositiveResponse(command.uuid)
+        return Connection.makePositiveResponse(command.uuid, JSONObject().apply { putUUID("user_id", userId) })
     }
 
     /**

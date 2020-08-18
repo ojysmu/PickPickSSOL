@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import mbtinder.android.R
+import mbtinder.android.util.Log
 import mbtinder.lib.component.card_stack.BaseCardStackContent
 import mbtinder.lib.component.card_stack.CardStackContent
 import mbtinder.lib.component.card_stack.DailyQuestionContent
@@ -37,6 +38,7 @@ class CardStackAdapter(private val fragment: HomeFragment): RecyclerView.Adapter
         return when (HomeFragment.cardStackContents[position]) {
             is CardStackContent -> TYPE_CARD_STACK_CONTENT
             is DailyQuestionContent -> TYPE_DAILY_QUESTION_CONTENT
+            is EmptyContent -> TYPE_EMPTY_CONTENT
             else -> throw AssertionError("View type error: position=$position")
         }
     }
@@ -53,6 +55,7 @@ class CardStackAdapter(private val fragment: HomeFragment): RecyclerView.Adapter
     fun getUserId(position: Int) = (HomeFragment.cardStackContents[position] as CardStackContent).userId
 
     fun addAt(position: Int, content: BaseCardStackContent) {
+        Log.v("CardStackAdapter.addAt(): position=$position")
         HomeFragment.cardStackContents.add(content)
         notifyItemInserted(position)
     }

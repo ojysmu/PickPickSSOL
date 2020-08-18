@@ -8,10 +8,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import mbtinder.android.R
+import mbtinder.android.component.StaticComponent
 import mbtinder.android.ui.view.AsyncImageView
 import mbtinder.android.util.ViewUtil
 import mbtinder.lib.component.card_stack.BaseCardStackContent
 import mbtinder.lib.component.card_stack.CardStackContent
+import mbtinder.lib.component.user.Coordinator
 
 class CardStackViewHolder(private val view: View): BaseCardStackViewHolder(view) {
     private var imageView: AsyncImageView = view.findViewById(R.id.card_main_stack_image)
@@ -44,7 +46,17 @@ class CardStackViewHolder(private val view: View): BaseCardStackViewHolder(view)
         if (content.description.isNotBlank()) {
             cardStackItemContents.add(content.description)
         }
-        cardStackItemContents.add(content.userName + ", " + content.jsonObject.getInt("age"))
+        val name = content.userName
+        val age = content.jsonObject.getInt("age")
+        val distance = content.coordinator.getDistance(
+            Coordinator(StaticComponent.user.lastLocationLng, StaticComponent.user.lastLocationLat)
+        )
+        val formattedDistance = if (distance < 1000) {
+            "${distance.toInt()}m" // 1,000m 미만일 시 m로 표시
+        } else {
+            "${distance.toInt() / 1000}km" // 1,000m 이상일 시 km로 표시
+        }
+        cardStackItemContents.add("$name, $age, $formattedDistance")
         imageView.setImage(content)
         recyclerView.itemAnimator = DefaultItemAnimator()
         recyclerView.layoutManager = LinearLayoutManager(itemView.context)

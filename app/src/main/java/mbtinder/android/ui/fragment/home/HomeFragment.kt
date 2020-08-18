@@ -83,6 +83,8 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     }
 
     private fun refreshCardStacks() {
+        Log.v("HomeFragment.refreshCardStacks(): currentPosition=$currentPosition, left=${cardStackAdapter.getLeftContents(currentPosition)}")
+        cardStackContents.forEachIndexed { index, baseCardStackContent -> Log.v("HomeFragment.refreshCardStacks() $index: $baseCardStackContent") }
         runOnBackground {
             val refreshResult = CommandProcess.refreshMatchableUsers(
                 userId = StaticComponent.user.userId,
@@ -92,7 +94,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             )
 
             if (refreshResult.isSucceed) {
-                cardStackContents.removeAt(cardStackContents.size - 1)
+                cardStackContents.removeAll { it is EmptyContent }
                 cardStackContents.addAll(refreshResult.result!!)
                 cardStackContents.add(EmptyContent())
                 runOnUiThread { cardStackAdapter.notifyDataSetChanged() }
@@ -101,16 +103,15 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     }
 
     private val cardStackListener = object : CardStackListener {
+        /**
+         * 카드가 나타났을 때 callback
+         * 일반 카드일 경우 swipe 가능, 일일 질문일 경우 swipe 가능, 목록의 끝일 경우 swipe 불가능
+         */
         override fun onCardAppeared(view: View?, position: Int) {
             val holder = cardStackAdapter.holders[position]
             Log.v("HomeFragment.onCardAppeared(): position=$position, isEmpty=${holder is EmptyViewHolder}, currentPosition=$currentPosition")
             currentPosition = position
-            // 마지막(EmptyContent)일 때 스크롤 불가능
             cardStackLayoutManager.setCanScrollHorizontal(cardStackAdapter.holders[currentPosition] !is EmptyViewHolder)
-            // 3개 남았을 때 refresh
-            if (cardStackAdapter.getLeftContents(position) == 3) {
-                refreshCardStacks()
-            }
         }
 
         override fun onCardDragging(direction: Direction?, ratio: Float) {
@@ -134,13 +135,18 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 holder.setNopeTransparency(0.0f)
                 holder.setPickTransparency(0.0f)
             }
+
+            if (cardStackAdapter.getLeftContents(position) == 3) {
+                refreshCardStacks()
+            }
         }
 
         override fun onCardSwiped(direction: Direction?) {
-            if (cardStackAdapter.getItemViewType(cardStackLayoutManager.topPosition) == CardStackAdapter.TYPE_CARD_STACK_CONTENT) {
+            val currentPosition = currentPosition
+            if (cardStackAdapter.getItemViewType(currentPosition) == CardStackAdapter.TYPE_CARD_STACK_CONTENT) {
                 runOnBackground {
                     // pick nope 여부 서버 업데이트
-                    val opponentId = cardStackAdapter.getUserId(cardStackLayoutManager.topPosition)
+                    val opponentId = cardStackAdapter.getUserId(currentPosition)
                     val isPicked = CommandProcess.pick(
                         userId = StaticComponent.user.userId,
                         opponentId = opponentId,
@@ -154,10 +160,10 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
                     // nope된 사용자는 pool에 추가
                     if (direction == Direction.Left) {
-                        nopeContents.add(cardStackContents[cardStackLayoutManager.topPosition] as CardStackContent)
+                        nopeContents.add(cardStackContents[currentPosition] as CardStackContent)
                     }
 
-                    runOnUiThread { cardStackAdapter.removeAt(cardStackLayoutManager.topPosition) }
+                    runOnUiThread { cardStackAdapter.removeAt(currentPosition) }
                 }
             }
         }

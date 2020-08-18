@@ -7,7 +7,6 @@ import mbtinder.lib.component.ImageComponent
 import mbtinder.lib.component.json.JSONParsable
 import mbtinder.lib.component.user.Coordinator
 import mbtinder.lib.component.user.SignUpQuestionContent
-import mbtinder.lib.component.user.UserContent
 import mbtinder.lib.constant.MBTI
 import mbtinder.lib.constant.ServerPath
 import mbtinder.lib.util.JSONList
@@ -32,37 +31,9 @@ open class CardStackContent: BaseCardStackContent, JSONParsable, IDContent, Imag
     @SkipParsing
     private var imageUrl: String
 
-    constructor(cardStackContent: CardStackContent) {
-        this.userId = cardStackContent.userId
-        this.userName = cardStackContent.userName
-        this.age = cardStackContent.age
-        this.gender = cardStackContent.gender
-        this.coordinator = cardStackContent.coordinator
-        this.description = cardStackContent.description
-        this.mbti = cardStackContent.mbti
-        this.contents = cardStackContent.contents
-        this.imageName = cardStackContent.imageName
-        this.imageUrl = cardStackContent.imageUrl
-        this.score = cardStackContent.score
-    }
-
     constructor(jsonObject: JSONObject): super(jsonObject) {
         this.imageName = "profile.png"
         this.imageUrl = ServerPath.getUserImageUrl(userId, imageName)
-    }
-
-    constructor(userContent: UserContent, mbti: MBTI, contents: JSONList<SignUpQuestionContent>, score: Int = 0) {
-        this.userId = userContent.userId
-        this.userName = userContent.name
-        this.age = userContent.age
-        this.description = userContent.description
-        this.mbti = mbti
-        this.contents = contents
-        this.imageName = "profile.png"
-        this.imageUrl = ServerPath.getUserImageUrl(userId, imageName)
-        this.score = score
-
-        updateJSONObject()
     }
 
     constructor(userId: UUID, userName: String, age: Int, gender: Int, coordinator: Coordinator, description: String,

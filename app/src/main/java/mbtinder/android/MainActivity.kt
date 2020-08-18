@@ -32,6 +32,7 @@ class MainActivity : Activity() {
         val navView = findViewById<BottomNavigationView>(R.id.nav_view)
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         val navController = navHostFragment.navController
+        navView.setOnNavigationItemReselectedListener { /* 재선택시 refresh 방지 */ }
         navView.setupWithNavController(navController)
 
         startForegroundService(Intent(this, ThreadService::class.java))

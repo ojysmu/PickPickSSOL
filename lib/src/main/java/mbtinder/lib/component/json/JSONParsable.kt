@@ -76,7 +76,7 @@ abstract class JSONParsable: JSONContent {
      *
      * @author 김지환
      */
-    override fun updateJSONObject() {
+    final override fun updateJSONObject() {
         val fields = this::class.java.declaredFields
         for (field in fields) {
             field.isAccessible = true

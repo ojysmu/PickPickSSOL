@@ -6,6 +6,7 @@ import org.json.JSONObject
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
+import java.util.*
 
 fun JSONObject.clone(): JSONObject {
     val cloned = JSONObject()
@@ -14,6 +15,14 @@ fun JSONObject.clone(): JSONObject {
     }
 
     return cloned
+}
+
+fun JSONObject.getUUID(key: String): UUID {
+    return UUID.fromString(getString(key))
+}
+
+fun JSONObject.putUUID(key: String, uuid: UUID): JSONObject {
+    return put(key, uuid.toString())
 }
 
 fun JSONArray.saveJSONArray(path: String) = saveJSONString(toString(), path)

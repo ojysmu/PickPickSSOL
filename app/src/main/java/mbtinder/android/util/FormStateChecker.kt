@@ -2,8 +2,14 @@ package mbtinder.android.util
 
 import android.view.View
 
-class FormStateChecker {
+class FormStateChecker(vararg views: View) {
     private val formStatus = HashMap<View, Boolean>()
+
+    init {
+        views.forEach {
+            formStatus[ViewUtil.filterEditText(it)] = false
+        }
+    }
 
     fun addViews(vararg views: View) = views.forEach {
         formStatus[ViewUtil.filterEditText(it)] = false

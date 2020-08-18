@@ -1,6 +1,6 @@
 package mbtinder.server.util
 
-import mbtinder.lib.component.CardStackContent
+import mbtinder.lib.component.card_stack.CardStackContent
 import mbtinder.lib.component.database.Row
 import mbtinder.lib.component.user.SearchFilter
 import mbtinder.lib.component.user.SignUpQuestionContent

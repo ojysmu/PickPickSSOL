@@ -45,19 +45,6 @@ class MainActivity : Activity() {
         socketClient.start()
     }
 
-    private fun initializeLocation() {
-        LocationUtil.getLocation(this) { location, locationManager, locationListener ->
-            location?.let {
-                // 위치 탐색을 성공했을 때
-                // 위치 탐색 종료
-                locationManager.removeUpdates(locationListener)
-                // 현재 위치 좌표로부터 Coordinator 생성
-                val coordinator =
-                    Coordinator(location.longitude, location.latitude)
-            }
-        }
-    }
-
     private fun onConnected() {
         Log.v("onConnected()")
     }
@@ -109,7 +96,7 @@ class MainActivity : Activity() {
             }
         }.start()
 
-        while (result == null) {
+        while (result == null) { // TODO: Use block
             Thread.sleep(500)
         }
 

@@ -10,17 +10,14 @@ import androidx.navigation.fragment.findNavController
 import kotlinx.android.synthetic.main.fragment_find_password.*
 import mbtinder.android.R
 import mbtinder.android.io.socket.CommandProcess
-import mbtinder.android.ui.model.ProgressFragment
-import mbtinder.android.util.ViewUtil
-import mbtinder.android.util.getText
-import mbtinder.android.util.runOnBackground
-import mbtinder.android.util.runOnUiThread
+import mbtinder.android.ui.model.Fragment
+import mbtinder.android.util.*
 import mbtinder.lib.constant.PasswordQuestion
 
-class FindPasswordFragment : ProgressFragment(R.layout.fragment_find_password) {
-    override fun initializeView() {
-        super.initializeView()
+class FindPasswordFragment : Fragment(R.layout.fragment_find_password) {
+    private val formStateChecker by lazy { FormStateChecker(find_password_email, find_password_answer) }
 
+    override fun initializeView() {
         val questionSelector = find_password_question_selector.findViewById<Spinner>(R.id.spinner)
 
         initializeFocusableEditText(find_password_email, this::onEmailChanged, this::onLeaveEmail)
@@ -29,7 +26,7 @@ class FindPasswordFragment : ProgressFragment(R.layout.fragment_find_password) {
         questionSelector.adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, PasswordQuestion.values().map { it.question })
 
         switchable_next.setOnClickListener {
-            switchWaitingStatus()
+            ViewUtil.switchNextButton(layout_find_password)
             val email = find_password_email.getText()
             val questionId = PasswordQuestion.findQuestion(questionSelector.selectedItem as String)!!.questionId
             val answer = find_password_answer.getText()
@@ -42,7 +39,7 @@ class FindPasswordFragment : ProgressFragment(R.layout.fragment_find_password) {
                     runOnUiThread { findNavController().navigate(R.id.action_to_update_password, bundle) }
                 } else {
                     runOnUiThread {
-                        switchWaitingStatus()
+                        ViewUtil.switchNextButton(layout_find_password)
                         Toast.makeText(requireContext(), R.string.find_password_failed, Toast.LENGTH_SHORT).show()
                     }
                 }
@@ -50,10 +47,14 @@ class FindPasswordFragment : ProgressFragment(R.layout.fragment_find_password) {
         }
     }
 
+    private fun enableNextButton() {
+        switchable_next.isEnabled = !formStateChecker.hasFalse()
+    }
+
     private fun onEmailChanged(editable: Editable?) {
         editable?.let {
             if (Patterns.EMAIL_ADDRESS.matcher(it).matches()) {
-                setFormStatus(find_password_email, true)
+                formStateChecker.setState(find_password_email, true)
                 find_password_email.isErrorEnabled = false
             } else if (getFocusCount(find_password_email) != 1) {
                 onEmailIssued()
@@ -71,15 +72,13 @@ class FindPasswordFragment : ProgressFragment(R.layout.fragment_find_password) {
     }
 
     private fun onEmailIssued() {
-        setFormStatus(find_password_email, false)
+        formStateChecker.setState(find_password_email, false)
         find_password_email.isErrorEnabled = true
         find_password_email.error = getString(R.string.find_password_email_error)
     }
 
     private fun onAnswerChanged(editable: Editable?) {
-        editable?.let {
-            setFormStatus(find_password_answer, it.isNotBlank())
-            enableNextButton()
-        }
+        formStateChecker.setState(find_password_answer, editable?.isNotBlank() ?: false)
+        enableNextButton()
     }
 }

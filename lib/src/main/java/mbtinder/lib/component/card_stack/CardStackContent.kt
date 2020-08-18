@@ -1,6 +1,9 @@
-package mbtinder.lib.component
+package mbtinder.lib.component.card_stack
 
 import mbtinder.lib.annotation.SkipParsing
+import mbtinder.lib.component.CloneableContent
+import mbtinder.lib.component.IDContent
+import mbtinder.lib.component.ImageComponent
 import mbtinder.lib.component.json.JSONParsable
 import mbtinder.lib.component.user.Coordinator
 import mbtinder.lib.component.user.SignUpQuestionContent
@@ -11,7 +14,7 @@ import mbtinder.lib.util.JSONList
 import org.json.JSONObject
 import java.util.*
 
-class CardStackContent: JSONParsable, IDContent, ImageComponent, CloneableContent<CardStackContent>, Comparable<CardStackContent> {
+class CardStackContent: BaseCardStackContent, JSONParsable, IDContent, ImageComponent, CloneableContent<CardStackContent>, Comparable<CardStackContent> {
     lateinit var userId: UUID
     lateinit var userName: String
     var age: Int = -1

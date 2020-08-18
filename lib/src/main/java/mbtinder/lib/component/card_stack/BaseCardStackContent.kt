@@ -1,0 +1,3 @@
+package mbtinder.lib.component.card_stack
+
+interface BaseCardStackContent

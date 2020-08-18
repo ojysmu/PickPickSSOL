@@ -12,7 +12,7 @@ import mbtinder.android.ui.model.Fragment
 import mbtinder.android.util.*
 
 class SignInFragment : Fragment(R.layout.fragment_sign_in) {
-    private val formStatus = arrayOf(false, false)
+    private val formStateChecker by lazy { FormStateChecker(sign_in_email, sign_in_password) }
 
     override fun initializeView() {
         initializeFocusableEditText(sign_in_email, this::onEmailChanged, this::onLeaveEmail)
@@ -35,13 +35,13 @@ class SignInFragment : Fragment(R.layout.fragment_sign_in) {
     }
 
     private fun enableNextButton() {
-        switchable_next.isEnabled = !formStatus.contains(false)
+        switchable_next.isEnabled = !formStateChecker.hasFalse()
     }
 
     private fun onEmailChanged(editable: Editable?) {
         editable?.let {
             if (Patterns.EMAIL_ADDRESS.matcher(it).matches()) {
-                formStatus[0] = true
+                formStateChecker.setState(sign_in_email, true)
                 sign_in_email.isErrorEnabled = false
             } else if (getFocusCount(sign_in_email) != 1) {
                 onEmailIssued()
@@ -58,7 +58,7 @@ class SignInFragment : Fragment(R.layout.fragment_sign_in) {
     }
 
     private fun onEmailIssued() {
-        formStatus[0] = false
+        formStateChecker.setState(sign_in_email, false)
         sign_in_email.isErrorEnabled = true
         sign_in_email.error = getString(R.string.sign_in_email_error)
     }
@@ -66,7 +66,7 @@ class SignInFragment : Fragment(R.layout.fragment_sign_in) {
     private fun onPasswordChanged(editable: Editable?) {
         editable?.let {
             if (it.length in 8..16) {
-                formStatus[1] = true
+                formStateChecker.setState(sign_in_password, true)
                 sign_in_password.isErrorEnabled = false
             } else if (getFocusCount(sign_in_password) != 1) {
                 onPasswordIssued()
@@ -83,7 +83,7 @@ class SignInFragment : Fragment(R.layout.fragment_sign_in) {
     }
 
     private fun onPasswordIssued() {
-        formStatus[1] = false
+        formStateChecker.setState(sign_in_password, false)
         sign_in_password.isErrorEnabled = true
         sign_in_password.error = getString(R.string.sign_in_password_error)
     }

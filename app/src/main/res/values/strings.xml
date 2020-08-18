@@ -127,9 +127,9 @@
     <string name="home_rewind_default">0</string>
     <string name="home_nope">NOPE</string>
     <string name="home_pick">PICK!</string>
-    <string name="home_stack_empty">목록의 끝이에요.</string>
-    <string name="home_stack_refresh">새로고침</string>
-    <string name="home_stack_update_failed">목록을 불러오는데 실패했습니다. 다시 시도해주세요.</string>
+    <string name="home_stack_empty">더이상 매칭되는 친구가 없어요.</string>
+    <string name="home_stack_empty_go_account">설정 변경하기</string>
+    <string name="home_stack_daily_question_title">오늘의 PICK!</string>
 
     <string name="message_list_title">메시지</string>
 

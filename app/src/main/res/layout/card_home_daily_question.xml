@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/card_home_daily_question"
+    style="@style/CardView.Light"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginStart="@dimen/card_horizontal_margin"
+    android:layout_marginTop="@dimen/card_vertical_margin"
+    android:layout_marginEnd="@dimen/card_horizontal_margin"
+    android:layout_marginBottom="@dimen/card_vertical_margin"
+    android:backgroundTint="@color/card_home_empty_background"
+    app:cardCornerRadius="24dp"
+    app:cardElevation="8dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/card_home_daily_question_title"
+            style="@style/FragmentContent.Title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/home_stack_daily_question_title"
+            android:textColor="@color/colorPrimary"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/card_home_daily_question_content"
+            style="@style/FragmentContent.Title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="데이트가 없는\n주말의 나는"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/card_home_daily_question_title" />
+
+        <ImageView
+            android:id="@+id/card_home_daily_question_nope_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:src="@drawable/baseline_keyboard_arrow_left_white_48"
+            app:tint="@android:color/white"
+            app:layout_constraintTop_toTopOf="@id/card_home_daily_question_nope_container"
+            app:layout_constraintBottom_toBottomOf="@id/card_home_daily_question_nope_container"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_home_daily_question_nope_container"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/fragment_title_vertical_margin"
+            android:foregroundTint="@android:color/white"
+            app:layout_constraintTop_toBottomOf="@id/card_home_daily_question_content"
+            app:layout_constraintStart_toEndOf="@id/card_home_daily_question_nope_image"
+            app:layout_constraintEnd_toStartOf="@id/card_home_daily_question_pick_image"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="0dp">
+
+            <TextView
+                android:id="@+id/card_home_daily_question_nope"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="@dimen/card_vertical_margin"
+                android:layout_marginHorizontal="@dimen/card_horizontal_margin"
+                android:text="단톡에 연락해서\n친구들과 약속을 잡는다."
+                android:textSize="@dimen/text_large6"
+                android:textColor="@android:color/black"
+                android:fontFamily="@font/noto_sans_cjk_kr_bold"
+                android:includeFontPadding="false"/>
+        </com.google.android.material.card.MaterialCardView>
+
+        <ImageView
+            android:id="@+id/card_home_daily_question_pick_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/activity_horizontal_margin"
+            android:src="@drawable/baseline_keyboard_arrow_right_white_48"
+            app:tint="@android:color/white"
+            app:layout_constraintTop_toTopOf="@id/card_home_daily_question_pick_container"
+            app:layout_constraintBottom_toBottomOf="@id/card_home_daily_question_pick_container"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_home_daily_question_pick_container"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:foregroundTint="@android:color/white"
+            app:layout_constraintTop_toBottomOf="@id/card_home_daily_question_nope_container"
+            app:layout_constraintStart_toEndOf="@id/card_home_daily_question_nope_image"
+            app:layout_constraintEnd_toStartOf="@id/card_home_daily_question_pick_image"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="0dp">
+
+            <TextView
+                android:id="@+id/card_home_daily_question_pick"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="@dimen/card_vertical_margin"
+                android:layout_marginHorizontal="@dimen/card_horizontal_margin"
+                android:text="방에서 침대와 하루종일\n물아일체가 된다."
+                android:textSize="@dimen/text_large6"
+                android:textColor="@android:color/black"
+                android:fontFamily="@font/noto_sans_cjk_kr_bold"
+                android:includeFontPadding="false"/>
+        </com.google.android.material.card.MaterialCardView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>

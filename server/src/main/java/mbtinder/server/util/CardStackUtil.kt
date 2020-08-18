@@ -1,11 +1,10 @@
 package mbtinder.server.util
 
-import mbtinder.lib.component.CardStackContent
+import mbtinder.lib.component.card_stack.CardStackContent
 import mbtinder.lib.component.database.Row
 import mbtinder.lib.component.user.Coordinator
 import mbtinder.lib.component.user.SearchFilter
 import mbtinder.lib.component.user.SignUpQuestionContent
-import mbtinder.lib.component.user.UserContent
 import mbtinder.lib.constant.MBTI
 import mbtinder.lib.util.*
 import mbtinder.server.constant.LocalFile
@@ -45,14 +44,13 @@ object CardStackUtil {
     fun findByUserIds(vararg userIds: UUID): List<CardStackContent> {
         ensureUpdate()
 
-        return userIds.map { userId: UUID ->
-            cardStacks!![cardStacks!!.binarySearch { card: CardStackContent -> card.userId.compareTo(userId) }].getCloned()
+        return userIds.map { userId ->
+            cardStacks!![cardStacks!!.binarySearch { card -> card.userId.compareTo(userId) }].getCloned()
         }
     }
 
     fun findAll(finderId: UUID, metList: List<UUID>, finderCoordinator: Coordinator, filter: SearchFilter): List<CardStackContent> {
         ensureUpdate()
-
         // 사용자 MBTI
         val finderMBTI = findMBTI(finderId)
         // 가입 시 입력한 취향

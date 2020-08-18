@@ -1,19 +1,18 @@
 package mbtinder.android.util
 
 import android.Manifest
-import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
-import androidx.core.app.ActivityCompat.requestPermissions
 import androidx.core.content.ContextCompat
 import mbtinder.android.io.http.HttpConnection
 import mbtinder.android.io.http.RequestMethod
 import mbtinder.android.ui.model.Fragment
 import mbtinder.lib.component.user.Coordinator
+import mbtinder.lib.util.block
 import org.json.JSONObject
 
 object LocationUtil {
@@ -23,20 +22,22 @@ object LocationUtil {
 
     private const val LOCATION_REQUEST_CODE = 0x00
 
-    fun getLocation(context: Context, onLocationChangedListener: (Location?, LocationManager, LocationListener) -> Unit) {
+    private fun getLocation(context: Context, onLocationChangedListener: (Location) -> Unit) {
         val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         val locationListener = object : LocationListener {
             override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) = Unit
-            override fun onProviderEnabled(provider: String?) = Unit
-            override fun onProviderDisabled(provider: String?) = Unit
-            override fun onLocationChanged(location: Location?) =
-                onLocationChangedListener.invoke(location, locationManager, this)
+            override fun onProviderEnabled(provider: String) = Unit
+            override fun onProviderDisabled(provider: String) = Unit
+            override fun onLocationChanged(location: Location) {
+                locationManager.removeUpdates(this)
+                onLocationChangedListener.invoke(location)
+            }
         }
 
         runOnUiThread {
             if (checkLocationPermission(context)) {
-                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0L, 0f, locationListener)
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0L, 0f, locationListener)
+                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1L, 0f, locationListener)
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1L, 0f, locationListener)
             }
         }
     }
@@ -77,24 +78,15 @@ object LocationUtil {
 
         var coordinator: Coordinator? = null
 
-        getLocation(context) { location, locationManager, locationListener ->
+        getLocation(context) { location ->
             Log.v("LocationUtil.onLocationPermissionGranted(): received")
-            location?.let {
-                locationManager.removeUpdates(locationListener)
-                if (coordinator == null) {
-                    coordinator = Coordinator(
-                        location.longitude,
-                        location.latitude
-                    )
-                }
-                Log.v("LocationUtil.onLocationPermissionGranted(): coordinator=$coordinator")
+            if (coordinator == null) {
+                coordinator = Coordinator(location.longitude, location.latitude)
             }
+            Log.v("LocationUtil.onLocationPermissionGranted(): coordinator=$coordinator")
         }
 
-        while (coordinator == null) {
-            Thread.sleep(100)
-        }
-
+        block { coordinator == null }
         return coordinator!!
     }
 }

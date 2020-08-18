@@ -39,11 +39,10 @@ class SQLiteConnection private constructor(val userId: UUID): CloseableThread(),
         fun getSelectMessageSql(chatId: UUID, endIndex: Int) =
             "SELECT * FROM '$chatId' LIMIT ${endIndex - SELECT_MESSAGE_LIMIT}, $SELECT_MESSAGE_LIMIT"
 
-        fun getInsertFirstMessageSql(chatId: UUID, senderId: UUID, receiverId: UUID): String {
-            return "INSERT INTO '$chatId' " +
+        fun getInsertFirstMessageSql(chatId: UUID, senderId: UUID, receiverId: UUID) =
+            "INSERT INTO '$chatId' " +
                     "(sender_id, receiver_id, timestamp, body) VALUES " +
                     "('$senderId', '$receiverId', ${System.currentTimeMillis()}, '매칭되었습니다.')"
-        }
     }
 
     private val statement: Statement

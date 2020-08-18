@@ -3,6 +3,7 @@ package mbtinder.android.io.socket
 import mbtinder.android.io.component.ServerResult
 import mbtinder.android.io.http.ImageUploader
 import mbtinder.lib.component.*
+import mbtinder.lib.component.card_stack.CardStackContent
 import mbtinder.lib.component.user.Coordinator
 import mbtinder.lib.component.user.SearchFilter
 import mbtinder.lib.component.user.SignUpQuestionContent
@@ -10,6 +11,7 @@ import mbtinder.lib.component.user.UserContent
 import mbtinder.lib.io.component.CommandContent
 import mbtinder.lib.io.constant.Command
 import mbtinder.lib.util.JSONList
+import mbtinder.lib.util.getUUID
 import org.json.JSONObject
 import java.util.*
 
@@ -25,16 +27,7 @@ object CommandProcess {
     /**
      * @see Command.ADD_USER
      */
-    fun signUp(
-        email: String,
-        password: String,
-        name: String,
-        age: Int,
-        gender: Int,
-        description: String,
-        passwordQuestionId: Int,
-        passwordAnswer: String
-    ): ServerResult<Void> {
+    fun signUp(email: String, password: String, name: String, age: Int, gender: Int, description: String, passwordQuestionId: Int, passwordAnswer: String): ServerResult<UUID> {
         val arguments = JSONObject()
         arguments.put("email", email)
         arguments.put("password", password)
@@ -45,9 +38,12 @@ object CommandProcess {
         arguments.put("password_question_id", passwordQuestionId)
         arguments.put("password_answer", passwordAnswer)
 
-        return SocketUtil.getVoidResult(
-            SocketUtil.getServerResult(Command.ADD_USER, arguments)
-        )
+        val result = SocketUtil.getServerResult(Command.ADD_USER, arguments)
+        return if (result.getBoolean("result")) {
+            ServerResult(true, 0, result.getUUID("user_id"))
+        } else {
+            ServerResult(false, result.getInt("code"))
+        }
     }
 
     fun uploadProfileImage(userId: UUID, rawImage: ByteArray): ServerResult<Void> {

@@ -2,7 +2,6 @@ package mbtinder.android.ui.fragment.home
 
 import android.view.View
 import android.view.animation.LinearInterpolator
-import android.widget.Toast
 import androidx.recyclerview.widget.DefaultItemAnimator
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.yuyakaido.android.cardstackview.*
@@ -13,7 +12,7 @@ import mbtinder.android.io.socket.CommandProcess
 import mbtinder.android.ui.model.Fragment
 import mbtinder.android.util.runOnBackground
 import mbtinder.android.util.runOnUiThread
-import mbtinder.lib.component.CardStackContent
+import mbtinder.lib.component.card_stack.CardStackContent
 import mbtinder.lib.component.user.Coordinator
 
 class HomeFragment : Fragment(R.layout.fragment_home) {
@@ -51,7 +50,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         }
     }
 
-    fun updateCardStack(onUpdateFinished: ((isSucceed: Boolean, content: CardStackContent?) -> Unit)? = null) {
+    private fun updateCardStack() {
         runOnBackground {
             val getResult = CommandProcess.getMatchableUsers(
                 userId = StaticComponent.user.userId,
@@ -64,14 +63,8 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
                 runOnUiThread {
                     cardStackAdapter.addContents(contents)
-
                     home_waiting.visibility = View.INVISIBLE
                     home_card_stack_view.visibility = View.VISIBLE
-                }
-            } else {
-                runOnUiThread {
-                    Toast.makeText(requireContext(), R.string.home_stack_update_failed, Toast.LENGTH_SHORT).show()
-                    onUpdateFinished?.invoke(false, null)
                 }
             }
         }
@@ -80,13 +73,15 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     private val cardStackListener = object : CardStackListener {
         override fun onCardDisappeared(view: View?, position: Int) {
             val holder = cardStackAdapter.holders[currentPosition]
-            holder.setNopeTransparency(0.0f)
-            holder.setPickTransparency(0.0f)
+            if (holder is CardStackViewHolder) {
+                holder.setNopeTransparency(0.0f)
+                holder.setPickTransparency(0.0f)
+            }
         }
 
         override fun onCardDragging(direction: Direction?, ratio: Float) {
             val holder = cardStackAdapter.holders[currentPosition]
-            if (!holder.isEmpty) {
+            if (holder is CardStackViewHolder) {
                 if (ratio == 0.0f) {
                     holder.setNopeTransparency(0.0f)
                     holder.setPickTransparency(0.0f)
@@ -101,23 +96,34 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
         override fun onCardSwiped(direction: Direction?) {
             runOnBackground {
-                val opponentId = cardStackAdapter.contents[currentPosition].userId
+                val content = cardStackAdapter.contents[currentPosition]
+                if (content is CardStackContent) {
+                    // pick된 사용자는 rewind 되지 않도록 함
+                    if (direction == Direction.Right) {
+                        runOnUiThread {
+                            cardStackAdapter.removeContent(currentPosition)
+                        }
+                    }
 
-                val isPicked = CommandProcess.pick(
-                    userId = StaticComponent.user.userId,
-                    opponentId = opponentId,
-                    isPick = direction == Direction.Right
-                ).result!!
+                    // pick nope 여부 서버 업데이트
+                    val opponentId = content.userId
+                    val isPicked = CommandProcess.pick(
+                        userId = StaticComponent.user.userId,
+                        opponentId = opponentId,
+                        isPick = direction == Direction.Right
+                    ).result!!
 
-                if (isPicked) {
-                    CommandProcess.createChat(StaticComponent.user.userId, opponentId)
+                    // 서로 pick했을 때 서버에 채팅 생성 요청
+                    if (isPicked) {
+                        CommandProcess.createChat(StaticComponent.user.userId, opponentId)
+                    }
                 }
             }
         }
 
         override fun onCardCanceled() {
             val holder = cardStackAdapter.holders[currentPosition]
-            if (!holder.isEmpty) {
+            if (holder is CardStackViewHolder) {
                 holder.setNopeTransparency(0.0f)
                 holder.setPickTransparency(0.0f)
             }
@@ -125,12 +131,16 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
         override fun onCardAppeared(view: View?, position: Int) {
             currentPosition = position
+
+            cardStackLayoutManager.setCanScrollHorizontal(cardStackAdapter.holders[currentPosition] !is EmptyViewHolder)
         }
 
         override fun onCardRewound() {
             val holder = cardStackAdapter.holders[currentPosition]
-            holder.setNopeTransparency(0.0f)
-            holder.setPickTransparency(0.0f)
+            if (holder is CardStackViewHolder) {
+                holder.setNopeTransparency(0.0f)
+                holder.setPickTransparency(0.0f)
+            }
         }
     }
 }

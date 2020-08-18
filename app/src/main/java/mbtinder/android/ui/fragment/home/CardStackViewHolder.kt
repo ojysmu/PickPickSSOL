@@ -1,22 +1,19 @@
 package mbtinder.android.ui.fragment.home
 
 import android.view.View
-import android.widget.Button
 import android.widget.FrameLayout
-import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import mbtinder.android.R
-import mbtinder.android.ui.model.recycler_view.AdaptableViewHolder
 import mbtinder.android.ui.view.AsyncImageView
-import mbtinder.android.util.Log
 import mbtinder.android.util.ViewUtil
-import mbtinder.lib.component.CardStackContent
+import mbtinder.lib.component.card_stack.BaseCardStackContent
+import mbtinder.lib.component.card_stack.CardStackContent
 
-class CardStackViewHolder(private val view: View): AdaptableViewHolder<CardStackContent>(view) {
+class CardStackViewHolder(private val view: View): BaseCardStackViewHolder(view) {
     private var imageView: AsyncImageView = view.findViewById(R.id.card_main_stack_image)
     private var recyclerView: RecyclerView = view.findViewById(R.id.card_main_stack_recycler_view)
     private var pickContainer: FrameLayout = view.findViewById(R.id.card_main_stack_pick_container)
@@ -25,12 +22,6 @@ class CardStackViewHolder(private val view: View): AdaptableViewHolder<CardStack
     private var nopeContainer: FrameLayout = view.findViewById(R.id.card_main_stack_nope_container)
     private var cardNope: MaterialCardView = view.findViewById(R.id.card_main_stack_nope)
     private var cardNopeContent: TextView = view.findViewById(R.id.card_main_stack_nope_content)
-    private var emptyTextView: TextView = view.findViewById(R.id.card_main_stack_empty)
-    private var refreshButton: Button = view.findViewById(R.id.card_main_stack_refresh)
-    private var refreshingProgressBar: ProgressBar = view.findViewById(R.id.card_main_stack_refreshing)
-
-    lateinit var adapter: CardStackAdapter
-    var isEmpty = false
 
     fun setPickTransparency(ratio: Float) {
         pickContainer.setBackgroundColor(ViewUtil.getColor(view.context.getColor(android.R.color.black), 1.0f - ratio / 2))
@@ -44,20 +35,15 @@ class CardStackViewHolder(private val view: View): AdaptableViewHolder<CardStack
         cardNopeContent.setTextColor(ViewUtil.getColor(view.context.getColor(android.R.color.black), 1.0f - ratio))
     }
 
-    override fun adapt(content: CardStackContent) {
-        emptyTextView.visibility = View.INVISIBLE
-        refreshButton.visibility = View.INVISIBLE
-        refreshingProgressBar.visibility = View.INVISIBLE
-        imageView.visibility = View.VISIBLE
-        recyclerView.visibility = View.VISIBLE
-        cardPick.visibility = View.VISIBLE
-        cardNope.visibility = View.VISIBLE
+    override fun adapt(content: BaseCardStackContent) {
+        if (content !is CardStackContent) {
+            error("Assertion failed")
+        }
 
         val cardStackItemContents = content.contents.mapTo(ArrayList()) { it.selectable.getString(it.selected) }
         if (content.description.isNotBlank()) {
             cardStackItemContents.add(content.description)
         }
-        Log.v("age=${content.jsonObject.getInt("age")}")
         cardStackItemContents.add(content.userName + ", " + content.jsonObject.getInt("age"))
         imageView.setImage(content)
         recyclerView.itemAnimator = DefaultItemAnimator()
@@ -65,30 +51,5 @@ class CardStackViewHolder(private val view: View): AdaptableViewHolder<CardStack
         recyclerView.adapter = CardStackContentAdapter(cardStackItemContents)
         setPickTransparency(0.0f)
         setNopeTransparency(0.0f)
-    }
-
-    private fun adaptEmpty() {
-        emptyTextView.visibility = View.VISIBLE
-        refreshButton.visibility = View.VISIBLE
-        refreshingProgressBar.visibility = View.INVISIBLE
-        imageView.visibility = View.INVISIBLE
-        recyclerView.visibility = View.INVISIBLE
-        cardPick.visibility = View.INVISIBLE
-        cardNope.visibility = View.INVISIBLE
-
-        refreshButton.setOnClickListener {
-            refreshButton.visibility = View.INVISIBLE
-            refreshingProgressBar.visibility = View.VISIBLE
-            adapter.requestUpdate(this::onUpdateFinished)
-        }
-    }
-
-    private fun onUpdateFinished(isSucceed: Boolean, content: CardStackContent?) {
-        if (isSucceed) {
-            adapt(content!!)
-        } else {
-            refreshButton.visibility = View.VISIBLE
-            refreshingProgressBar.visibility = View.INVISIBLE
-        }
     }
 }

@@ -129,6 +129,10 @@
         android:name="mbtinder.android.ui.fragment.home.HomeFragment"
         android:label="@string/home_title"
         tools:layout="@layout/fragment_splash">
+
+        <action
+            android:id="@+id/action_to_account"
+            app:destination="@id/nav_account" />
     </fragment>
 
     <fragment

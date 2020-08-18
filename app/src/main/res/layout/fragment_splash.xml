@@ -17,18 +17,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <TextView
+    <ImageView
         android:id="@+id/splash_content"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/activity_horizontal_margin"
-        android:text="@string/splash_content"
-        android:textSize="60sp"
-        android:textStyle="bold"
-        android:textColor="@android:color/black"
+        android:src="@drawable/img_splash"
         android:visibility="gone"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/splash_sign_up"
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
@@ -36,20 +32,20 @@
         android:id="@+id/splash_sign_up"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:layout_marginBottom="@dimen/card_vertical_margin"
         android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
         android:text="@string/splash_sign_up"
         android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@id/splash_content" />
+        app:layout_constraintBottom_toTopOf="@id/splash_sign_in" />
 
     <Button
         style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         android:id="@+id/splash_sign_in"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/card_vertical_margin"
+        android:layout_marginBottom="@dimen/activity_vertical_margin"
         android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
         android:text="@string/splash_sign_in"
         android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@id/splash_sign_up" />
+        app:layout_constraintBottom_toBottomOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

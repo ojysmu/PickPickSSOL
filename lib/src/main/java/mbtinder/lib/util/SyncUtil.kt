@@ -27,6 +27,12 @@ fun <T> block(variable: T, duration: Long = 100, flag: (T) -> Boolean): T {
     return variable
 }
 
+fun block(duration: Long = 100, flag: () -> Boolean) {
+    while (flag.invoke()) {
+        Thread.sleep(duration)
+    }
+}
+
 /**
  * flag가 false가 될 때까지 대기
  *

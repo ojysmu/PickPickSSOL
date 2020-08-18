@@ -1,6 +1,6 @@
 package mbtinder.lib.component.user
 
-import mbtinder.lib.component.CardStackContent
+import mbtinder.lib.component.card_stack.CardStackContent
 import mbtinder.lib.component.IDContent
 import mbtinder.lib.component.database.Row
 import mbtinder.lib.component.json.JSONParsable

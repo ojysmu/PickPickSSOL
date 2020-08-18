@@ -408,7 +408,7 @@ object CommandProcess {
     }
 
     private fun refreshMatchableUsers(command: CommandContent): JSONObject {
-        val userId = command.arguments.getUUID("user_Id")
+        val userId = command.arguments.getUUID("user_id")
         val userCoordinator = Coordinator(command.arguments.getJSONObject("coordinator"))
         val searchFilter = SearchFilter(command.arguments.getJSONObject("search_filter"))
         val currentMetList = command.arguments.getJSONArray("current_met_list").toUUIDList()

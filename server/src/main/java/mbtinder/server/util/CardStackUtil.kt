@@ -38,7 +38,7 @@ object CardStackUtil {
     fun findByUserId(userId: UUID): CardStackContent? {
         ensureUpdate()
 
-        return findBinaryTwice(cardStacks!!, this::updateCardStacks) { it.userId.compareTo(userId) }
+        return findBinaryTwice(cardStacks!!) { it.userId.compareTo(userId) }
     }
 
     fun findByUserIds(vararg userIds: UUID): List<CardStackContent> {

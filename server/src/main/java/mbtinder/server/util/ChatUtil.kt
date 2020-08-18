@@ -36,6 +36,6 @@ object ChatUtil {
 
     fun getChatContent(chatId: UUID): ChatContent? {
         ensureUpdate()
-        return findBinaryTwice(chats, this::updateChats) { it.getUUID().compareTo(chatId) }
+        return findBinaryTwice(chats) { it.getUUID().compareTo(chatId) }
     }
 }

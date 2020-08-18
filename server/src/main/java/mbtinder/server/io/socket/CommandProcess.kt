@@ -47,6 +47,7 @@ object CommandProcess {
             Command.SET_SIGN_UP_QUESTIONS -> setSignUpQuestion(command)
             Command.SET_MBTI -> setMBTI(command)
             Command.GET_MATCHABLE_USERS -> getMatchableUsers(command)
+            Command.REFRESH_MATCHABLE_USERS -> refreshMatchableUsers(command)
             Command.PICK -> pick(command)
 
             Command.CREATE_CHAT -> createChat(command)
@@ -397,6 +398,27 @@ object CommandProcess {
         val queryResult = sqLiteConnection.getResult(queryId)
         // 이미 목록에 나타났던 사용자 목록
         val metList = queryResult.content.map { it.getUUID("opponent_id") }
+
+        val filteredCardStackContent = CardStackUtil.findAll(userId, metList, userCoordinator, searchFilter).toJSONArray()
+
+        return Connection.makePositiveResponse(
+            command.uuid,
+            JSONObject().apply { put("card_stack_contents", filteredCardStackContent) }
+        )
+    }
+
+    private fun refreshMatchableUsers(command: CommandContent): JSONObject {
+        val userId = command.arguments.getUUID("user_Id")
+        val userCoordinator = Coordinator(command.arguments.getJSONObject("coordinator"))
+        val searchFilter = SearchFilter(command.arguments.getJSONObject("search_filter"))
+        val currentMetList = command.arguments.getJSONArray("current_met_list").toUUIDList()
+
+        val sqLiteConnection = SQLiteConnection.getConnection(userId)
+        val sql = "SELECT opponent_id FROM pick"
+        val queryId = sqLiteConnection.addQuery(sql)
+        val queryResult = sqLiteConnection.getResult(queryId)
+        val metList = queryResult.content.mapTo(ArrayList<UUID>()) { it.getUUID("opponent_id") }
+        metList.addAll(currentMetList)
 
         val filteredCardStackContent = CardStackUtil.findAll(userId, metList, userCoordinator, searchFilter).toJSONArray()
 

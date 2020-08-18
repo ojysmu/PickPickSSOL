@@ -17,13 +17,19 @@ fun JSONObject.clone(): JSONObject {
     return cloned
 }
 
-fun JSONObject.getUUID(key: String): UUID {
-    return UUID.fromString(getString(key))
+fun JSONObject.getUUID(key: String) = UUID.fromString(getString(key))
+
+fun JSONObject.putUUID(key: String, uuid: UUID) = put(key, uuid.toString())
+
+fun JSONArray.getUUID(index: Int) = UUID.fromString(getString(index))
+
+fun JSONArray.putUUID(uuid: UUID) = put(uuid.toString())
+
+fun List<UUID>.toJSONArray() = JSONArray().also {
+    forEach { element -> it.putUUID(element) }
 }
 
-fun JSONObject.putUUID(key: String, uuid: UUID): JSONObject {
-    return put(key, uuid.toString())
-}
+fun JSONArray.toUUIDList() = (0 until length()).map { getUUID(it) }
 
 fun JSONArray.saveJSONArray(path: String) = saveJSONString(toString(), path)
 

@@ -12,6 +12,8 @@ import mbtinder.lib.io.component.CommandContent
 import mbtinder.lib.io.constant.Command
 import mbtinder.lib.util.JSONList
 import mbtinder.lib.util.getUUID
+import mbtinder.lib.util.putUUID
+import mbtinder.lib.util.toJSONArray
 import org.json.JSONObject
 import java.util.*
 
@@ -172,6 +174,19 @@ object CommandProcess {
 
         return SocketUtil.getJSONListResult(
             SocketUtil.getServerResult(Command.GET_MATCHABLE_USERS, arguments),
+            "card_stack_contents"
+        )
+    }
+
+    fun refreshMatchableUsers(userId: UUID, coordinator: Coordinator, searchFilter: SearchFilter, currentMetList: List<UUID>): ServerResult<JSONList<CardStackContent>> {
+        val arguments = JSONObject()
+        arguments.putUUID("user_id", userId)
+        arguments.put("coordinator", coordinator.toJSONObject())
+        arguments.put("search_filter", searchFilter.toJSONObject())
+        arguments.put("current_met_list", currentMetList.toJSONArray())
+
+        return SocketUtil.getJSONListResult(
+            SocketUtil.getServerResult(Command.REFRESH_MATCHABLE_USERS, arguments),
             "card_stack_contents"
         )
     }

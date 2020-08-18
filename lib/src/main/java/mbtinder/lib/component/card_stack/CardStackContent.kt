@@ -14,7 +14,7 @@ import mbtinder.lib.util.JSONList
 import org.json.JSONObject
 import java.util.*
 
-class CardStackContent: BaseCardStackContent, JSONParsable, IDContent, ImageComponent, CloneableContent<CardStackContent>, Comparable<CardStackContent> {
+open class CardStackContent: BaseCardStackContent, JSONParsable, IDContent, ImageComponent, CloneableContent<CardStackContent>, Comparable<CardStackContent> {
     lateinit var userId: UUID
     lateinit var userName: String
     var age: Int = -1
@@ -31,6 +31,20 @@ class CardStackContent: BaseCardStackContent, JSONParsable, IDContent, ImageComp
     private var imageName: String
     @SkipParsing
     private var imageUrl: String
+
+    constructor(cardStackContent: CardStackContent) {
+        this.userId = cardStackContent.userId
+        this.userName = cardStackContent.userName
+        this.age = cardStackContent.age
+        this.gender = cardStackContent.gender
+        this.coordinator = cardStackContent.coordinator
+        this.description = cardStackContent.description
+        this.mbti = cardStackContent.mbti
+        this.contents = cardStackContent.contents
+        this.imageName = cardStackContent.imageName
+        this.imageUrl = cardStackContent.imageUrl
+        this.score = cardStackContent.score
+    }
 
     constructor(jsonObject: JSONObject): super(jsonObject) {
         this.imageName = "profile.png"

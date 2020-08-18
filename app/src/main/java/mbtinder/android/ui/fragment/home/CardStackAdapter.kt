@@ -8,13 +8,8 @@ import mbtinder.lib.component.card_stack.BaseCardStackContent
 import mbtinder.lib.component.card_stack.CardStackContent
 import mbtinder.lib.component.card_stack.DailyQuestionContent
 
-class CardStackAdapter(val contents: MutableList<BaseCardStackContent>, private val fragment: HomeFragment): RecyclerView.Adapter<BaseCardStackViewHolder>() {
+class CardStackAdapter(private val fragment: HomeFragment): RecyclerView.Adapter<BaseCardStackViewHolder>() {
     val holders = arrayListOf<BaseCardStackViewHolder>()
-
-    init {
-        // 마지막 항목 추가
-        contents.add(EmptyContent())
-    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseCardStackViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(viewType, parent, false)
@@ -24,51 +19,50 @@ class CardStackAdapter(val contents: MutableList<BaseCardStackContent>, private 
             TYPE_DAILY_QUESTION_CONTENT -> DailyQuestionViewHolder(view)
             TYPE_EMPTY_CONTENT -> EmptyViewHolder(view, fragment)
             else -> throw AssertionError("View type error: viewType=$viewType")
-        }
+        }.apply { setIsRecyclable(false) }
     }
 
     override fun onBindViewHolder(holder: BaseCardStackViewHolder, position: Int) {
         holders.add(holder)
-        holder.adapt(contents[position])
+        holder.adapt(HomeFragment.cardStackContents[position])
     }
 
-    override fun getItemCount() = contents.size
+    override fun getItemCount() = HomeFragment.cardStackContents.size
 
-    override fun getItemViewType(position: Int) = when (contents[position]) {
-        is CardStackContent -> TYPE_CARD_STACK_CONTENT
-        is DailyQuestionContent -> TYPE_DAILY_QUESTION_CONTENT
-        is EmptyContent -> TYPE_EMPTY_CONTENT
-        else -> throw AssertionError("View type error: position=$position")
+    override fun getItemViewType(position: Int): Int {
+        if (position == itemCount - 1) {
+            return TYPE_EMPTY_CONTENT
+        }
+
+        return when (HomeFragment.cardStackContents[position]) {
+            is CardStackContent -> TYPE_CARD_STACK_CONTENT
+            is DailyQuestionContent -> TYPE_DAILY_QUESTION_CONTENT
+            else -> throw AssertionError("View type error: position=$position")
+        }
     }
 
-    /**
-     * HomeFragment에서 새 카드 목록을 불러왔을 때 호출
-     */
-    fun addContents(list: List<BaseCardStackContent>) {
-        val lastIndex = contents.size - 1
-        // 마지막(EmptyContent) 삭제
-        contents.removeAt(lastIndex)
-        // 새 목록 추가
-        contents.addAll(list)
-        // 마지막(EmptyContent) 추가
-        contents.add(EmptyContent())
-        notifyItemRangeInserted(lastIndex, lastIndex + list.size)
+    override fun getItemId(position: Int): Long {
+        val uuid = HomeFragment.cardStackContents[position].getUUID()
+        return uuid.leastSignificantBits + uuid.mostSignificantBits
     }
 
-    /**
-     * [CardStackContent]를 Pick하거나, [DailyQuestionContent]를 Pick, Nope했을 때 호출
-     */
-    fun removeContent(position: Int) {
-        contents.removeAt(position)
+    fun getUserIds() = HomeFragment.cardStackContents.map { it.getUUID() }
+
+    fun getLeftContents(currentPosition: Int) = itemCount - currentPosition
+
+    fun getUserId(position: Int) = (HomeFragment.cardStackContents[position] as CardStackContent).userId
+
+    fun addAt(position: Int, content: BaseCardStackContent) {
+        HomeFragment.cardStackContents.add(content)
+        notifyItemInserted(position)
+    }
+
+    fun removeAt(position: Int) {
+        HomeFragment.cardStackContents.removeAt(position)
         notifyItemRemoved(position)
     }
 
-    /**
-     * 남은 contents의 수 반환
-     */
-    fun getLeftContents(currentPosition: Int) = itemCount - currentPosition
-
-    private companion object {
+    companion object {
         const val TYPE_CARD_STACK_CONTENT = R.layout.card_main_stack
         const val TYPE_DAILY_QUESTION_CONTENT = R.layout.card_home_daily_question
         const val TYPE_EMPTY_CONTENT = R.layout.card_home_empty

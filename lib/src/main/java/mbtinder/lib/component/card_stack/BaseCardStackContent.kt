@@ -1,3 +1,5 @@
 package mbtinder.lib.component.card_stack
 
-interface BaseCardStackContent
+import mbtinder.lib.component.IDContent
+
+interface BaseCardStackContent: IDContent

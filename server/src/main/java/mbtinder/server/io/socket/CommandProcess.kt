@@ -465,7 +465,7 @@ object CommandProcess {
 
         return Connection.makePositiveResponse(
             command.uuid,
-            JSONObject().apply { put("answered", queryResult.getRowCount() == 0) }
+            JSONObject().apply { put("answered", queryResult.getRowCount() != 0) }
         )
     }
 

@@ -12,13 +12,16 @@ import mbtinder.android.R
 import mbtinder.android.component.StaticComponent
 import mbtinder.android.io.socket.CommandProcess
 import mbtinder.android.ui.model.Fragment
+import mbtinder.android.util.Log
 import mbtinder.android.util.SharedPreferencesUtil
 import mbtinder.android.util.runOnBackground
 import mbtinder.android.util.runOnUiThread
 import mbtinder.lib.component.card_stack.BaseCardStackContent
+import mbtinder.lib.component.card_stack.CardStackContent
 import mbtinder.lib.component.card_stack.DailyQuestionContent
 import mbtinder.lib.component.user.Coordinator
 import mbtinder.lib.util.findAll
+import mbtinder.lib.util.mapBase
 import org.json.JSONObject
 import java.sql.Date
 
@@ -78,8 +81,10 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
             if (getResult.isSucceed) {
                 val mapped = getResult.result!!
-                    .mapTo(ArrayList<BaseCardStackContent>()) { it }
+                    .mapBase<BaseCardStackContent, CardStackContent>()
+                    .apply { addAll(0, todayQuestions) }
                     .apply { add(EmptyContent()) }
+                Log.v("HomeFragment.getCardStacks(): todayQuestions=$todayQuestions")
                 cardStackContents.addAll(mapped)
                 runOnUiThread {
                     cardStackAdapter.notifyDataSetChanged()
@@ -93,7 +98,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     /**
      * 카드 스택 업데이트
      * 이미 카드 스택이 존재하고, 추가로 필요할 떄 호출
-     * 오늘의 질문이 남았을 경우 맨 뒤에 추가
+     * 오늘의 질문이 남았을 경우 하나만 맨 뒤에 추가
      */
     @AnyThread
     private fun refreshCardStacks() {
@@ -108,9 +113,9 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             if (refreshResult.isSucceed && refreshResult.result!!.isNotEmpty()) {
                 cardStackContents.removeAll { it is EmptyContent }
                 cardStackContents.addAll(refreshResult.result!!)
-                if (todayQuestions.isNotEmpty()) {
-                    cardStackContents.add(todayQuestions.removeAt(0))
-                }
+//                if (todayQuestions.isNotEmpty()) {
+//                    cardStackContents.add(todayQuestions.removeAt(0))
+//                }
                 cardStackContents.add(EmptyContent())
                 runOnUiThread { cardStackAdapter.notifyDataSetChanged() }
             }
@@ -129,7 +134,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             val lastDate = saved
                 .map { DailyQuestionContent(JSONObject(it)) }
                 .max()
-                ?.date ?: Date(System.currentTimeMillis())
+                ?.date ?: Date(System.currentTimeMillis() - 86400000)
 
             val getResult = CommandProcess.getDailyQuestions(lastDate)
             if (getResult.isSucceed) {
@@ -159,7 +164,10 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     private fun getTodayDailyQuestions(): List<DailyQuestionContent> {
         val context = SharedPreferencesUtil.getContext(requireContext(), SharedPreferencesUtil.PREF_QUESTIONS)
         val saved = context.getStringList("questions").map { DailyQuestionContent(JSONObject(it)) }
-        return saved.findAll { it.date == Date(System.currentTimeMillis()) }
+        Log.v("HomeFragment.getTodayDailyQuestions(): saved=$saved")
+        return saved.filterTo(ArrayList()) { Log.v("HomeFragment.getTodayDailyQuestions(): a=${it.date.time}, b=${Date(System.currentTimeMillis()).time}"); it.date.toString() == Date(System.currentTimeMillis()).toString() }.apply {
+            Log.v("HomeFragment.getTodayDailyQuestions(): found=$this")
+        }
     }
 
     /**

@@ -193,7 +193,7 @@ object CommandProcess {
     fun getDailyQuestions(lastDate: Date): ServerResult<JSONList<DailyQuestionContent>> {
         return SocketUtil.getJSONListResult(
             SocketUtil.getServerResult(Command.GET_DAILY_QUESTIONS, JSONObject().apply { putDate("last_date", lastDate) }),
-            "daily_question_contents"
+            "daily_questions"
         )
     }
 
@@ -204,7 +204,7 @@ object CommandProcess {
 
         val result = SocketUtil.getServerResult(Command.IS_ANSWERED_QUESTION, arguments)
         return if (result.getBoolean("result")) {
-            ServerResult(result.getBoolean("answered"))
+            ServerResult(true, 0, result.getBoolean("answered"))
         } else {
             ServerResult(false, result.getInt("code"))
         }

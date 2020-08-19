@@ -265,6 +265,14 @@ object CommandProcess {
         opponentConnection.addQuery(deleteSql)
         opponentConnection.addQuery(dropSql)
 
+        NotificationServer.getInstance().addNotification(NotificationForm(
+            notification = Notification.BLOCKED,
+            receiverId = opponentId,
+            title = "",
+            content = "",
+            extra = JSONObject().apply { putUUID("user_id", userId) }
+        ))
+
         return Connection.makePositiveResponse(command.uuid)
     }
 

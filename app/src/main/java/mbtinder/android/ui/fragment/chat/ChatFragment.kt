@@ -16,6 +16,7 @@ import mbtinder.android.util.*
 import mbtinder.lib.component.MessageContent
 import mbtinder.lib.util.IDList
 import mbtinder.lib.util.toIDList
+import java.util.*
 
 class ChatFragment : Fragment(R.layout.fragment_chat) {
     private val chatId by lazy { requireArguments().getUUID("chat_id")!! }
@@ -103,6 +104,7 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
         super.onStop()
 
         aliveAdapter = null
+        fragment = null
     }
 
     private fun updateMessages(): Boolean {
@@ -133,6 +135,7 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
         // Chat ID 단위로 구별되는 cache
         private val messages = IDList<IDList<MessageContent>>()
         private var aliveAdapter: MessageAdapter? = null
+        private var fragment: ChatFragment? = null
 
         fun addMessage(messageContent: MessageContent): Boolean {
             aliveAdapter?.let {
@@ -151,5 +154,13 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
 
             return aliveAdapter == null
         }
+
+        fun deleteMessage(chatId: UUID) {
+            messages.remove(chatId)
+        }
+
+        fun isAlive(chatId: UUID) = aliveAdapter?.getChatId() == chatId
+
+        fun getFragment() = fragment!!
     }
 }

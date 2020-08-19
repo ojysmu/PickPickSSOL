@@ -8,6 +8,7 @@ import android.graphics.BitmapFactory
 import android.os.Build
 import androidx.annotation.DrawableRes
 import androidx.core.app.NotificationCompat
+import androidx.navigation.fragment.findNavController
 import mbtinder.android.R
 import mbtinder.android.component.NotificationContent.Companion.makeNotification
 import mbtinder.android.ui.fragment.chat.ChatFragment
@@ -16,6 +17,7 @@ import mbtinder.android.util.runOnUiThread
 import mbtinder.lib.component.IDContent
 import mbtinder.lib.component.MessageContent
 import mbtinder.lib.constant.Notification
+import mbtinder.lib.util.getUUID
 import mbtinder.lib.util.idListOf
 import org.json.JSONObject
 
@@ -52,6 +54,14 @@ val notifications = idListOf(
             }
             // 채팅 목록 마지막 채팅 갱신
             MessageListFragment.setLastMessage(messageContent)
+        }
+    },
+    NotificationContent(Notification.BLOCKED) { _, _, _, extra ->
+        val chatId = extra!!.getUUID("chat_id")
+        MessageListFragment.deleteLastMessage(chatId)
+        if (ChatFragment.isAlive(chatId)) {
+            ChatFragment.deleteMessage(chatId)
+            runOnUiThread { ChatFragment.getFragment().findNavController().popBackStack() }
         }
     }
 )

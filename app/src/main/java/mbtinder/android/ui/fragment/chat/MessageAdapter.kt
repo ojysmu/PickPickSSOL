@@ -8,6 +8,8 @@ import mbtinder.android.R
 import mbtinder.android.component.StaticComponent
 import mbtinder.android.util.Log
 import mbtinder.lib.component.MessageContent
+import java.util.*
+import kotlin.collections.ArrayList
 
 class MessageAdapter(val recyclerView: RecyclerView, private val contents: ArrayList<MessageContent>) : RecyclerView.Adapter<MessageViewHolder>() {
     private lateinit var context: Context
@@ -67,6 +69,8 @@ class MessageAdapter(val recyclerView: RecyclerView, private val contents: Array
         added.append(original)
         return added.toString()
     }
+
+    fun getChatId() = contents[0].chatId
 
     companion object {
         private const val TYPE_USER = R.layout.card_chat_user

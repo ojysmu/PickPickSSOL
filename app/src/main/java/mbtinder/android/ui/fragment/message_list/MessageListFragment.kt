@@ -17,6 +17,7 @@ import mbtinder.android.util.runOnUiThread
 import mbtinder.lib.component.MessageContent
 import mbtinder.lib.util.IDList
 import mbtinder.lib.util.toIDList
+import java.util.*
 
 class MessageListFragment: Fragment(R.layout.fragment_message_list) {
     override fun initializeView() {
@@ -84,6 +85,14 @@ class MessageListFragment: Fragment(R.layout.fragment_message_list) {
                     aliveAdapter?.notifyItemInserted(lastMessages!!.size - 1)
                 }
             }
+        }
+
+        fun deleteLastMessage(chatId: UUID) {
+            lastMessages?.let {
+                it.find { messageContent -> messageContent.chatId == chatId }
+                    ?.let { messageContent -> it.remove(messageContent) }
+            }
+            aliveAdapter?.notifyDataSetChanged()
         }
     }
 }

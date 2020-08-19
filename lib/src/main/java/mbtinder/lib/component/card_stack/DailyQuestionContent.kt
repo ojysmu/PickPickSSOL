@@ -33,6 +33,6 @@ class DailyQuestionContent: BaseCardStackContent, JSONParsable, IDContent, Compa
 
     class SaveForm(row: Row) {
         val questionId: UUID = row.getUUID("question_id")
-        val isPicked: Boolean = row.getBoolean("is_picked")
+        val isPicked: Int = row.getInt("is_picked")
     }
 }

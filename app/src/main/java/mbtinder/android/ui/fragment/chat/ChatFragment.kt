@@ -58,7 +58,7 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
                         findNavController().popBackStack()
                     }
                 }
-            })
+            }).show()
         }
 
         chat_send.setOnClickListener {

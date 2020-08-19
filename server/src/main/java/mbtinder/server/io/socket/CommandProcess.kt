@@ -270,7 +270,7 @@ object CommandProcess {
             receiverId = opponentId,
             title = "",
             content = "",
-            extra = JSONObject().apply { putUUID("user_id", userId) }
+            extra = JSONObject().apply { putUUID("chat_id", chatId) }
         ))
 
         return Connection.makePositiveResponse(command.uuid)

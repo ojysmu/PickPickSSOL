@@ -7,7 +7,7 @@ import java.util.*
 enum class Notification(val notificationId: UUID): IDContent {
     MATCHED(UUID.fromString("c0e967d6-330b-4b31-b29d-21e0c121e953")),
     MESSAGE_RECEIVED(UUID.fromString("c0e967d6-330b-4b31-b29d-21e0c121e954")),
-    BLOCKED(UUID.fromString("c0e967d6-330b-4b31-b29d-21e0c121e954"));
+    BLOCKED(UUID.fromString("c0e967d6-330b-4b31-b29d-21e0c121e955"));
 
     override fun getUUID() = notificationId
 

@@ -37,6 +37,7 @@ object CommandProcess {
             Command.UPDATE_SEARCH_FILTER -> updateSearchFilter(command)
             Command.UPDATE_USER_NOTIFICATION -> updateUserNotification(command)
             Command.DELETE_USER -> deleteUser(command)
+            Command.BLOCK_USER -> blockUser(command)
             Command.GET_USER_IMAGES -> TODO() // getUserImages(command)
             Command.DELETE_USER_IMAGE -> deleteUserImage(command)
             Command.SIGN_IN -> signIn(command, connection)
@@ -245,6 +246,27 @@ object CommandProcess {
         return Connection.makePositiveResponse(command.uuid)
     }
 
+    private fun blockUser(command: CommandContent): JSONObject {
+        val userId = command.arguments.getUUID("user_id")
+        val opponentId = command.arguments.getUUID("opponent_id")
+        val chatId = command.arguments.getUUID("chat_id")
+
+        val userConnection = SQLiteConnection.getConnection(userId)
+        val opponentConnection = SQLiteConnection.getConnection(opponentId)
+        val userInsertSql = "INSERT INTO block (opponent_id) VALUES ('$opponentId')"
+        val opponentInsertSql = "INSERT INTO block (opponent_id) VALUES ('$userId')"
+        val deleteSql = "DELETE FROM chat WHERE chat_id='$chatId'"
+        val dropSql = "DROP TABLE '$chatId'"
+        userConnection.addQuery(userInsertSql)
+        userConnection.addQuery(deleteSql)
+        userConnection.addQuery(dropSql)
+        opponentConnection.addQuery(opponentInsertSql)
+        opponentConnection.addQuery(deleteSql)
+        opponentConnection.addQuery(dropSql)
+
+        return Connection.makePositiveResponse(command.uuid)
+    }
+
 //    /**
 //     * 사용자 프로필 이미지 경로 반환
 //     * @param command: 인수는 다음이 포함되어야 함: 사용자 ID
@@ -409,13 +431,23 @@ object CommandProcess {
         val searchFilter = SearchFilter(command.arguments.getJSONObject("search_filter"))
 
         val sqLiteConnection = SQLiteConnection.getConnection(userId)
-        val sql = "SELECT opponent_id FROM pick"
-        val queryId = sqLiteConnection.addQuery(sql)
-        val queryResult = sqLiteConnection.getResult(queryId)
-        // 이미 목록에 나타났던 사용자 목록
-        val metList = queryResult.content.map { it.getUUID("opponent_id") }
+        // 내가 PICK 또는 NOPE한 사용자 탐색
+        val pickSelectSql = "SELECT opponent_id FROM pick"
+        val pickQueryId = sqLiteConnection.addQuery(pickSelectSql)
+        val pickQueryResult = sqLiteConnection.getResult(pickQueryId)
+        // 내가 차단 또는 나를 차단한 사용자 탐색
+        val blockSelectSql = "SELECT opponent_id FROM block"
+        val blockQueryId = sqLiteConnection.addQuery(blockSelectSql)
+        val blockQueryResult = sqLiteConnection.getResult(blockQueryId)
 
-        val filteredCardStackContent = CardStackUtil.findAll(userId, metList, userCoordinator, searchFilter).toJSONArray()
+        // 이미 목록에 나타났던 사용자 목록
+        val metList = pickQueryResult.content.map { it.getUUID("opponent_id") }
+        // 차단된 사용자 목록
+        val blockedList = blockQueryResult.content.map { it.getUUID("opponent_id") }
+        // 만나선 안 될 사용자 전체
+        val missList = metList.merge(blockedList)
+
+        val filteredCardStackContent = CardStackUtil.findAll(userId, missList, userCoordinator, searchFilter).toJSONArray()
 
         return Connection.makePositiveResponse(
             command.uuid,
@@ -474,8 +506,20 @@ object CommandProcess {
         val questionId = command.arguments.getUUID("question_id")
         val isPick = command.arguments.getBoolean("is_pick")
 
-        val sql = "INSERT INTO daily_questions (question_id, is_picked) VALUES ('$questionId', $isPick)"
-        SQLiteConnection.getConnection(userId).addQuery(sql)
+        val connection = SQLiteConnection.getConnection(userId)
+
+        val selectSql = "SELECT _id FROM daily_questions"
+        // 저장된 답변 수 탐색
+        val selectId = connection.addQuery(selectSql)
+        val selectResult = connection.getResult(selectId)
+        if (selectResult.getRowCount() == 28) {
+            // 답변이 28개일 때 앞에서 1개 삭제
+            val deleteSql = "DELETE FROM daily_questions WHERE _id=${selectResult.content[0].getInt("_id")}"
+            connection.addQuery(deleteSql)
+        }
+
+        val insertSql = "INSERT INTO daily_questions (question_id, is_picked) VALUES ('$questionId', $isPick)"
+        SQLiteConnection.getConnection(userId).addQuery(insertSql)
 
         return Connection.makePositiveResponse(command.uuid)
     }

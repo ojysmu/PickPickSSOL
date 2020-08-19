@@ -93,6 +93,17 @@ object CommandProcess {
         )
     }
 
+    fun blockUser(userId: UUID, opponentId: UUID, chatId: UUID): ServerResult<Void> {
+        val arguments = JSONObject()
+        arguments.putUUID("user_id", userId)
+        arguments.putUUID("opponent_id", opponentId)
+        arguments.putUUID("chat_id", chatId)
+
+        return SocketUtil.getVoidResult(
+            SocketUtil.getServerResult(Command.BLOCK_USER, arguments)
+        )
+    }
+
     fun signIn(email: String, password: String): ServerResult<UserContent> {
         val arguments = JSONObject()
         arguments.put("email", email)

@@ -9,3 +9,11 @@ fun <B, D: B> Collection<D>.mapBase(transform: (D) -> B = { it }): ArrayList<B> 
     }
     return asList
 }
+
+fun <T> Collection<T>.merge(collection: Collection<T>): Collection<T> {
+    return toMutableList().apply { addAll(collection) }
+}
+
+fun <T> List<T>.merge(list: List<T>): List<T> {
+    return toMutableList().apply { addAll(list) }
+}

@@ -9,11 +9,10 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.fragment_chat.*
 import mbtinder.android.R
 import mbtinder.android.component.StaticComponent
+import mbtinder.android.io.component.ServerResult
 import mbtinder.android.io.socket.CommandProcess
 import mbtinder.android.ui.model.Fragment
-import mbtinder.android.util.getUUID
-import mbtinder.android.util.runOnBackground
-import mbtinder.android.util.runOnUiThread
+import mbtinder.android.util.*
 import mbtinder.lib.component.MessageContent
 import mbtinder.lib.util.IDList
 import mbtinder.lib.util.toIDList
@@ -45,6 +44,20 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
                     chat_progress_bar.visibility = View.INVISIBLE
                 }
             }
+        }
+
+        chat_block.setOnClickListener {
+            DialogFactory.getContentedDialog(requireContext(), R.string.chat_block_alert, onPositive = {
+                val waitDialog = DialogFactory.getWaitDialog(requireContext())
+                waitDialog.show()
+                runOnBackground {
+                    CommandProcess.blockUser(StaticComponent.user.userId, opponentId, chatId)
+                    runOnUiThread {
+                        waitDialog.dismiss()
+                        findNavController().popBackStack()
+                    }
+                }
+            })
         }
 
         chat_send.setOnClickListener {

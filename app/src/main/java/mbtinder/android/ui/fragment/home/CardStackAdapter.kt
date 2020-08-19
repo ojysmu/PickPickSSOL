@@ -18,6 +18,7 @@ class CardStackAdapter(private val fragment: HomeFragment): RecyclerView.Adapter
         return when (viewType) {
             TYPE_CARD_STACK_CONTENT -> CardStackViewHolder(view)
             TYPE_DAILY_QUESTION_CONTENT -> DailyQuestionViewHolder(view)
+            TYPE_TUTORIAL -> TutorialViewHolder(view)
             TYPE_EMPTY_CONTENT -> EmptyViewHolder(view, fragment)
             else -> throw AssertionError("View type error: viewType=$viewType")
         }
@@ -34,6 +35,10 @@ class CardStackAdapter(private val fragment: HomeFragment): RecyclerView.Adapter
                 holder.bind(HomeFragment.cardStackContents[position] as DailyQuestionContent)
                 cardStackViewHolders.add(null)
                 dailyQuestionViewHolders.add(holder)
+            }
+            is TutorialViewHolder -> {
+                cardStackViewHolders.add(null)
+                dailyQuestionViewHolders.add(null)
             }
             is EmptyViewHolder -> {
                 holder.bind()
@@ -53,6 +58,7 @@ class CardStackAdapter(private val fragment: HomeFragment): RecyclerView.Adapter
         return when (HomeFragment.cardStackContents[position]) {
             is CardStackContent -> TYPE_CARD_STACK_CONTENT
             is DailyQuestionContent -> TYPE_DAILY_QUESTION_CONTENT
+            is TutorialContent -> TYPE_TUTORIAL
             is EmptyContent -> TYPE_EMPTY_CONTENT
             else -> throw AssertionError("View type error: position=$position")
         }
@@ -74,8 +80,9 @@ class CardStackAdapter(private val fragment: HomeFragment): RecyclerView.Adapter
         notifyItemRemoved(position)
     }
     companion object {
-        const val TYPE_CARD_STACK_CONTENT = R.layout.card_main_stack
+        const val TYPE_CARD_STACK_CONTENT = R.layout.card_home_stack
         const val TYPE_DAILY_QUESTION_CONTENT = R.layout.card_home_daily_question
+        const val TYPE_TUTORIAL = R.layout.card_home_tutorial
         const val TYPE_EMPTY_CONTENT = R.layout.card_home_empty
     }
 }

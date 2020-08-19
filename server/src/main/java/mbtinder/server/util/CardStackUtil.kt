@@ -1,6 +1,7 @@
 package mbtinder.server.util
 
 import mbtinder.lib.component.card_stack.CardStackContent
+import mbtinder.lib.component.card_stack.DailyQuestionContent
 import mbtinder.lib.component.database.Row
 import mbtinder.lib.component.user.Coordinator
 import mbtinder.lib.component.user.SearchFilter
@@ -9,6 +10,7 @@ import mbtinder.lib.constant.MBTI
 import mbtinder.lib.util.*
 import mbtinder.server.constant.LocalFile
 import mbtinder.server.io.database.MySQLServer
+import mbtinder.server.io.database.SQLiteConnection
 import java.util.*
 
 object CardStackUtil {
@@ -49,22 +51,37 @@ object CardStackUtil {
         }
     }
 
-    fun findAll(finderId: UUID, metList: List<UUID>, finderCoordinator: Coordinator, filter: SearchFilter): List<CardStackContent> {
+    fun findAll(finderId: UUID, missList: List<UUID>, finderCoordinator: Coordinator, filter: SearchFilter): List<CardStackContent> {
         ensureUpdate()
         // 사용자 MBTI
         val finderMBTI = findMBTI(finderId)
         // 가입 시 입력한 취향
         val finderSignUpQuestionContents = findSignUpQuestion(finderId)
+        // 일일 질문
+        val finderDailyQuestionContents = findDailyQuestion(finderId)
+
         // 최대 10개 index
         var index = 0
 
         return cardStacks!!.clone()
             .asSequence()
-            .filter { it.userId != finderId && !metList.contains(it.userId) }
-            .filter { filter.isInRange(finderCoordinator, it) }
-            .filter { UserUtil.getMatchingScore(finderMBTI, finderSignUpQuestionContents, it) >= 30 }
-            .filter { index++ < 10 }
-            .sorted()
+            .filter {
+                // 10명까지만
+                if (index == 10) return@filter false
+                // 점수 계산
+                it.score = UserUtil.getMatchingScore(finderMBTI, finderSignUpQuestionContents, finderDailyQuestionContents, it)
+                // 자기 자신 제외
+                it.userId != finderId
+                        // 이미 만난 사용자 제외
+                        && !missList.contains(it.userId)
+                        // 거리, 나이, 성별이 맞지 않으면 제외
+                        && filter.isInRange(finderCoordinator, it)
+                        // 매칭 점수가 30점 미만일 때 제외
+                        && it.score >= 30
+                        // 10명까지만
+                        && index++ < 10
+            }
+            .sortedBy { it.score } // 점수 정렬
             .toList()
     }
 
@@ -84,4 +101,13 @@ object CardStackUtil {
 
     private fun findSignUpQuestion(userId: UUID) =
         loadJSONArray(LocalFile.getUserSignUpQuestionPath(userId)).toJSONList<SignUpQuestionContent.ConnectionForm>()
+
+    fun findDailyQuestion(userId: UUID): List<DailyQuestionContent.SaveForm> {
+        val connection = SQLiteConnection.getConnection(userId)
+        val sql = "SELECT question_id, is_picked FROM daily_question"
+        val queryId = connection.addQuery(sql)
+        val queryResult = connection.getResult(queryId)
+
+        return queryResult.content.map { DailyQuestionContent.SaveForm(it) }
+    }
 }

@@ -1,6 +1,7 @@
 package mbtinder.server.util
 
 import mbtinder.lib.component.card_stack.CardStackContent
+import mbtinder.lib.component.card_stack.DailyQuestionContent
 import mbtinder.lib.component.database.Row
 import mbtinder.lib.component.user.SearchFilter
 import mbtinder.lib.component.user.SignUpQuestionContent
@@ -63,6 +64,7 @@ object UserUtil {
     fun getMatchingScore(
         userMBTI: MBTI,
         userSignUpQuestions: List<SignUpQuestionContent.ConnectionForm>,
+        userDailyQuestions: List<DailyQuestionContent.SaveForm>,
         cardStackContent: CardStackContent
     ): Int {
         var sum = 0
@@ -72,11 +74,19 @@ object UserUtil {
         var signUpQuestionCount = 0
         userSignUpQuestions.forEach { userForm ->
             cardStackContent.contents.find { opponentForm ->
-                opponentForm.questionId == userForm.questionId &&
-                        opponentForm.selected == userForm.selected
+                opponentForm.questionId == userForm.questionId && opponentForm.selected == userForm.selected
             }?.let { signUpQuestionCount++ }
         }
         sum += signUpQuestionCount * 4
+
+        val opponentDailyQuestions = CardStackUtil.findDailyQuestion(cardStackContent.userId)
+        var dailyQuestionCount = 0
+        userDailyQuestions.forEach { userForm ->
+            opponentDailyQuestions.find { opponentForm ->
+                opponentForm.questionId == userForm.questionId && opponentForm.isPicked == userForm.isPicked
+            }?.let { dailyQuestionCount++ }
+        }
+        sum += dailyQuestionCount
 
         return sum
     }

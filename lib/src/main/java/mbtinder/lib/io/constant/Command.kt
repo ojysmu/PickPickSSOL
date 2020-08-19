@@ -17,6 +17,7 @@ enum class Command {
     UPDATE_SEARCH_FILTER,       // 검색 필터 갱신
     UPDATE_USER_NOTIFICATION,   // 알림 수신 여부 갱신
     DELETE_USER,                // 사용자 삭제(=회원탈퇴)
+    BLOCK_USER,                 // 사용자 차단
     GET_USER_IMAGES,            // 사용자 이미지 ID 목록 탐색
     DELETE_USER_IMAGE,          // 사용자 이미지 삭제
     GET_SIGN_UP_QUESTIONS,      // 회원가입 질문 목록 탐색

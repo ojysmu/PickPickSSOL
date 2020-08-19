@@ -73,6 +73,8 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     @AnyThread
     private fun getCardStacks() {
         runOnBackground {
+            val isFirst = arguments?.getBoolean("is_first") ?: false
+
             val getResult = CommandProcess.getMatchableUsers(
                 userId = StaticComponent.user.userId,
                 coordinator = Coordinator(StaticComponent.user.lastLocationLng, StaticComponent.user.lastLocationLat),
@@ -82,8 +84,14 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             if (getResult.isSucceed) {
                 val mapped = getResult.result!!
                     .mapBase<BaseCardStackContent, CardStackContent>()
-                    .apply { addAll(0, todayQuestions) }
-                    .apply { add(EmptyContent()) }
+                    .apply {
+                        // 최초실행시 맨앞에 튜토리얼 삽입
+                        if (isFirst) {
+                            add(0, TutorialContent())
+                        }
+                        // 맨뒤에 empty 추가
+                        add(EmptyContent())
+                    }
                 Log.v("HomeFragment.getCardStacks(): todayQuestions=$todayQuestions")
                 cardStackContents.addAll(mapped)
                 runOnUiThread {
@@ -112,10 +120,10 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
             if (refreshResult.isSucceed && refreshResult.result!!.isNotEmpty()) {
                 cardStackContents.removeAll { it is EmptyContent }
+                if (todayQuestions.isNotEmpty()) {
+                    cardStackContents.add(todayQuestions.removeAt(0))
+                }
                 cardStackContents.addAll(refreshResult.result!!)
-//                if (todayQuestions.isNotEmpty()) {
-//                    cardStackContents.add(todayQuestions.removeAt(0))
-//                }
                 cardStackContents.add(EmptyContent())
                 runOnUiThread { cardStackAdapter.notifyDataSetChanged() }
             }
@@ -180,10 +188,12 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
          * 일반 카드일 경우 swipe 가능, 일일 질문일 경우 swipe 가능, 목록의 끝일 경우 swipe 불가능
          */
         override fun onCardAppeared(view: View?, position: Int) {
-            cardStackLayoutManager.setCanScrollHorizontal(
-                !(cardStackAdapter.cardStackViewHolders[position] == null
-                        && cardStackAdapter.dailyQuestionViewHolders[position] == null)
-            )
+            when (cardStackContents[position]) {
+                is TutorialContent -> cardStackLayoutManager.setCanScrollHorizontal(true)
+                is CardStackContent -> cardStackLayoutManager.setCanScrollHorizontal(true)
+                is DailyQuestionContent -> cardStackLayoutManager.setCanScrollHorizontal(true)
+                else -> cardStackLayoutManager.setCanScrollHorizontal(false)
+            }
             currentPosition = position
         }
 
@@ -227,37 +237,10 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
          */
         override fun onCardSwiped(direction: Direction?) {
             val currentPosition = currentPosition
-            val viewType = cardStackAdapter.getItemViewType(currentPosition)
-            if (viewType == CardStackAdapter.TYPE_CARD_STACK_CONTENT) {
-                runOnBackground {
-                    // pick nope 여부 서버 업데이트
-                    val opponentId = cardStackAdapter.getUserId(currentPosition)
-                    val isPicked = CommandProcess.pick(
-                        userId = StaticComponent.user.userId,
-                        opponentId = opponentId,
-                        isPick = direction == Direction.Right
-                    ).result!!
-
-                    // 서로 pick했을 때 서버에 채팅 생성 요청
-                    if (isPicked) {
-                        CommandProcess.createChat(StaticComponent.user.userId, opponentId)
-                    }
-
-                    // nope된 사용자는 pool에 추가
-                    if (direction == Direction.Right) {
-                        runOnUiThread { cardStackAdapter.removeAt(currentPosition) }
-                    }
-                }
-            } else if (viewType == CardStackAdapter.TYPE_DAILY_QUESTION_CONTENT) {
-                runOnBackground {
-                    val questionContent = cardStackContents[currentPosition] as DailyQuestionContent
-                    CommandProcess.answerQuestion(
-                        userId = StaticComponent.user.userId,
-                        questionId = questionContent.questionId,
-                        isPick = direction == Direction.Right
-                    )
-                    runOnUiThread { cardStackAdapter.removeAt(currentPosition) }
-                }
+            when (cardStackAdapter.getItemViewType(currentPosition)) {
+                CardStackAdapter.TYPE_CARD_STACK_CONTENT -> onCardContentSwiped(direction, currentPosition)
+                CardStackAdapter.TYPE_DAILY_QUESTION_CONTENT -> onDailyQuestionSwiped(direction, currentPosition)
+                CardStackAdapter.TYPE_TUTORIAL -> cardStackAdapter.removeAt(currentPosition)
             }
         }
 
@@ -275,6 +258,40 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         override fun onCardRewound() {
             val holder = cardStackAdapter.cardStackViewHolders[currentPosition]
             holder?.setDefaultTransparency()
+        }
+
+        private fun onCardContentSwiped(direction: Direction?, currentPosition: Int) {
+            runOnBackground {
+                // pick nope 여부 서버 업데이트
+                val opponentId = cardStackAdapter.getUserId(currentPosition)
+                val isPicked = CommandProcess.pick(
+                    userId = StaticComponent.user.userId,
+                    opponentId = opponentId,
+                    isPick = direction == Direction.Right
+                ).result!!
+
+                // 서로 pick했을 때 서버에 채팅 생성 요청
+                if (isPicked) {
+                    CommandProcess.createChat(StaticComponent.user.userId, opponentId)
+                }
+
+                // nope된 사용자는 pool에 추가
+                if (direction == Direction.Right) {
+                    runOnUiThread { cardStackAdapter.removeAt(currentPosition) }
+                }
+            }
+        }
+
+        private fun onDailyQuestionSwiped(direction: Direction?, currentPosition: Int) {
+            runOnBackground {
+                val questionContent = cardStackContents[currentPosition] as DailyQuestionContent
+                CommandProcess.answerQuestion(
+                    userId = StaticComponent.user.userId,
+                    questionId = questionContent.questionId,
+                    isPick = direction == Direction.Right
+                )
+                runOnUiThread { cardStackAdapter.removeAt(currentPosition) }
+            }
         }
     }
 }

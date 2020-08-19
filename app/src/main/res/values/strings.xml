@@ -130,9 +130,13 @@
     <string name="home_stack_empty">더이상 매칭되는 친구가 없어요.</string>
     <string name="home_stack_empty_go_account">설정 변경하기</string>
     <string name="home_stack_daily_question_title">오늘의 PICK!</string>
+    <string name="home_tutorial_title">환영합니다!</string>
+    <string name="home_tutorial_first">MBTI와 취향이 잘맞는 친구를 스와이프하여 찾아보세요!</string>
+    <string name="home_tutorial_second">매일 랜덤으로 질문을 드립니다. 저희가 더욱 잘맞는 친구를 찾아드릴게요!</string>
 
     <string name="message_list_title">메시지</string>
 
+    <string name="chat_block_alert">정말 차단하시겠습니까?</string>
     <string name="chat_failed_to_send">전송을 실패했습니다.</string>
     <string name="chat_timestamp_format">%2d:%2d</string>
 

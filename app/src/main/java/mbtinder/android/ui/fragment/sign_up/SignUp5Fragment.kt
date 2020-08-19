@@ -1,6 +1,7 @@
 package mbtinder.android.ui.fragment.sign_up
 
 import android.content.Intent
+import android.os.Bundle
 import android.widget.Toast
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
@@ -121,7 +122,8 @@ class SignUp5Fragment : Fragment(R.layout.fragment_sign_up5) {
                 StaticComponent.user.lastLocationLat = coordinator.latitude
                 CommandProcess.setCoordinator(StaticComponent.user.userId, coordinator)
 
-                runOnUiThread { findNavController().navigate(R.id.action_to_home) }
+                val bundle = Bundle().apply { putBoolean("is_first", true) }
+                runOnUiThread { findNavController().navigate(R.id.action_to_home, bundle) }
             }
         } else {
             Toast.makeText(requireContext(), R.string.common_require_location_permission, Toast.LENGTH_SHORT).show()

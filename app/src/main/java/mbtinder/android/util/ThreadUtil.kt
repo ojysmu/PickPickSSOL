@@ -2,20 +2,31 @@ package mbtinder.android.util
 
 import android.os.Handler
 import android.os.Looper
-import android.view.View
+import androidx.annotation.AnyThread
 import androidx.annotation.MainThread
+import androidx.annotation.WorkerThread
 import mbtinder.lib.util.BlockWrapper
-import mbtinder.lib.util.block
 import mbtinder.lib.util.blockNull
 
+@AnyThread
 fun runOnUiThread(@MainThread process: () -> Unit) {
-    Handler(Looper.getMainLooper()).post(process)
+//    val start = System.nanoTime()
+    Handler(Looper.getMainLooper()).post {
+        process.invoke();
+//        Log.v("runOnUiThread(): elapsed=${System.nanoTime() - start}, ${getStackTrace()}")
+    }
 }
 
+@AnyThread
 fun runOnBackground(process: () -> Unit): Thread {
-    return Thread { process.invoke() }.apply { start() }
+//    val start = System.nanoTime()
+    return Thread {
+        process.invoke();
+//        Log.v("runOnBackground(): elapsed=${System.nanoTime() - start}, ${getStackTrace()}")
+    }.apply { start() }
 }
 
+@WorkerThread
 inline fun <R> runOnBackground(crossinline process: () -> R): R {
     var result: R? = null
     Thread { result = process.invoke() }.apply { start(); join() }
@@ -23,13 +34,17 @@ inline fun <R> runOnBackground(crossinline process: () -> R): R {
     return blockNull(BlockWrapper(result)) { it == null }!!
 }
 
-
-fun runEach(processes: Array<() -> Unit>, needMainThread: Boolean = false): List<Thread> {
-    return processes.map {
-        if (needMainThread) {
-            runOnBackground { runOnUiThread(it) }
-        } else {
-            runOnBackground(it)
-        }
+fun getStackTrace(): String {
+    val stackTraceElements = Thread.currentThread().stackTrace
+    val traceBuilder = StringBuilder()
+    for (i in 3 until stackTraceElements.size) {
+        traceBuilder.append(stackTraceElements[i].fileName)
+        traceBuilder.append(":")
+        traceBuilder.append(stackTraceElements[i].lineNumber)
+        traceBuilder.append(":")
+        traceBuilder.append(stackTraceElements[i].methodName)
+        traceBuilder.append(" => ")
     }
+
+    return traceBuilder.toString()
 }

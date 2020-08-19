@@ -474,7 +474,7 @@ object CommandProcess {
         val questionId = command.arguments.getUUID("question_id")
         val isPick = command.arguments.getBoolean("is_pick")
 
-        val sql = "INSERT INTO daliy_questions (question_id, is_picked) VALUES ('$questionId', $isPick)"
+        val sql = "INSERT INTO daily_questions (question_id, is_picked) VALUES ('$questionId', $isPick)"
         SQLiteConnection.getConnection(userId).addQuery(sql)
 
         return Connection.makePositiveResponse(command.uuid)

@@ -180,9 +180,10 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
          * 일반 카드일 경우 swipe 가능, 일일 질문일 경우 swipe 가능, 목록의 끝일 경우 swipe 불가능
          */
         override fun onCardAppeared(view: View?, position: Int) {
-            val holder = cardStackAdapter.cardStackViewHolders[position]
-
-            cardStackLayoutManager.setCanScrollHorizontal(holder != null)
+            cardStackLayoutManager.setCanScrollHorizontal(
+                !(cardStackAdapter.cardStackViewHolders[position] == null
+                        && cardStackAdapter.dailyQuestionViewHolders[position] == null)
+            )
             currentPosition = position
         }
 
@@ -193,13 +194,13 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         override fun onCardDragging(direction: Direction?, ratio: Float) {
             cardStackAdapter.cardStackViewHolders[currentPosition]?.let {
                 when {
-                    ratio == 0.0f -> it.setDefaultTransparency()
+                    ratio < 0.1f -> it.setDefaultTransparency()
                     direction == Direction.Left -> it.setNopeTransparency(ratio)
                     direction == Direction.Right -> it.setPickTransparency(ratio)
                 }
             } ?: cardStackAdapter.dailyQuestionViewHolders[currentPosition]?.let {
                 when {
-                    ratio == 0.0f -> it.disableAll()
+                    ratio < 0.1f -> it.disableAll()
                     direction == Direction.Left -> it.enableNope()
                     direction == Direction.Right -> it.enablePick()
                 }
@@ -250,7 +251,12 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             } else if (viewType == CardStackAdapter.TYPE_DAILY_QUESTION_CONTENT) {
                 runOnBackground {
                     val questionContent = cardStackContents[currentPosition] as DailyQuestionContent
-
+                    CommandProcess.answerQuestion(
+                        userId = StaticComponent.user.userId,
+                        questionId = questionContent.questionId,
+                        isPick = direction == Direction.Right
+                    )
+                    runOnUiThread { cardStackAdapter.removeAt(currentPosition) }
                 }
             }
         }
@@ -259,8 +265,8 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
          * 카드 드래그 취소할 때 callback. Threshold 넘지 않고 손 뗐을 때 invoke
          */
         override fun onCardCanceled() {
-            val holder = cardStackAdapter.cardStackViewHolders[currentPosition]
-            holder?.setDefaultTransparency()
+            cardStackAdapter.cardStackViewHolders[currentPosition]?.setDefaultTransparency()
+                ?:cardStackAdapter.dailyQuestionViewHolders[currentPosition]?.disableAll()
         }
 
         /**

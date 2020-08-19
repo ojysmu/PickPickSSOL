@@ -10,6 +10,9 @@ import java.lang.reflect.Field
 import java.sql.Date
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
+import kotlin.reflect.KFunction
+import kotlin.reflect.jvm.kotlinProperty
 
 abstract class JSONParsable: JSONContent {
     var jsonObject: JSONObject
@@ -49,7 +52,8 @@ abstract class JSONParsable: JSONContent {
                         continue
                     }
 
-                    if (field.type.isPrimitive) {
+                    if (field.type.isPrimitive || field::class.java.isPrimitive || field.javaClass.isPrimitive || field::class.javaPrimitiveType != null) {
+                        println("================ is Primitive type ${field.name} => ${field.type}")
                         // Int, Long 등의 Primitive 타입은 선처리 후 continue
                         field.set(this, jsonObject.get(key))
                         continue
@@ -167,6 +171,15 @@ abstract class JSONParsable: JSONContent {
     }
 
     companion object {
+        private val primitives: List<Form<*>> = listOf(
+            Form(Int::class.java, JSONObject::getInt),
+            Form(Long::class.java, JSONObject::getLong),
+            Form(Float::class.java, JSONObject::getFloat),
+            Form(Double::class.java, JSONObject::getDouble)
+        )
+
+        private class Form<in T>(clazz: Class<T>, function: KFunction<T>)
+
         /**
          * 클래스 이름에서 Generic을 분리
          *

@@ -23,8 +23,9 @@ class AccountFragment : Fragment(R.layout.fragment_account) {
         account_name.text = getString(R.string.account_name_format, StaticComponent.user.name, StaticComponent.user.age)
         account_description.editText!!.setText(StaticComponent.user.description)
         account_gender_selector.check(genderToId(StaticComponent.user.searchFilter.gender))
-        account_age_selector.valueFrom = StaticComponent.user.searchFilter.jsonObject.getInt("age_start").toFloat()
-        account_age_selector.valueTo = StaticComponent.user.searchFilter.jsonObject.getInt("age_end").toFloat()
+//        account_age_selector.valueFrom = StaticComponent.user.searchFilter.ageStart.toFloat()
+//        account_age_selector.valueTo = StaticComponent.user.searchFilter.ageEnd.toFloat()
+        account_age_selector.values = listOf(StaticComponent.user.searchFilter.ageStart.toFloat(), StaticComponent.user.searchFilter.ageEnd.toFloat())
         account_age_indicator.text = getString(R.string.account_age_indicator, account_age_selector.getStart(), account_age_selector.getEnd())
         account_distance_selector.value = StaticComponent.user.searchFilter.distance.toFloat()
         account_distance_indicator.text = getString(R.string.account_distance_indicator, account_distance_selector.value.toInt())
@@ -112,9 +113,11 @@ class AccountFragment : Fragment(R.layout.fragment_account) {
     }
 
     private fun updateSearchFilter() {
-        runOnBackground { CommandProcess.updateSearchFilter(buildSearchFilter()) }
-        account_age_indicator.text = getString(R.string.account_age_indicator, account_age_selector.getStart(), account_age_selector.getEnd())
-        account_distance_indicator.text = getString(R.string.account_distance_indicator, account_distance_selector.value.toInt())
+        val built = buildSearchFilter()
+        runOnBackground { CommandProcess.updateSearchFilter(built) }
+        account_age_indicator.text = getString(R.string.account_age_indicator, built.ageStart, built.ageEnd)
+        account_distance_indicator.text = getString(R.string.account_distance_indicator, built.distance)
+        StaticComponent.user.searchFilter = built
     }
 
     private fun buildSearchFilter() = SearchFilter(

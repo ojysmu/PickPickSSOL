@@ -2,6 +2,7 @@ package mbtinder.android.ui.fragment.home
 
 import android.view.View
 import android.view.animation.LinearInterpolator
+import android.widget.ProgressBar
 import androidx.annotation.AnyThread
 import androidx.annotation.WorkerThread
 import androidx.recyclerview.widget.DefaultItemAnimator
@@ -35,7 +36,15 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     private var currentPosition = 0
     private val todayQuestions by lazy { getNotAnsweredQuestion(getTodayDailyQuestions()) }
 
+    private val viewMap: HashMap<Int, View> by lazy {
+        hashMapOf<Int, View>(
+            Pair(R.id.home_waiting, rootView.findViewById<ProgressBar>(R.id.home_waiting))
+        )
+    }
+
     override fun initializeView() {
+        cardStackContents.clear()
+
         requireActivity().findViewById<BottomNavigationView>(R.id.nav_view).visibility = View.VISIBLE
         getCardStacks()
         getDailyQuestions()
@@ -96,8 +105,8 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 cardStackContents.addAll(mapped)
                 runOnUiThread {
                     cardStackAdapter.notifyDataSetChanged()
-                    home_waiting.visibility = View.INVISIBLE
-                    home_card_stack_view.visibility = View.VISIBLE
+                    home_waiting?.let { it.visibility = View.INVISIBLE }
+                    home_card_stack_view?.let { it.visibility = View.VISIBLE }
                 }
             }
         }

@@ -52,13 +52,6 @@ abstract class JSONParsable: JSONContent {
                         continue
                     }
 
-                    if (field.type.isPrimitive || field::class.java.isPrimitive || field.javaClass.isPrimitive || field::class.javaPrimitiveType != null) {
-                        // Int, Long 등의 Primitive 타입은 선처리 후 continue
-
-//                        field.set(this, jsonObject.get(key))
-//                        continue
-                    }
-
                     if (field.type.superclass == JSONParsable::class.java) {
                         // JSONParsable content
                         val value = jsonObject.getJSONObject(key)
@@ -102,22 +95,10 @@ abstract class JSONParsable: JSONContent {
     private fun parseFromType(field: Field, jsonObject: JSONObject, key: String) {
         when (field.type) {
             // UUID, Date, JSONList의 경우 별도 wrapping 필요
-            Byte::class.java, Short::class.java, Int::class.java -> {
-                field.set(this, jsonObject.getInt(key))
-                println("================ is Int type ${field.name} => ${field.type}: ${field.get(this)}")
-            }
-            Long::class.java -> {
-                field.set(this, jsonObject.getLong(key))
-                println("================ is Long type ${field.name} => ${field.type}: ${field.get(this)}")
-            }
-            Float::class.java -> {
-                field.set(this, jsonObject.getFloat(key))
-                println("================ is Float type ${field.name} => ${field.type}: ${field.get(this)}")
-            }
-            Double::class.java -> {
-                field.set(this, jsonObject.getDouble(key))
-                println("================ is Double type ${field.name} => ${field.type}: ${field.get(this)}")
-            }
+            Byte::class.java, Short::class.java, Int::class.java -> field.set(this, jsonObject.getInt(key))
+            Long::class.java -> field.set(this, jsonObject.getLong(key))
+            Float::class.java -> field.set(this, jsonObject.getFloat(key))
+            Double::class.java -> field.set(this, jsonObject.getDouble(key))
             UUID::class.java -> field.set(this, UUID.fromString(jsonObject.getString(key)))
             Date::class.java -> field.set(this, Date.valueOf(jsonObject.getString(key)))
             MBTI::class.java -> field.set(this, MBTI.findByName(jsonObject.getString(key)))

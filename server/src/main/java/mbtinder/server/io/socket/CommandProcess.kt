@@ -205,7 +205,7 @@ object CommandProcess {
     private fun updateUserNotification(command: CommandContent): JSONObject {
         val userId = command.arguments.getString("user_id")
         val isEnabled = command.arguments.getBoolean("is_enabled")
-        val sql = "UPDATE mbtiner.user SET notification=$isEnabled WHERE user_id='$userId'"
+        val sql = "UPDATE pickpick.user SET notification=$isEnabled WHERE user_id='$userId'"
         MySQLServer.getInstance().addQuery(sql)
 
         return Connection.makePositiveResponse(command.uuid)

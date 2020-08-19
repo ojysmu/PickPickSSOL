@@ -28,6 +28,9 @@ enum class Command {
     UPDATE_PASSWORD,            // 비밀번호 변경
     GET_MATCHABLE_USERS,        // 현재 사용자와 매칭 가능한 사용자 목록 탐색(=카드스택 초기)
     REFRESH_MATCHABLE_USERS,    // 현재 사용자와 매칭 가능한 사용자 추가 탐색(=카드스택 업데이트)
+    GET_DAILY_QUESTIONS,        // 일일 질문 요청
+    IS_ANSWERED_QUESTION,       // 이미 답변한 일일 질문인지 확인
+    ANSWER_QUESTION,            // 일일 질문 답변
     PICK,                       // PICK 누적
 
     // Message related commands

@@ -4,13 +4,13 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import mbtinder.android.R
-import mbtinder.android.util.Log
-import mbtinder.lib.component.card_stack.BaseCardStackContent
 import mbtinder.lib.component.card_stack.CardStackContent
 import mbtinder.lib.component.card_stack.DailyQuestionContent
 
 class CardStackAdapter(private val fragment: HomeFragment): RecyclerView.Adapter<BaseCardStackViewHolder>() {
-    val holders = arrayListOf<BaseCardStackViewHolder>()
+    val cardStackViewHolders = arrayListOf<CardStackViewHolder?>()
+    val dailyQuestionViewHolders = arrayListOf<DailyQuestionViewHolder?>()
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseCardStackViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(viewType, parent, false)
@@ -20,12 +20,27 @@ class CardStackAdapter(private val fragment: HomeFragment): RecyclerView.Adapter
             TYPE_DAILY_QUESTION_CONTENT -> DailyQuestionViewHolder(view)
             TYPE_EMPTY_CONTENT -> EmptyViewHolder(view, fragment)
             else -> throw AssertionError("View type error: viewType=$viewType")
-        }.apply { setIsRecyclable(false) }
+        }
     }
 
     override fun onBindViewHolder(holder: BaseCardStackViewHolder, position: Int) {
-        holders.add(holder)
-        holder.adapt(HomeFragment.cardStackContents[position])
+        when (holder) {
+            is CardStackViewHolder -> {
+                holder.bind(HomeFragment.cardStackContents[position] as CardStackContent)
+                cardStackViewHolders.add(holder)
+                dailyQuestionViewHolders.add(null)
+            }
+            is DailyQuestionViewHolder -> {
+                holder.bind(HomeFragment.cardStackContents[position] as DailyQuestionContent)
+                cardStackViewHolders.add(null)
+                dailyQuestionViewHolders.add(holder)
+            }
+            is EmptyViewHolder -> {
+                holder.bind()
+                cardStackViewHolders.add(null)
+                dailyQuestionViewHolders.add(null)
+            }
+        }
     }
 
     override fun getItemCount() = HomeFragment.cardStackContents.size
@@ -54,17 +69,10 @@ class CardStackAdapter(private val fragment: HomeFragment): RecyclerView.Adapter
 
     fun getUserId(position: Int) = (HomeFragment.cardStackContents[position] as CardStackContent).userId
 
-    fun addAt(position: Int, content: BaseCardStackContent) {
-        Log.v("CardStackAdapter.addAt(): position=$position")
-        HomeFragment.cardStackContents.add(content)
-        notifyItemInserted(position)
-    }
-
     fun removeAt(position: Int) {
         HomeFragment.cardStackContents.removeAt(position)
         notifyItemRemoved(position)
     }
-
     companion object {
         const val TYPE_CARD_STACK_CONTENT = R.layout.card_main_stack
         const val TYPE_DAILY_QUESTION_CONTENT = R.layout.card_home_daily_question

@@ -3,10 +3,15 @@ package mbtinder.android.util
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.graphics.Matrix
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import androidx.core.graphics.get
+import mbtinder.lib.util.sum
 import java.io.ByteArrayOutputStream
+
+private typealias RGBColor = Triple<Int, Int, Int>
 
 object ImageUtil {
     private const val RESIZE_DEFAULT = 640
@@ -68,5 +73,32 @@ object ImageUtil {
         val matrix = Matrix().apply { setRotate(degrees.toFloat(), bitmap.width.toFloat(), bitmap.height.toFloat()) }
 
         return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
+    }
+
+    fun getColorAverage(bitmap: Bitmap): RGBColor {
+        var rBucket: Long = 0
+        var gBucket: Long = 0
+        var bBucket: Long = 0
+        val width = bitmap.width
+        val height = bitmap.height
+        val size = width * height
+        for (x in 0 until width) {
+            for (y in 0 until height) {
+                val pixel = bitmap[x, y]
+                rBucket += Color.red(pixel)
+                gBucket += Color.green(pixel)
+                bBucket += Color.blue(pixel)
+            }
+        }
+
+        return Triple((rBucket / size).toInt(), (gBucket / size).toInt(), (bBucket / size).toInt())
+    }
+
+    fun isLight(color: RGBColor): Boolean {
+        return color.sum() / 3 >= 128
+    }
+
+    fun isDark(color: RGBColor): Boolean {
+        return color.sum() / 3 < 128
     }
 }

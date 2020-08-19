@@ -4,17 +4,16 @@ import mbtinder.android.io.component.ServerResult
 import mbtinder.android.io.http.ImageUploader
 import mbtinder.lib.component.*
 import mbtinder.lib.component.card_stack.CardStackContent
+import mbtinder.lib.component.card_stack.DailyQuestionContent
 import mbtinder.lib.component.user.Coordinator
 import mbtinder.lib.component.user.SearchFilter
 import mbtinder.lib.component.user.SignUpQuestionContent
 import mbtinder.lib.component.user.UserContent
 import mbtinder.lib.io.component.CommandContent
 import mbtinder.lib.io.constant.Command
-import mbtinder.lib.util.JSONList
-import mbtinder.lib.util.getUUID
-import mbtinder.lib.util.putUUID
-import mbtinder.lib.util.toJSONArray
+import mbtinder.lib.util.*
 import org.json.JSONObject
+import java.sql.Date
 import java.util.*
 
 object CommandProcess {
@@ -188,6 +187,37 @@ object CommandProcess {
         return SocketUtil.getJSONListResult(
             SocketUtil.getServerResult(Command.REFRESH_MATCHABLE_USERS, arguments),
             "card_stack_contents"
+        )
+    }
+
+    fun getDailyQuestions(lastDate: Date): ServerResult<JSONList<DailyQuestionContent>> {
+        return SocketUtil.getJSONListResult(
+            SocketUtil.getServerResult(Command.GET_DAILY_QUESTIONS, JSONObject().apply { putDate("last_date", lastDate) }),
+            "daily_question_contents"
+        )
+    }
+
+    fun isAnsweredQuestion(userId: UUID, questionId: UUID): ServerResult<Boolean> {
+        val arguments = JSONObject()
+        arguments.putUUID("user_id", userId)
+        arguments.putUUID("question_id", questionId)
+
+        val result = SocketUtil.getServerResult(Command.IS_ANSWERED_QUESTION, arguments)
+        return if (result.getBoolean("result")) {
+            ServerResult(result.getBoolean("answered"))
+        } else {
+            ServerResult(false, result.getInt("code"))
+        }
+    }
+
+    fun answerQuestion(userId: UUID, questionId: UUID, isPick: Boolean): ServerResult<Void> {
+        val arguments = JSONObject()
+        arguments.putUUID("user_id", userId)
+        arguments.putUUID("question_id", questionId)
+        arguments.put("is_pick", isPick)
+
+        return SocketUtil.getVoidResult(
+            SocketUtil.getServerResult(Command.ANSWER_QUESTION, arguments)
         )
     }
 

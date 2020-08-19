@@ -10,7 +10,6 @@ import mbtinder.lib.component.card_stack.BaseCardStackContent
 import mbtinder.lib.component.card_stack.DailyQuestionContent
 
 class DailyQuestionViewHolder(itemView: View) : BaseCardStackViewHolder(itemView) {
-    private val context = itemView.context
     private val nopeImageView: ImageView = itemView.findViewById(R.id.card_home_daily_question_nope_image)
     private val nopeContainer: MaterialCardView = itemView.findViewById(R.id.card_main_stack_nope_container)
     private val nopeTextView: TextView = itemView.findViewById(R.id.card_home_daily_question_nope)
@@ -22,13 +21,14 @@ class DailyQuestionViewHolder(itemView: View) : BaseCardStackViewHolder(itemView
     private val colorWhite = context.getColor(android.R.color.white)
     private val colorBlack = context.getColor(android.R.color.black)
 
-    override fun adapt(content: BaseCardStackContent) {
-        if (content !is DailyQuestionContent) {
-            error("Assertion failed")
-        }
-
+    fun bind(content: DailyQuestionContent) {
         nopeTextView.text = content.nopeContent
         pickTextView.text = content.pickContent
+    }
+
+    fun disableAll() {
+        disableNope()
+        disablePick()
     }
 
     fun enableNope() {

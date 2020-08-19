@@ -62,9 +62,7 @@ class SignUp5Fragment : Fragment(R.layout.fragment_sign_up5) {
                     val mbtiResult = setMBTI()
                     val questionResult = setSignUpQuestion()
 
-                    if (mbtiResult && questionResult) {
-                        runOnUiThread { findNavController().navigate(R.id.action_to_home) }
-                    } else {
+                    if (!(mbtiResult && questionResult)) {
                         runOnUiThread {
                             ViewUtil.switchNextButton(layout_sign_up5)
                             Toast.makeText(requireContext(), R.string.sign_up5_failed, Toast.LENGTH_SHORT).show()

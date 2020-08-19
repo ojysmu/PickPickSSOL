@@ -10,37 +10,40 @@ import com.google.android.material.card.MaterialCardView
 import mbtinder.android.R
 import mbtinder.android.component.StaticComponent
 import mbtinder.android.ui.view.AsyncImageView
+import mbtinder.android.util.ImageUtil
 import mbtinder.android.util.ViewUtil
-import mbtinder.lib.component.card_stack.BaseCardStackContent
 import mbtinder.lib.component.card_stack.CardStackContent
 import mbtinder.lib.component.user.Coordinator
 
-class CardStackViewHolder(private val view: View): BaseCardStackViewHolder(view) {
-    private var imageView: AsyncImageView = view.findViewById(R.id.card_main_stack_image)
-    private var recyclerView: RecyclerView = view.findViewById(R.id.card_main_stack_recycler_view)
-    private var pickContainer: FrameLayout = view.findViewById(R.id.card_main_stack_pick_container)
-    private var cardPick: MaterialCardView = view.findViewById(R.id.card_main_stack_pick)
-    private var cardPickContent: TextView = view.findViewById(R.id.card_main_stack_pick_content)
-    private var nopeContainer: FrameLayout = view.findViewById(R.id.card_main_stack_nope_container)
-    private var cardNope: MaterialCardView = view.findViewById(R.id.card_main_stack_nope)
-    private var cardNopeContent: TextView = view.findViewById(R.id.card_main_stack_nope_content)
+class CardStackViewHolder(itemView: View): BaseCardStackViewHolder(itemView) {
+    private var imageView: AsyncImageView = itemView.findViewById(R.id.card_main_stack_image)
+    private var recyclerView: RecyclerView = itemView.findViewById(R.id.card_main_stack_recycler_view)
+    private var pickContainer: FrameLayout = itemView.findViewById(R.id.card_main_stack_pick_container)
+    private var cardPick: MaterialCardView = itemView.findViewById(R.id.card_main_stack_pick)
+    private var cardPickContent: TextView = itemView.findViewById(R.id.card_main_stack_pick_content)
+    private var nopeContainer: FrameLayout = itemView.findViewById(R.id.card_main_stack_nope_container)
+    private var cardNope: MaterialCardView = itemView.findViewById(R.id.card_main_stack_nope)
+    private var cardNopeContent: TextView = itemView.findViewById(R.id.card_main_stack_nope_content)
+
+    fun setDefaultTransparency() {
+        setPickTransparency(0.0f)
+        setNopeTransparency(0.0f)
+    }
 
     fun setPickTransparency(ratio: Float) {
-        pickContainer.setBackgroundColor(ViewUtil.getColor(view.context.getColor(android.R.color.black), 1.0f - ratio / 2))
-        cardPick.strokeColor = ViewUtil.getColor(view.context.getColor(R.color.colorPrimary), 1.0f - ratio)
-        cardPickContent.setTextColor(ViewUtil.getColor(view.context.getColor(R.color.colorPrimary), 1.0f - ratio))
+        pickContainer.setBackgroundColor(ViewUtil.getColor(context.getColor(android.R.color.black), 1.0f - ratio / 2))
+        cardPick.strokeColor = ViewUtil.getColor(context.getColor(R.color.colorPrimary), 1.0f - ratio)
+        cardPickContent.setTextColor(ViewUtil.getColor(context.getColor(R.color.colorPrimary), 1.0f - ratio))
     }
 
     fun setNopeTransparency(ratio: Float) {
-        nopeContainer.setBackgroundColor(ViewUtil.getColor(view.context.getColor(android.R.color.black), 1.0f - ratio / 2))
-        cardNope.strokeColor = ViewUtil.getColor(view.context.getColor(android.R.color.black), 1.0f - ratio)
-        cardNopeContent.setTextColor(ViewUtil.getColor(view.context.getColor(android.R.color.black), 1.0f - ratio))
+        nopeContainer.setBackgroundColor(ViewUtil.getColor(context.getColor(android.R.color.black), 1.0f - ratio / 2))
+        cardNope.strokeColor = ViewUtil.getColor(context.getColor(android.R.color.black), 1.0f - ratio)
+        cardNopeContent.setTextColor(ViewUtil.getColor(context.getColor(android.R.color.black), 1.0f - ratio))
     }
 
-    override fun adapt(content: BaseCardStackContent) {
-        if (content !is CardStackContent) {
-            error("Assertion failed")
-        }
+    fun bind(content: CardStackContent) {
+        imageView.setImage(content)
 
         val cardStackItemContents = content.contents.mapTo(ArrayList()) { it.selectable.getString(it.selected) }
         if (content.description.isNotBlank()) {
@@ -57,10 +60,17 @@ class CardStackViewHolder(private val view: View): BaseCardStackViewHolder(view)
             "${distance.toInt() / 1000}km" // 1,000m 이상일 시 km로 표시
         }
         cardStackItemContents.add("$name, $age, $formattedDistance")
-        imageView.setImage(content)
+
+        val coloredContents = if (content.hasImage()) {
+            val average = ImageUtil.getColorAverage(ImageUtil.byteArrayToBitmap(content.getImage()))
+            cardStackItemContents.map { Pair(it, ImageUtil.isDark(average)) }
+        } else {
+            cardStackItemContents.map { Pair(it, true) }
+        }
+
         recyclerView.itemAnimator = DefaultItemAnimator()
-        recyclerView.layoutManager = LinearLayoutManager(itemView.context)
-        recyclerView.adapter = CardStackContentAdapter(cardStackItemContents)
+        recyclerView.layoutManager = LinearLayoutManager(context)
+        recyclerView.adapter = CardStackContentAdapter(coloredContents.toMutableList())
         setPickTransparency(0.0f)
         setNopeTransparency(0.0f)
     }

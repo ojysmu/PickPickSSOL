@@ -7,7 +7,6 @@ import mbtinder.lib.io.component.CommandContent
 import mbtinder.lib.util.CloseableThread
 import mbtinder.lib.util.IDList
 import mbtinder.lib.util.block
-import mbtinder.lib.util.sync
 import org.json.JSONObject
 import java.io.DataInputStream
 import java.io.DataOutputStream
@@ -67,37 +66,29 @@ class SocketClient private constructor(private val address: String, private val 
                 dataInputStream = DataInputStream(socket.getInputStream())
                 dataOutputStream = DataOutputStream(socket.getOutputStream())
 
-                onConnected?.let { it() }
+                onConnected?.invoke()
 
-                listeningThread =
-                    ListeningThread(
-                        context,
-                        dataInputStream,
-                        onDisconnected ?: {})
+                listeningThread = ListeningThread(context, dataInputStream, onDisconnected ?: {})
                 listeningThread.start()
             } catch (e: IOException) {
                 stopThread()
-                onConnectionFailed?.let { it(e) }
+                onConnectionFailed?.invoke(e)
             }
         }
 
         loop = {
-            if (commandPool.isEmpty()) {
-                sleep()
-            } else {
-//                val command = sync(commandPool, commandPool::removeAt, 0)
-                val command = sync(commandPool) { it.removeAt(0) }
-                val clientMessage = command.jsonObject.toString()
-                Log.v("clientMessage=$clientMessage")
+            block(commandPool) { it.isEmpty() }
+            val command = commandPool.removeAt(0)
+            val clientMessage = command.jsonObject.toString()
+            Log.v("clientMessage=$clientMessage")
 
-                try {
-                    dataOutputStream.writeUTF(clientMessage)
-                    dataOutputStream.flush()
-                } catch (e: IOException) {
-                    stopThread()
-                    close()
-                    onDisconnected?.let { it(e) }
-                }
+            try {
+                dataOutputStream.writeUTF(clientMessage)
+                dataOutputStream.flush()
+            } catch (e: IOException) {
+                stopThread()
+                close()
+                onDisconnected?.let { it(e) }
             }
         }
     }
@@ -112,14 +103,14 @@ class SocketClient private constructor(private val address: String, private val 
         instance = null
     }
 
-    fun addCommand(commandContent: CommandContent) = sync(commandPool) { it.add(commandContent) }
+    fun addCommand(commandContent: CommandContent) = commandPool.add(commandContent)
 
-    fun addResult(commandResult: CommandResult) = sync(resultPool) { it.add(commandResult) }
+    fun addResult(commandResult: CommandResult) = resultPool.add(commandResult)
 
     fun getResult(commandId: UUID): JSONObject {
         block(resultPool, intervalInMillis) { !it.contains(commandId) }
 
-        return sync(resultPool) { it.remove(commandId) }.arguments
+        return resultPool.remove(commandId).arguments
     }
 
     override fun pauseThread() {

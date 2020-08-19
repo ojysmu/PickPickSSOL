@@ -4,6 +4,7 @@ import android.content.Context
 
 object SharedPreferencesUtil {
     const val PREF_ACCOUNT = "account"
+    const val PREF_QUESTIONS = "questions"
 
     fun getContext(context: Context, prefName: String) = PreferencesContext(context, prefName)
 
@@ -96,12 +97,12 @@ object SharedPreferencesUtil {
             return context.getSharedPreferences(prefName, Context.MODE_PRIVATE).getFloat(key, 0f)
         }
 
-        fun getStringSet(key: String): Set<String>? {
-            return context.getSharedPreferences(prefName, Context.MODE_PRIVATE).getStringSet(key, null)
+        fun getStringSet(key: String, defValue: Set<String>? = null): Set<String>? {
+            return context.getSharedPreferences(prefName, Context.MODE_PRIVATE).getStringSet(key, defValue)
         }
 
-        fun getStringList(key: String): List<String>? {
-            return context.getSharedPreferences(prefName, Context.MODE_PRIVATE).getStringSet(key, null)?.mapTo(ArrayList()) { s -> s }
+        fun getStringList(key: String): ArrayList<String> {
+            return getStringSet(key, HashSet())!!.mapTo(ArrayList()) { it }
         }
 
         fun removePreference(): MutableMap<String, *> {

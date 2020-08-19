@@ -48,6 +48,9 @@ object CommandProcess {
             Command.SET_MBTI -> setMBTI(command)
             Command.GET_MATCHABLE_USERS -> getMatchableUsers(command)
             Command.REFRESH_MATCHABLE_USERS -> refreshMatchableUsers(command)
+            Command.GET_DAILY_QUESTIONS -> getDailyQuestions(command)
+            Command.IS_ANSWERED_QUESTION -> isAnsweredQuestion(command)
+            Command.ANSWER_QUESTION -> answerQuestion(command)
             Command.PICK -> pick(command)
 
             Command.CREATE_CHAT -> createChat(command)
@@ -136,6 +139,19 @@ object CommandProcess {
             val createTableSql = "CREATE TABLE picked (" +
                     "_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     "opponent_id CHAR(36) NOT NULL)"
+            sqLiteConnection.addQuery(createTableSql)
+        }
+        run {
+            val createTableSql = "CREATE TABLE block (" +
+                    "_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    "opponent_id CHAR(36) NOT NULL)"
+            sqLiteConnection.addQuery(createTableSql)
+        }
+        run {
+            val createTableSql = "CREATE TABLE daily_questions (" +
+                    "_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    "question_id CHAR(36) NOT NULL, " +
+                    "is_picked BOOLEAN NOT NULL)"
             sqLiteConnection.addQuery(createTableSql)
         }
 
@@ -426,6 +442,42 @@ object CommandProcess {
             command.uuid,
             JSONObject().apply { put("card_stack_contents", filteredCardStackContent) }
         )
+    }
+
+    private fun getDailyQuestions(command: CommandContent): JSONObject {
+        val lastDate = command.arguments.getDate("last_date")
+        val sql = "SELECT * FROM `daily_questions` WHERE date > str_to_date('$lastDate', '%Y-%m-%d')"
+        val queryId = MySQLServer.getInstance().addQuery(sql)
+        val queryResult = MySQLServer.getInstance().getResult(queryId)
+        val questions = queryResult.content.map { DailyQuestionUtil.buildDailyQuestion(it) }.sorted().toJSONArray()
+
+        return Connection.makePositiveResponse(command.uuid, JSONObject().apply { put("daily_questions", questions) })
+    }
+
+    private fun isAnsweredQuestion(command: CommandContent): JSONObject {
+        val userId = command.arguments.getUUID("user_id")
+        val questionId = command.arguments.getUUID("question_id")
+
+        val sql = "SELECT _id FROM daily_questions WHERE question_id='$questionId'"
+        val sqLiteConnection = SQLiteConnection.getConnection(userId)
+        val queryId = sqLiteConnection.addQuery(sql)
+        val queryResult = sqLiteConnection.getResult(queryId)
+
+        return Connection.makePositiveResponse(
+            command.uuid,
+            JSONObject().apply { put("answered", queryResult.getRowCount() == 0) }
+        )
+    }
+
+    private fun answerQuestion(command: CommandContent): JSONObject {
+        val userId = command.arguments.getUUID("user_id")
+        val questionId = command.arguments.getUUID("question_id")
+        val isPick = command.arguments.getBoolean("is_pick")
+
+        val sql = "INSERT INTO daliy_questions (question_id, is_picked) VALUES ('$questionId', $isPick)"
+        SQLiteConnection.getConnection(userId).addQuery(sql)
+
+        return Connection.makePositiveResponse(command.uuid)
     }
 
     /**

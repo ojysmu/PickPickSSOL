@@ -17,7 +17,8 @@ internal class ListeningThread(private val context: Context,
     init {
         loop = {
             try {
-                val response = JSONObject(dataInputStream.readUTF())
+                val rawResponse = dataInputStream.readUTF()
+                val response = JSONObject(rawResponse)
                 Log.v("ListeningThread: $response")
                 if (isNotificationMessage(response)) {
                     val id = UUID.fromString(response.getString("notification_id"))

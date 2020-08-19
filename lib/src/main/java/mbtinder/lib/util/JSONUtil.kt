@@ -6,7 +6,8 @@ import org.json.JSONObject
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
-import java.util.*
+import java.sql.Date
+import java.util.UUID
 
 fun JSONObject.clone(): JSONObject {
     val cloned = JSONObject()
@@ -20,6 +21,10 @@ fun JSONObject.clone(): JSONObject {
 fun JSONObject.getUUID(key: String) = UUID.fromString(getString(key))
 
 fun JSONObject.putUUID(key: String, uuid: UUID) = put(key, uuid.toString())
+
+fun JSONObject.getDate(key: String) = Date.valueOf(getString(key))
+
+fun JSONObject.putDate(key: String, date: Date) = put(key, date.toString())
 
 fun JSONArray.getUUID(index: Int) = UUID.fromString(getString(index))
 

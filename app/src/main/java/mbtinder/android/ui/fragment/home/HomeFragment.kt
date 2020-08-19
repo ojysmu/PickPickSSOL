@@ -2,6 +2,8 @@ package mbtinder.android.ui.fragment.home
 
 import android.view.View
 import android.view.animation.LinearInterpolator
+import androidx.annotation.AnyThread
+import androidx.annotation.WorkerThread
 import androidx.recyclerview.widget.DefaultItemAnimator
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.yuyakaido.android.cardstackview.*
@@ -10,26 +12,30 @@ import mbtinder.android.R
 import mbtinder.android.component.StaticComponent
 import mbtinder.android.io.socket.CommandProcess
 import mbtinder.android.ui.model.Fragment
-import mbtinder.android.util.Log
+import mbtinder.android.util.SharedPreferencesUtil
 import mbtinder.android.util.runOnBackground
 import mbtinder.android.util.runOnUiThread
 import mbtinder.lib.component.card_stack.BaseCardStackContent
-import mbtinder.lib.component.card_stack.CardStackContent
+import mbtinder.lib.component.card_stack.DailyQuestionContent
 import mbtinder.lib.component.user.Coordinator
+import mbtinder.lib.util.findAll
+import org.json.JSONObject
+import java.sql.Date
 
 class HomeFragment : Fragment(R.layout.fragment_home) {
     companion object {
         val cardStackContents = arrayListOf<BaseCardStackContent>()
-        private val nopeContents = arrayListOf<CardStackContent>()
     }
 
     private lateinit var cardStackLayoutManager: CardStackLayoutManager
     private val cardStackAdapter by lazy { CardStackAdapter(this) }
     private var currentPosition = 0
+    private val todayQuestions by lazy { getNotAnsweredQuestion(getTodayDailyQuestions()) }
 
     override fun initializeView() {
         requireActivity().findViewById<BottomNavigationView>(R.id.nav_view).visibility = View.VISIBLE
         getCardStacks()
+        getDailyQuestions()
 
         cardStackLayoutManager = CardStackLayoutManager(requireContext(), cardStackListener)
         cardStackLayoutManager.setStackFrom(StackFrom.None)
@@ -53,13 +59,15 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         home_card_stack_view.adapter = cardStackAdapter
 
         home_rewind.setOnClickListener {
-            if (nopeContents.isNotEmpty()) {
-                cardStackAdapter.addAt(0, nopeContents.removeAt(nopeContents.size - 1))
-                home_card_stack_view.smoothScrollToPosition(currentPosition - 1)
-            }
+            home_card_stack_view.rewind()
         }
     }
 
+    /**
+     * 카드 스택 최초 생성
+     * 카드 스택이 존재하지 않고, 최초 로딩 시 호출
+     */
+    @AnyThread
     private fun getCardStacks() {
         runOnBackground {
             val getResult = CommandProcess.getMatchableUsers(
@@ -82,9 +90,13 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         }
     }
 
+    /**
+     * 카드 스택 업데이트
+     * 이미 카드 스택이 존재하고, 추가로 필요할 떄 호출
+     * 오늘의 질문이 남았을 경우 맨 뒤에 추가
+     */
+    @AnyThread
     private fun refreshCardStacks() {
-        Log.v("HomeFragment.refreshCardStacks(): currentPosition=$currentPosition, left=${cardStackAdapter.getLeftContents(currentPosition)}")
-        cardStackContents.forEachIndexed { index, baseCardStackContent -> Log.v("HomeFragment.refreshCardStacks() $index: $baseCardStackContent") }
         runOnBackground {
             val refreshResult = CommandProcess.refreshMatchableUsers(
                 userId = StaticComponent.user.userId,
@@ -93,57 +105,121 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 currentMetList = cardStackAdapter.getUserIds()
             )
 
-            if (refreshResult.isSucceed) {
+            if (refreshResult.isSucceed && refreshResult.result!!.isNotEmpty()) {
                 cardStackContents.removeAll { it is EmptyContent }
                 cardStackContents.addAll(refreshResult.result!!)
+                if (todayQuestions.isNotEmpty()) {
+                    cardStackContents.add(todayQuestions.removeAt(0))
+                }
                 cardStackContents.add(EmptyContent())
                 runOnUiThread { cardStackAdapter.notifyDataSetChanged() }
             }
         }
     }
 
+    /**
+     * 로컬 일일 질문 갱신
+     * 마지막 저장된 날짜 이후의 모든 질문 다운로드
+     */
+    @AnyThread
+    private fun getDailyQuestions() {
+        runOnBackground {
+            val context = SharedPreferencesUtil.getContext(requireContext(), SharedPreferencesUtil.PREF_QUESTIONS)
+            val saved = context.getStringList("questions")
+            val lastDate = saved
+                .map { DailyQuestionContent(JSONObject(it)) }
+                .max()
+                ?.date ?: Date(System.currentTimeMillis())
+
+            val getResult = CommandProcess.getDailyQuestions(lastDate)
+            if (getResult.isSucceed) {
+                saved.addAll(getResult.result!!.map { it.toJSONObject().toString() })
+                context.put("questions", saved)
+            }
+        }
+    }
+
+    /**
+     * 인수로 전달된 질문 중 답변되지 않은 질문 반환. 반드시 background에서 실행되어야 함
+     * @param questions: 답변되었는지 확인되지 않은 질문
+     * @return 답변되지 않은 질문
+     */
+    @WorkerThread
+    private fun getNotAnsweredQuestion(questions: List<DailyQuestionContent>) =
+        questions.findAll {
+            val isAnsweredResult = CommandProcess.isAnsweredQuestion(StaticComponent.user.userId, it.questionId)
+            isAnsweredResult.isSucceed && !isAnsweredResult.result!!
+        }
+
+    /**
+     * 로컬에서 오늘의 일일 질문 반환. [getDailyQuestions]이 같은 날 선행되었음이 보장되어야 함
+     * @return 오늘의 일일 질문
+     */
+    @AnyThread
+    private fun getTodayDailyQuestions(): List<DailyQuestionContent> {
+        val context = SharedPreferencesUtil.getContext(requireContext(), SharedPreferencesUtil.PREF_QUESTIONS)
+        val saved = context.getStringList("questions").map { DailyQuestionContent(JSONObject(it)) }
+        return saved.findAll { it.date == Date(System.currentTimeMillis()) }
+    }
+
+    /**
+     * 카드 이벤트 callback listener
+     * onCardAppeared -> onCardDragging -> onCardDisappeared -> onCardSwiped
+     */
     private val cardStackListener = object : CardStackListener {
         /**
          * 카드가 나타났을 때 callback
          * 일반 카드일 경우 swipe 가능, 일일 질문일 경우 swipe 가능, 목록의 끝일 경우 swipe 불가능
          */
         override fun onCardAppeared(view: View?, position: Int) {
-            val holder = cardStackAdapter.holders[position]
-            Log.v("HomeFragment.onCardAppeared(): position=$position, isEmpty=${holder is EmptyViewHolder}, currentPosition=$currentPosition")
+            val holder = cardStackAdapter.cardStackViewHolders[position]
+
+            cardStackLayoutManager.setCanScrollHorizontal(holder != null)
             currentPosition = position
-            cardStackLayoutManager.setCanScrollHorizontal(cardStackAdapter.holders[currentPosition] !is EmptyViewHolder)
         }
 
+        /**
+         * 카드 드래그할 때 callback
+         * 일반 카드일 경우 배경 어둡게, PICK, NOPE 노출, 일일 질문일 경우 답변 highlight
+         */
         override fun onCardDragging(direction: Direction?, ratio: Float) {
-            val holder = cardStackAdapter.holders[currentPosition]
-            if (holder is CardStackViewHolder) {
-                if (ratio == 0.0f) {
-                    holder.setNopeTransparency(0.0f)
-                    holder.setPickTransparency(0.0f)
+            cardStackAdapter.cardStackViewHolders[currentPosition]?.let {
+                when {
+                    ratio == 0.0f -> it.setDefaultTransparency()
+                    direction == Direction.Left -> it.setNopeTransparency(ratio)
+                    direction == Direction.Right -> it.setPickTransparency(ratio)
                 }
-                if (direction == Direction.Left) {
-                    holder.setNopeTransparency(ratio)
-                } else {
-                    holder.setPickTransparency(ratio)
+            } ?: cardStackAdapter.dailyQuestionViewHolders[currentPosition]?.let {
+                when {
+                    ratio == 0.0f -> it.disableAll()
+                    direction == Direction.Left -> it.enableNope()
+                    direction == Direction.Right -> it.enablePick()
                 }
             }
         }
 
+        /**
+         * 카드가 사라졌을 때 callback
+         * 카드가 세장 남았을 경우 refresh
+         */
         override fun onCardDisappeared(view: View?, position: Int) {
-            val holder = cardStackAdapter.holders[currentPosition]
-            if (holder is CardStackViewHolder) {
-                holder.setNopeTransparency(0.0f)
-                holder.setPickTransparency(0.0f)
-            }
+            val holder = cardStackAdapter.cardStackViewHolders[currentPosition]
+            holder?.setDefaultTransparency()
 
             if (cardStackAdapter.getLeftContents(position) == 3) {
                 refreshCardStacks()
             }
         }
 
+        /**
+         * 카드가 swipe 됐을 때 callback
+         * 일반 카드일 경우 PICK, NOPE 여부 서버 전송, PICK일 경우 목록에서 삭제(rewind 방지)
+         * 일일 질문일 경우 PICK, NOPE 여부 서버 전송, 목록에서 삭제
+         */
         override fun onCardSwiped(direction: Direction?) {
             val currentPosition = currentPosition
-            if (cardStackAdapter.getItemViewType(currentPosition) == CardStackAdapter.TYPE_CARD_STACK_CONTENT) {
+            val viewType = cardStackAdapter.getItemViewType(currentPosition)
+            if (viewType == CardStackAdapter.TYPE_CARD_STACK_CONTENT) {
                 runOnBackground {
                     // pick nope 여부 서버 업데이트
                     val opponentId = cardStackAdapter.getUserId(currentPosition)
@@ -159,29 +235,32 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                     }
 
                     // nope된 사용자는 pool에 추가
-                    if (direction == Direction.Left) {
-                        nopeContents.add(cardStackContents[currentPosition] as CardStackContent)
+                    if (direction == Direction.Right) {
+                        runOnUiThread { cardStackAdapter.removeAt(currentPosition) }
                     }
+                }
+            } else if (viewType == CardStackAdapter.TYPE_DAILY_QUESTION_CONTENT) {
+                runOnBackground {
+                    val questionContent = cardStackContents[currentPosition] as DailyQuestionContent
 
-                    runOnUiThread { cardStackAdapter.removeAt(currentPosition) }
                 }
             }
         }
 
+        /**
+         * 카드 드래그 취소할 때 callback. Threshold 넘지 않고 손 뗐을 때 invoke
+         */
         override fun onCardCanceled() {
-            val holder = cardStackAdapter.holders[currentPosition]
-            if (holder is CardStackViewHolder) {
-                holder.setNopeTransparency(0.0f)
-                holder.setPickTransparency(0.0f)
-            }
+            val holder = cardStackAdapter.cardStackViewHolders[currentPosition]
+            holder?.setDefaultTransparency()
         }
 
+        /**
+         * 카드가 rewind 됐을 떄 callback
+         */
         override fun onCardRewound() {
-            val holder = cardStackAdapter.holders[currentPosition]
-            if (holder is CardStackViewHolder) {
-                holder.setNopeTransparency(0.0f)
-                holder.setPickTransparency(0.0f)
-            }
+            val holder = cardStackAdapter.cardStackViewHolders[currentPosition]
+            holder?.setDefaultTransparency()
         }
     }
 }

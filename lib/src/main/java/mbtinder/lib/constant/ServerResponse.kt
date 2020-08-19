@@ -9,4 +9,5 @@ enum class ServerResponse {
     CHAT_ID_NOT_FOUND,
     IMAGE_NOT_FOUND,
     IMAGE_ID_NOT_FOUND,
+    ANSWERED_QUESTION
 }

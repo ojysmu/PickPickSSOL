@@ -14,7 +14,12 @@ class SearchFilter: JSONParsable, IDContent {
     var ageEnd: Int = 100
     var distance: Int = 100
 
-    constructor(jsonObject: JSONObject): super(jsonObject)
+    constructor(jsonObject: JSONObject): super(jsonObject) {
+        this.gender = jsonObject.getInt("gender")
+        this.ageStart = jsonObject.getInt("age_start")
+        this.ageEnd = jsonObject.getInt("age_end")
+        this.distance = jsonObject.getInt("distance")
+    }
 
     constructor(userId: UUID) {
         this.userId = userId

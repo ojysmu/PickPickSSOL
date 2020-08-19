@@ -104,7 +104,7 @@ object CardStackUtil {
 
     fun findDailyQuestion(userId: UUID): List<DailyQuestionContent.SaveForm> {
         val connection = SQLiteConnection.getConnection(userId)
-        val sql = "SELECT question_id, is_picked FROM daily_question"
+        val sql = "SELECT question_id, is_picked FROM daily_questions"
         val queryId = connection.addQuery(sql)
         val queryResult = connection.getResult(queryId)
 

@@ -62,7 +62,7 @@
                 android:backgroundTint="@color/colorPrimary"
                 android:translationX="@dimen/activity_horizontal_margin"
                 android:translationY="@dimen/activity_vertical_margin"
-                android:translationZ="2dp"
+                android:translationZ="0dp"
                 android:elevation="100dp"
                 app:tint="@android:color/white"
                 app:layout_constraintBottom_toBottomOf="@id/account_profile_container"

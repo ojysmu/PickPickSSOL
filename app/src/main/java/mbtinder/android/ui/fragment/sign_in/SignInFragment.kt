@@ -99,7 +99,7 @@ class SignInFragment : Fragment(R.layout.fragment_sign_in) {
             }
         } else {
             Toast.makeText(requireContext(), R.string.common_require_location_permission, Toast.LENGTH_SHORT).show()
-            requireActivity().finish()
+            finish()
         }
     }
 }

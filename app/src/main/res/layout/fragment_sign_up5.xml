@@ -51,8 +51,9 @@
             android:id="@+id/sign_up5_questions_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:clipToPadding="false"
             app:layout_constraintTop_toBottomOf="@id/sign_up5_mbti_recycler_view"
-            tools:listitem="@layout/card_sign_up4_questions"
+            tools:listitem="@layout/card_sign_up5_questions"
             tools:itemCount="3" />
 
         <Button

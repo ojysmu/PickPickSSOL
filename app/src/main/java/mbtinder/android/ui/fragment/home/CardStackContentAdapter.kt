@@ -9,6 +9,6 @@ class CardStackContentAdapter(private val contents: MutableList<Pair<String, Boo
 
     override fun onBindViewHolder(holder: AdaptableViewHolder<String>, position: Int) {
         (holder as CardStackContentViewHolder).isDark = contents[position].second
-        holder.adapt(contents[position].first)
+        holder.bind(contents[position].first)
     }
 }

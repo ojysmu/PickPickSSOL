@@ -27,7 +27,6 @@
             android:id="@+id/card_chat_list_image"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:src="@drawable/image"
             android:scaleType="centerCrop"/>
     </com.google.android.material.card.MaterialCardView>
 
@@ -38,6 +37,7 @@
         android:layout_marginBottom="4dp"
         android:layout_marginStart="@dimen/card_horizontal_margin"
         android:maxLines="1"
+        android:textColor="@android:color/black"
         android:fontFamily="@font/noto_sans_cjk_kr_bold"
         android:includeFontPadding="false"
         app:layout_constraintBottom_toTopOf="@id/card_chat_list_guideline_vertical_50"
@@ -51,6 +51,7 @@
         android:layout_marginTop="4dp"
         android:layout_marginStart="@dimen/card_horizontal_margin"
         android:maxLines="1"
+        android:textColor="@android:color/black"
         android:fontFamily="@font/noto_sans_cjk_kr_regular"
         android:includeFontPadding="false"
         app:layout_constraintTop_toBottomOf="@id/card_chat_list_guideline_vertical_50"

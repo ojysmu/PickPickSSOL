@@ -6,7 +6,7 @@ import kotlinx.android.synthetic.main.fragment_sign_up3.*
 import mbtinder.android.R
 import mbtinder.android.ui.model.Fragment
 import mbtinder.android.util.FormStateChecker
-import mbtinder.android.util.ViewUtil
+import mbtinder.android.util.getInt
 import mbtinder.android.util.getText
 
 class SignUp3Fragment : Fragment(R.layout.fragment_sign_up3) {
@@ -27,23 +27,20 @@ class SignUp3Fragment : Fragment(R.layout.fragment_sign_up3) {
     }
 
     private fun onGenderSelected(checkedId: Int, isChecked: Boolean) {
-        gender = if (isChecked) {
-            when (checkedId) {
-                R.id.sign_up3_gender_male -> 0
-                R.id.sign_up3_gender_female -> 1
-                else -> -1
-            }
-        } else {
-            -1
+        gender = when (checkedId) {
+            R.id.sign_up3_gender_male -> 0
+            R.id.sign_up3_gender_female -> 1
+            else -> throw AssertionError("What gender is this: id=$checkedId")
         }
         formStateChecker.setState(sign_up3_gender_selector, isChecked)
+        enableNextButton()
     }
 
     private fun onNextClicked() {
         val arguments = requireArguments()
         arguments.putString("name", sign_up3_name.getText())
         arguments.putInt("gender", gender)
-        arguments.putInt("age", sign_up3_age.getText().toInt())
+        arguments.putInt("age", sign_up3_age.getInt())
 
         findNavController().navigate(R.id.action_to_sign_up4, arguments)
     }
@@ -58,6 +55,7 @@ class SignUp3Fragment : Fragment(R.layout.fragment_sign_up3) {
                 formStateChecker.setState(sign_up3_name, true)
                 sign_up3_name.isErrorEnabled = false
             } else {
+                formStateChecker.setState(sign_up3_name, false)
                 onInputIssued(sign_up3_name, R.string.sign_up3_name_error, formStateChecker)
             }
             enableNextButton()
@@ -70,6 +68,7 @@ class SignUp3Fragment : Fragment(R.layout.fragment_sign_up3) {
                 formStateChecker.setState(sign_up3_age, true)
                 sign_up3_age.isErrorEnabled = false
             } else {
+                formStateChecker.setState(sign_up3_age, false)
                 onInputIssued(sign_up3_age, R.string.sign_up3_age_error, formStateChecker)
             }
             enableNextButton()

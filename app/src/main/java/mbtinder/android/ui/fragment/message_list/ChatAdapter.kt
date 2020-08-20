@@ -15,7 +15,8 @@ class ChatAdapter(private val fragment: MessageListFragment, private val content
 
     override fun onBindViewHolder(holder: AdaptableViewHolder<MessageContent>, position: Int) {
         (holder as ChatViewHolder).adapter = this
-        holder.adapt(contents[position])
+        holder.bind(contents[position])
+        holder.setIsRecyclable(false)
     }
 
     fun requestNavigate(chatId: UUID, opponentId: UUID, opponentName: String) {

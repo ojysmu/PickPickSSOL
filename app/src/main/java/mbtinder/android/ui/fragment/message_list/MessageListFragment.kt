@@ -39,7 +39,10 @@ class MessageListFragment: Fragment(R.layout.fragment_message_list) {
         val getResult = CommandProcess.getLastMessages(StaticComponent.user.userId)
 
         if (getResult.isSucceed) {
-            lastMessages = getResult.result!!.sorted().toIDList()
+            lastMessages = getResult.result!!
+                .sorted()
+                .reversed()
+                .toIDList()
         }
 
         return getResult.isSucceed
@@ -70,14 +73,18 @@ class MessageListFragment: Fragment(R.layout.fragment_message_list) {
         private var aliveAdapter: ChatAdapter? = null
 
         fun setLastMessage(messageContent: MessageContent) {
-            if (lastMessages != null) {
+            lastMessages?.let { messages ->
                 val found = lastMessages!!.find { it.chatId == messageContent.chatId }
                 if (found != null) {
-                    lastMessages!!.remove(found)
-                    lastMessages!!.add(messageContent)
+                    messages.remove(found)
+                    messages.add(messageContent)
+                    messages.sort()
+                    messages.reverse()
                     aliveAdapter?.notifyDataSetChanged()
                 } else {
-                    lastMessages!!.add(messageContent)
+                    messages.add(messageContent)
+                    messages.sort()
+                    messages.reverse()
                     aliveAdapter?.notifyItemInserted(lastMessages!!.size - 1)
                 }
             }

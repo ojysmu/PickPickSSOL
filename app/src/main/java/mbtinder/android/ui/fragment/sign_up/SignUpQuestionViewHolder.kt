@@ -13,11 +13,11 @@ import mbtinder.android.util.ViewUtil
 import mbtinder.lib.component.user.SignUpQuestionContent
 
 class SignUpQuestionViewHolder(itemView: View) : AdaptableViewHolder<SignUpQuestionContent>(itemView) {
-    private val titleTextView: TextView = itemView.findViewById(R.id.card_sign_up4_question_title)
+    private val titleTextView: TextView = itemView.findViewById(R.id.card_sign_up5_question_title)
     private val selectableGroup: ChipGroup = itemView.findViewById(R.id.card_sign_up5_question_selector)
 
     @SuppressLint("InflateParams")
-    override fun adapt(content: SignUpQuestionContent) {
+    override fun bind(content: SignUpQuestionContent) {
         titleTextView.text = content.question
         (0 until content.selectable.length()).forEach {
             selectableGroup.addView(getChip().apply {
@@ -37,5 +37,5 @@ class SignUpQuestionViewHolder(itemView: View) : AdaptableViewHolder<SignUpQuest
     fun getCheckItemPosition() = selectableGroup.checkedChipId
 
     @SuppressLint("InflateParams")
-    private fun getChip() = LayoutInflater.from(itemView.context).inflate(R.layout.chip_sign_up4_question, null) as Chip
+    private fun getChip() = LayoutInflater.from(itemView.context).inflate(R.layout.chip_sign_up5_question, null) as Chip
 }

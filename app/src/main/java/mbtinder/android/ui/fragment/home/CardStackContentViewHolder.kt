@@ -12,7 +12,7 @@ class CardStackContentViewHolder(view: View): AdaptableViewHolder<String>(view) 
     private val cardView: MaterialCardView = view.findViewById(R.id.card_main_stack_content)
     private val contentTextView: TextView = view.findViewById(R.id.card_main_stack_content_body)
 
-    override fun adapt(content: String) {
+    override fun bind(content: String) {
         contentTextView.text = content
 
         if (!isDark) {

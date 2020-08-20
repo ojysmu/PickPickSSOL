@@ -17,7 +17,7 @@ class MBTIViewHolder(itemView: View) : AdaptableViewHolder<MBTIContent>(itemView
     private val contentTextView: TextView = itemView.findViewById(R.id.card_sign_up5_mbti_content)
     private val checkImageView: ImageView = itemView.findViewById(R.id.card_sign_up5_mbti_check)
 
-    override fun adapt(content: MBTIContent) {
+    override fun bind(content: MBTIContent) {
         this.content = content
 
         titleTextView.text = content.title

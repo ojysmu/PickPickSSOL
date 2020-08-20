@@ -12,7 +12,7 @@ class MBTIAdapter(private val contents: MutableList<MBTIContent>)
     override fun onBindViewHolder(holder: AdaptableViewHolder<MBTIContent>, position: Int) {
         holders.add(holder as MBTIViewHolder)
         holder.adapter = this
-        holder.adapt(contents[position])
+        holder.bind(contents[position])
     }
 
     fun uncheckAll() = holders.forEach { it.uncheck() }

@@ -46,10 +46,8 @@ abstract class Fragment(@LayoutRes private val layout: Int) : Fragment(), View.O
 
     protected fun hideIme() {
         rootView.findFocus()?.let {
-            val editText = it as EditText
-            val inputMethodManager = editText.context.getSystemService(Context.INPUT_METHOD_SERVICE)
-                    as InputMethodManager
-            inputMethodManager.hideSoftInputFromWindow(editText.windowToken, 0)
+            val inputMethodManager = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            inputMethodManager.hideSoftInputFromWindow((it as EditText).windowToken, 0)
         }
     }
 
@@ -61,7 +59,7 @@ abstract class Fragment(@LayoutRes private val layout: Int) : Fragment(), View.O
         }
     }
 
-    protected fun addFocusEvent(v: View, event: () -> Unit) {
+    private fun addFocusEvent(v: View, event: () -> Unit) {
         focusEvent[ViewUtil.filterEditText(v)] = event
     }
 

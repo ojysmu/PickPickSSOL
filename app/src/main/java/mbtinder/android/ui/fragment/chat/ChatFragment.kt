@@ -26,6 +26,7 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
     private val opponentName by lazy { requireArguments().getString("opponent_name")!! }
 
     override fun initializeView() {
+        fragment = this
         requireActivity().findViewById<BottomNavigationView>(R.id.nav_view).visibility = View.GONE
 
         chat_title.text = opponentName

@@ -17,7 +17,7 @@ class ChatViewHolder(itemView: View) : AdaptableViewHolder<MessageContent>(itemV
     private val userNameTextView: TextView = itemView.findViewById(R.id.card_chat_list_user_name)
     private val lastMessageTextView: TextView = itemView.findViewById(R.id.card_chat_list_last_message)
 
-    override fun adapt(content: MessageContent) {
+    override fun bind(content: MessageContent) {
         val opponentId = content.getOpponentId(StaticComponent.user.userId)
 
         StaticComponent.setUserImage(opponentId, userImageView)

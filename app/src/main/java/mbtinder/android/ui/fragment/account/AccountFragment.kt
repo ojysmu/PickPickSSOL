@@ -85,7 +85,7 @@ class AccountFragment : Fragment(R.layout.fragment_account) {
                     .removePreference()
                 waitDialog.dismiss()
                 Toast.makeText(requireActivity(), R.string.account_delete_succeed, Toast.LENGTH_SHORT).show()
-                requireActivity().finish()
+                finish()
             } else {
                 waitDialog.dismiss()
                 Toast.makeText(requireContext(), R.string.account_delete_failed, Toast.LENGTH_SHORT).show()
@@ -101,7 +101,7 @@ class AccountFragment : Fragment(R.layout.fragment_account) {
                 .removePreference()
             waitDialog.dismiss()
             Toast.makeText(requireActivity(), R.string.account_sign_out_succeed, Toast.LENGTH_SHORT).show()
-            requireActivity().finish()
+            finish()
         }).show()
     }
 

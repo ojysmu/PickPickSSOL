@@ -3,6 +3,7 @@ package mbtinder.android.util
 import android.content.Context
 import android.content.Intent
 import android.provider.MediaStore
+import android.text.InputType
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
@@ -74,5 +75,11 @@ fun RangeSlider.getStart() = values[0].toInt()
 fun RangeSlider.getEnd() = values[1].toInt()
 
 fun TextInputLayout.getText() = editText!!.text.toString()
+
+fun TextInputLayout.getInt() = if (editText!!.inputType == InputType.TYPE_CLASS_NUMBER) {
+    getText().toInt()
+} else {
+    throw IllegalStateException("Getting Int from non-numeric TextInputLayout")
+}
 
 fun TextInputLayout.isSame(textInputLayout: TextInputLayout) = getText() == textInputLayout.getText()

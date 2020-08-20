@@ -31,12 +31,15 @@
     <com.google.android.material.textfield.TextInputLayout
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:id="@+id/sign_up3_name"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/activity_horizontal_margin"
+        android:layout_marginStart="@dimen/activity_horizontal_margin"
+        android:layout_marginEnd="@dimen/card_horizontal_margin"
         android:layout_marginTop="@dimen/card_vertical_margin"
         android:hint="@string/sign_up3_name"
-        app:layout_constraintTop_toBottomOf="@id/sign_up3_name_title">
+        app:layout_constraintTop_toBottomOf="@id/sign_up3_name_title"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/sign_up3_guideline_vertical_50">
 
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
@@ -48,41 +51,10 @@
 
     <TextView
         style="@style/FragmentContent.Medium"
-        android:id="@+id/sign_up3_gender_title"
-        android:text="@string/sign_up3_gender_title"
-        app:layout_constraintTop_toBottomOf="@id/sign_up3_name"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <com.google.android.material.button.MaterialButtonToggleGroup
-        android:id="@+id/sign_up3_gender_selector"
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_marginStart="@dimen/activity_horizontal_margin"
-        android:layout_marginTop="@dimen/card_vertical_margin"
-        app:layout_constraintTop_toBottomOf="@id/sign_up3_gender_title"
-        app:layout_constraintStart_toStartOf="parent"
-        app:singleSelection="true">
-
-        <Button
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            android:id="@+id/sign_up3_gender_male"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:text="@string/sign_up3_gender_male" />
-
-        <Button
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            android:id="@+id/sign_up3_gender_female"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:text="@string/sign_up3_gender_female" />
-    </com.google.android.material.button.MaterialButtonToggleGroup>
-
-    <TextView
-        style="@style/FragmentContent.Medium"
         android:id="@+id/sign_up3_age_title"
         android:text="@string/sign_up3_age_title"
-        app:layout_constraintTop_toBottomOf="@id/sign_up3_name"
+        android:layout_marginStart="@dimen/card_horizontal_margin"
+        app:layout_constraintTop_toBottomOf="@id/sign_up3_title"
         app:layout_constraintStart_toEndOf="@id/sign_up3_guideline_vertical_50" />
 
     <com.google.android.material.textfield.TextInputLayout
@@ -105,6 +77,39 @@
             android:maxLength="2"/>
     </com.google.android.material.textfield.TextInputLayout>
 
+    <TextView
+        style="@style/FragmentContent.Medium"
+        android:id="@+id/sign_up3_gender_title"
+        android:text="@string/sign_up3_gender_title"
+        app:layout_constraintTop_toBottomOf="@id/sign_up3_name"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <com.google.android.material.button.MaterialButtonToggleGroup
+        android:id="@+id/sign_up3_gender_selector"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginStart="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="@dimen/card_vertical_margin"
+        app:layout_constraintTop_toBottomOf="@id/sign_up3_gender_title"
+        app:layout_constraintStart_toStartOf="parent"
+        app:singleSelection="true"
+        app:selectionRequired="true">
+
+        <Button
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:id="@+id/sign_up3_gender_male"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="@string/sign_up3_gender_male" />
+
+        <Button
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:id="@+id/sign_up3_gender_female"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="@string/sign_up3_gender_female" />
+    </com.google.android.material.button.MaterialButtonToggleGroup>
+
     <Button
         style="@style/ButtonNext"
         android:id="@+id/sign_up3_next"
@@ -113,7 +118,7 @@
         android:layout_marginTop="@dimen/activity_vertical_margin"
         android:layout_marginEnd="@dimen/activity_horizontal_margin"
         android:enabled="false"
-        app:layout_constraintTop_toBottomOf="@id/sign_up3_age"
+        app:layout_constraintTop_toBottomOf="@id/sign_up3_gender_selector"
         app:layout_constraintEnd_toEndOf="parent"
         android:text="@string/common_next" />
 </androidx.constraintlayout.widget.ConstraintLayout>

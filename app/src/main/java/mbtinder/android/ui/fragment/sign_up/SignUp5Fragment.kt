@@ -20,6 +20,7 @@ import mbtinder.lib.component.user.MBTIContent
 import mbtinder.lib.component.user.SignUpQuestionContent
 import mbtinder.lib.constant.MBTI
 import mbtinder.lib.util.JSONList
+import mbtinder.lib.util.toJSONList
 
 class SignUp5Fragment : Fragment(R.layout.fragment_sign_up5) {
     private lateinit var mbtiAdapter: MBTIAdapter
@@ -43,7 +44,7 @@ class SignUp5Fragment : Fragment(R.layout.fragment_sign_up5) {
     }
 
     private fun initializeSignUpQuestions() {
-        signUpQuestions = CommandProcess.getSignUpQuestion().result!!
+        signUpQuestions = requireArguments().getJSONArray("sign_up_questions")!!.toJSONList()
         signUpQuestionAdapter = SignUpQuestionAdapter(signUpQuestions)
         sign_up5_questions_recycler_view.layoutManager = LinearLayoutManager(requireContext())
         sign_up5_questions_recycler_view.itemAnimator = DefaultItemAnimator()
@@ -136,7 +137,7 @@ class SignUp5Fragment : Fragment(R.layout.fragment_sign_up5) {
             }
         } else {
             Toast.makeText(requireContext(), R.string.common_require_location_permission, Toast.LENGTH_SHORT).show()
-            requireActivity().finish()
+            finish()
         }
     }
 

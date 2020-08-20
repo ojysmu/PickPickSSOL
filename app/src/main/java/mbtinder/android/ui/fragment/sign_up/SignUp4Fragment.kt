@@ -4,6 +4,8 @@ import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.text.Editable
+import android.view.ViewGroup
+import android.widget.Toast
 import androidx.navigation.fragment.findNavController
 import kotlinx.android.synthetic.main.fragment_sign_up4.*
 import mbtinder.android.R
@@ -28,7 +30,7 @@ class SignUp4Fragment : Fragment(R.layout.fragment_sign_up4) {
         sign_up4_profile.clipToOutline = true
         sign_up4_profile.setOnClickListener { onProfileClicked() }
         sign_up4_profile_select.setOnClickListener { onProfileClicked() }
-        sign_up4_next.setOnClickListener { onNextClicked() }
+        switchable_next.setOnClickListener { onNextClicked() }
     }
 
     private fun onProfileClicked() {
@@ -36,15 +38,26 @@ class SignUp4Fragment : Fragment(R.layout.fragment_sign_up4) {
     }
 
     private fun onNextClicked() {
-        val arguments = requireArguments()
-        arguments.putByteArray("profile", selectedProfileImage)
-        arguments.putString("description", sign_up4_description.getText())
-
-        findNavController().navigate(R.id.action_to_sign_up5, arguments)
+        ViewUtil.switchNextButton(layout_sign_up4)
+        runOnBackground {
+            val getResult = CommandProcess.getSignUpQuestion()
+            if (getResult.isSucceed) {
+                val arguments = requireArguments()
+                arguments.putByteArray("profile", selectedProfileImage)
+                arguments.putString("description", sign_up4_description.getText())
+                arguments.putJSONArray("sign_up_questions", getResult.result!!.toJSONArray())
+                runOnUiThread { findNavController().navigate(R.id.action_to_sign_up5, arguments) }
+            } else {
+                runOnUiThread {
+                    Toast.makeText(requireContext(), R.string.sign_up4_sign_up_question_failed, Toast.LENGTH_SHORT).show()
+                    ViewUtil.switchNextButton(layout_sign_up4)
+                }
+            }
+        }
     }
 
     private fun enableNextButton() {
-        sign_up4_next.isEnabled = !formStateChecker.hasFalse()
+        switchable_next.isEnabled = !formStateChecker.hasFalse()
     }
 
     private fun onDescriptionChanged(editable: Editable?) {

@@ -29,22 +29,8 @@ class MessageListFragment: Fragment(R.layout.fragment_message_list) {
         message_list_recycler_view.itemAnimator = DefaultItemAnimator()
 
         runOnBackground {
-            Log.v("MessageListFragment.initializeView(): 1")
             if (updateLastMessages()) {
-                Log.v("MessageListFragment.initializeView(): 2-1")
-                aliveAdapter = ChatAdapter(this, lastMessages!!)
-
-                runOnUiThread {
-                    Log.v("MessageListFragment.initializeView(): 3-1")
-                    message_list_recycler_view.adapter = aliveAdapter
-                    message_list_recycler_view.visibility = View.VISIBLE
-                    message_list_progress_bar.visibility = View.INVISIBLE
-                }
-            } else {
-                Log.v("MessageListFragment.initializeView(): 2-2")
-                runOnUiThread {
-                    Toast.makeText(requireContext(), "Failed to load last messages.", Toast.LENGTH_SHORT).show()
-                }
+                onLastMessageUpdated()
             }
         }
     }
@@ -57,6 +43,16 @@ class MessageListFragment: Fragment(R.layout.fragment_message_list) {
         }
 
         return getResult.isSucceed
+    }
+
+    private fun onLastMessageUpdated() {
+        aliveAdapter = ChatAdapter(this, lastMessages!!)
+
+        runOnUiThread {
+            message_list_recycler_view.adapter = aliveAdapter
+            message_list_recycler_view.visibility = View.VISIBLE
+            message_list_progress_bar.visibility = View.INVISIBLE
+        }
     }
 
     private fun onSearchChanged(editable: Editable?) {

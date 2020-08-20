@@ -20,13 +20,15 @@ class SignUp1Fragment : Fragment(R.layout.fragment_sign_up1) {
         initializeFocusableEditText(sign_up1_password, this::onPasswordChanged, this::onLeavePassword)
         initializeFocusableEditText(sign_up1_password_repeat, this::onPasswordRepeatChanged, this::onLeavePasswordRepeat)
 
-        sign_up1_next.setOnClickListener {
-            val arguments = Bundle()
-            arguments.putString("email", sign_up1_email.getText())
-            arguments.putString("password", sign_up1_password.getText())
+        sign_up1_next.setOnClickListener { onNextClicked() }
+    }
 
-            findNavController().navigate(R.id.action_to_sign_up2, arguments)
-        }
+    private fun onNextClicked() {
+        val arguments = Bundle()
+        arguments.putString("email", sign_up1_email.getText())
+        arguments.putString("password", sign_up1_password.getText())
+
+        findNavController().navigate(R.id.action_to_sign_up2, arguments)
     }
 
     private fun enableNextButton() {

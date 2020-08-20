@@ -26,6 +26,7 @@
 
         <activity android:name=".WebViewActivity" />
         <activity android:name=".MainActivity">
+            <nav-graph android:value="@navigation/navigation_main" />
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

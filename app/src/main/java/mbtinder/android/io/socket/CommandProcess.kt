@@ -2,6 +2,9 @@ package mbtinder.android.io.socket
 
 import mbtinder.android.io.component.ServerResult
 import mbtinder.android.io.http.ImageUploader
+import mbtinder.android.ui.fragment.account.AccountFragment
+import mbtinder.android.ui.fragment.chat.ChatFragment
+import mbtinder.android.ui.fragment.sign_up.SignUp5Fragment
 import mbtinder.lib.component.*
 import mbtinder.lib.component.card_stack.CardStackContent
 import mbtinder.lib.component.card_stack.DailyQuestionContent
@@ -9,6 +12,7 @@ import mbtinder.lib.component.user.Coordinator
 import mbtinder.lib.component.user.SearchFilter
 import mbtinder.lib.component.user.SignUpQuestionContent
 import mbtinder.lib.component.user.UserContent
+import mbtinder.lib.constant.PasswordQuestion
 import mbtinder.lib.io.component.CommandContent
 import mbtinder.lib.io.constant.Command
 import mbtinder.lib.util.*
@@ -26,7 +30,17 @@ object CommandProcess {
     }
 
     /**
-     * @see Command.ADD_USER
+     * 회원가입
+     * @param email: 이메일
+     * @param password: 암호화되지 않은 비밀번호
+     * @param name: 이름
+     * @param age: 나이
+     * @param gender: 성별
+     * @param description: 자기소개
+     * @param passwordQuestionId: 비밀번호 질문 ID [PasswordQuestion] 확인
+     * @param passwordAnswer: 비밀번호 답변
+     * @return 가입된 사용자의 ID
+     * @see SignUp5Fragment.signUp
      */
     fun signUp(email: String, password: String, name: String, age: Int, gender: Int, description: String, passwordQuestionId: Int, passwordAnswer: String): ServerResult<UUID> {
         val arguments = JSONObject()
@@ -47,6 +61,14 @@ object CommandProcess {
         }
     }
 
+    /**
+     * 사용자 프로필 이미지 등록
+     * @param userId: 사용자 ID
+     * @param rawImage: 이미지 바이트 배열
+     * @return 성공 여부
+     * @see SignUp5Fragment.signUp
+     * @see AccountFragment.onActivityResult
+     */
     fun uploadProfileImage(userId: UUID, rawImage: ByteArray): ServerResult<Void> {
         val uploader = ImageUploader(userId, rawImage, true)
         uploader.start()
@@ -59,6 +81,13 @@ object CommandProcess {
         }
     }
 
+    /**
+     * 사용자 자기소개 갱신
+     * @param userId: 사용자 ID
+     * @param description: 변경할 자기소개
+     * @return 성공 여부
+     * @see AccountFragment.onDescriptionEditClicked
+     */
     fun updateUserDescription(userId: UUID, description: String): ServerResult<Void> {
         val arguments = JSONObject()
         arguments.put("user_id", userId.toString())
@@ -69,6 +98,12 @@ object CommandProcess {
         )
     }
 
+    /**
+     * 매칭 검색 필터 갱신
+     * @param searchFilter: 변경할 검색 필터
+     * @return 반환하지 않는 명령
+     * @see AccountFragment.updateSearchFilter
+     */
     fun updateSearchFilter(searchFilter: SearchFilter) {
         SocketClient.getInstance().addCommand(CommandContent(
             UUID.randomUUID(),
@@ -77,6 +112,13 @@ object CommandProcess {
         ))
     }
 
+    /**
+     * 알림 수신 여부 갱신
+     * @param userId: 사용자 ID
+     * @param isEnabled: 일림 수신 여부
+     * @return 성공 여부
+     * @see AccountFragment.onNotificationChanged
+     */
     fun updateUserNotification(userId: UUID, isEnabled: Boolean): ServerResult<Void> {
         val arguments = JSONObject()
         arguments.put("user_id", userId.toString())
@@ -87,12 +129,26 @@ object CommandProcess {
         )
     }
 
+    /**
+     * 회원 탈퇴
+     * @param userId: 탈퇴할 사용자 ID
+     * @return 성공 여부
+     * @see AccountFragment.onDeleteClicked
+     */
     fun deleteUser(userId: UUID): ServerResult<Void> {
         return SocketUtil.getVoidResult(
             SocketUtil.getServerResult(Command.DELETE_USER, JSONObject().apply { put("user_id", userId) })
         )
     }
 
+    /**
+     * 사용자 차단
+     * @param userId: 사용자 ID
+     * @param opponentId: 차단할 상대방 ID
+     * @param chatId: 상대방과 포함된 채팅 ID
+     * @return 성공여부
+     * @see ChatFragment.onBlockClicked
+     */
     fun blockUser(userId: UUID, opponentId: UUID, chatId: UUID): ServerResult<Void> {
         val arguments = JSONObject()
         arguments.putUUID("user_id", userId)

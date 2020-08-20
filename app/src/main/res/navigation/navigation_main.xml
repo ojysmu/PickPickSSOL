@@ -24,6 +24,14 @@
             app:popUpTo="@id/nav_splash"
             app:popUpToInclusive="true"
             app:destination="@id/nav_home" />
+
+        <action
+            android:id="@+id/action_to_message_list"
+            app:destination="@id/nav_message_list" />
+
+        <action
+            android:id="@+id/action_to_chat"
+            app:destination="@id/nav_chat" />
     </fragment>
 
     <fragment

@@ -27,6 +27,11 @@ inline fun <R> runOnBackground(crossinline process: () -> R): R {
     return result!!
 }
 
+@AnyThread
+fun runEach(processes: Array<() -> Unit>) {
+    processes.forEach { runOnBackground(it) }
+}
+
 fun getStackTrace(): String {
     val stackTraceElements = Thread.currentThread().stackTrace
     val traceBuilder = StringBuilder()

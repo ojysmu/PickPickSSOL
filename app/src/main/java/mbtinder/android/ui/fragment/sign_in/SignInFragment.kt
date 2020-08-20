@@ -17,20 +17,18 @@ class SignInFragment : Fragment(R.layout.fragment_sign_in) {
     override fun initializeView() {
         initializeFocusableEditText(sign_in_email, this::onEmailChanged, this::onLeaveEmail)
         initializeFocusableEditText(sign_in_password, this::onPasswordChanged, this::onLeavePassword)
+        sign_in_forgot.setOnClickListener { findNavController().navigate(R.id.action_to_find_password) }
+        switchable_next.setOnClickListener { onNextClicked() }
+    }
 
-        sign_in_forgot.setOnClickListener {
-            findNavController().navigate(R.id.action_to_find_password)
-        }
+    private fun onNextClicked() {
+        ViewUtil.switchNextButton(layout_sign_in)
+        val email = sign_in_email.getText()
+        val password = sign_in_password.getText()
 
-        switchable_next.setOnClickListener {
+        StaticComponent.signIn(this, email, password) {
+            Toast.makeText(requireContext(), R.string.sign_in_failed, Toast.LENGTH_SHORT).show()
             ViewUtil.switchNextButton(layout_sign_in)
-            val email = sign_in_email.getText()
-            val password = sign_in_password.getText()
-
-            StaticComponent.signIn(this, email, password) {
-                Toast.makeText(requireContext(), R.string.sign_in_failed, Toast.LENGTH_SHORT).show()
-                ViewUtil.switchNextButton(layout_sign_in)
-            }
         }
     }
 

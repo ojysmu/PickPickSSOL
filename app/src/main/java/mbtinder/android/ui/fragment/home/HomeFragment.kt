@@ -36,19 +36,18 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     private var currentPosition = 0
     private val todayQuestions by lazy { getNotAnsweredQuestion(getTodayDailyQuestions()) }
 
-    private val viewMap: HashMap<Int, View> by lazy {
-        hashMapOf<Int, View>(
-            Pair(R.id.home_waiting, rootView.findViewById<ProgressBar>(R.id.home_waiting))
-        )
-    }
-
     override fun initializeView() {
         cardStackContents.clear()
 
         requireActivity().findViewById<BottomNavigationView>(R.id.nav_view).visibility = View.VISIBLE
         getCardStacks()
         getDailyQuestions()
+        initializeCardStackLayoutManager()
+        initializeCardStackView()
+        home_rewind.setOnClickListener { onRewindClicked() }
+    }
 
+    private fun initializeCardStackLayoutManager() {
         cardStackLayoutManager = CardStackLayoutManager(requireContext(), cardStackListener)
         cardStackLayoutManager.setStackFrom(StackFrom.None)
         cardStackLayoutManager.setVisibleCount(3)
@@ -61,7 +60,9 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         cardStackLayoutManager.setCanScrollVertical(false)
         cardStackLayoutManager.setSwipeableMethod(SwipeableMethod.AutomaticAndManual)
         cardStackLayoutManager.setOverlayInterpolator(LinearInterpolator())
+    }
 
+    private fun initializeCardStackView() {
         home_card_stack_view.layoutManager = cardStackLayoutManager
         home_card_stack_view.itemAnimator.apply {
             if (this is DefaultItemAnimator) {
@@ -69,10 +70,10 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             }
         }
         home_card_stack_view.adapter = cardStackAdapter
+    }
 
-        home_rewind.setOnClickListener {
-            home_card_stack_view.rewind()
-        }
+    private fun onRewindClicked() {
+        home_card_stack_view.rewind()
     }
 
     /**

@@ -9,6 +9,7 @@ import mbtinder.android.component.StaticComponent
 import mbtinder.android.util.Log
 import mbtinder.lib.component.MessageContent
 import java.util.*
+import java.util.concurrent.TimeUnit
 import kotlin.collections.ArrayList
 
 class MessageAdapter(val recyclerView: RecyclerView, private val contents: ArrayList<MessageContent>) : RecyclerView.Adapter<MessageViewHolder>() {
@@ -47,13 +48,18 @@ class MessageAdapter(val recyclerView: RecyclerView, private val contents: Array
     fun getLastIndex() = contents.size - 1
 
     private fun bindUser(holder: MessageUserViewHolder, position: Int) {
-        holder.contentTextView.text = addNewLine(contents[position].body)
+        val content = contents[position]
+        val (h, m) = getTimestamp(content.timestamp)
+        holder.contentTextView.text = addNewLine(content.body)
+        holder.timestampTextView.text = context.getString(R.string.chat_timestamp_format, h, m)
     }
 
     private fun bindOpponent(holder: MessageOpponentViewHolder, position: Int) {
         val content = contents[position]
-        holder.opponentImageView.setImage(StaticComponent.getUserImage(content.senderId))
+        val (h, m) = getTimestamp(content.timestamp)
+        StaticComponent.setUserImage(content.senderId, holder.opponentImageView)
         holder.contentTextView.text = addNewLine(content.body)
+        holder.timestampTextView.text = context.getString(R.string.chat_timestamp_format, h, m)
     }
 
     private fun addNewLine(body: String, width: Int = 20): String {
@@ -68,6 +74,12 @@ class MessageAdapter(val recyclerView: RecyclerView, private val contents: Array
 
         added.append(original)
         return added.toString()
+    }
+
+    private fun getTimestamp(timestamp: Long): Pair<Int, Int> {
+        val calendar = Calendar.getInstance()
+        calendar.timeInMillis = timestamp
+        return Pair(calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE))
     }
 
     fun getChatId() = contents[0].chatId

@@ -3,12 +3,10 @@ package mbtinder.android.ui.fragment.update_password
 import android.text.Editable
 import android.widget.Toast
 import androidx.navigation.fragment.findNavController
-import kotlinx.android.synthetic.main.fragment_sign_up4.*
 import kotlinx.android.synthetic.main.fragment_update_password.*
 import mbtinder.android.R
 import mbtinder.android.io.socket.CommandProcess
 import mbtinder.android.ui.model.Fragment
-import mbtinder.android.ui.model.ProgressFragment
 import mbtinder.android.util.*
 import java.util.*
 
@@ -16,23 +14,24 @@ class UpdatePasswordFragment : Fragment(R.layout.fragment_update_password) {
     private val formStateChecker = FormStateChecker()
 
     override fun initializeView() {
-        val userId = UUID.fromString(requireArguments().getString("user_id")!!)
-
         formStateChecker.addViews(update_password_password, update_password_password_repeat)
 
         initializeFocusableEditText(update_password_password, this::onPasswordChanged, this::onLeavePassword)
         initializeFocusableEditText(update_password_password_repeat, this::onPasswordRepeatChanged, this::onLeavePasswordRepeat)
+        switchable_next.setOnClickListener { onNextClicked() }
+    }
 
-        switchable_next.setOnClickListener {
-            ViewUtil.switchNextButton(layout_update_password)
-            runOnBackground {
-                val password = update_password_password.getText() // TODO: encrypt
-                val updateResult = CommandProcess.updatePassword(userId, password)
-                if (updateResult.isSucceed) {
-                    runOnUiThread {
-                        Toast.makeText(requireContext(), R.string.update_password_succeed, Toast.LENGTH_SHORT).show()
-                        findNavController().popBackStack()
-                    }
+    private fun onNextClicked() {
+        val userId = UUID.fromString(requireArguments().getString("user_id")!!)
+
+        ViewUtil.switchNextButton(layout_update_password)
+        runOnBackground {
+            val password = update_password_password.getText() // TODO: encrypt
+            val updateResult = CommandProcess.updatePassword(userId, password)
+            if (updateResult.isSucceed) {
+                runOnUiThread {
+                    Toast.makeText(requireContext(), R.string.update_password_succeed, Toast.LENGTH_SHORT).show()
+                    findNavController().popBackStack()
                 }
             }
         }

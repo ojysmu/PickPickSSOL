@@ -6,4 +6,5 @@ import mbtinder.android.R
 
 class MessageUserViewHolder(itemView: View) : MessageViewHolder(itemView) {
     val contentTextView: TextView = itemView.findViewById(R.id.card_chat_content)
+    val timestampTextView: TextView = itemView.findViewById(R.id.card_chat_timestamp)
 }

@@ -8,6 +8,7 @@ import mbtinder.android.io.http.ImageDownloader
 import mbtinder.android.io.http.SQLiteDownloader
 import mbtinder.android.io.socket.CommandProcess
 import mbtinder.android.ui.model.Fragment
+import mbtinder.android.ui.view.AsyncImageView
 import mbtinder.android.util.*
 import mbtinder.lib.component.user.UserContent
 import mbtinder.lib.component.user.UserImageContent
@@ -51,16 +52,14 @@ object StaticComponent {
 
     private val userImages = IDList<UserImageContent>()
 
-    fun getUserImage(userId: UUID): UserImageContent {
+    fun setUserImage(userId: UUID, imageView: AsyncImageView) {
         val found = userImages.find { it.userId == userId }
-        return if (found == null) {
+        if (found == null) {
             val newImage = UserImageContent(userId)
-            ImageDownloader(newImage).execute().get()
+            ImageDownloader(newImage, imageView).execute()
             userImages.add(newImage)
-
-            newImage
         } else {
-            found
+            imageView.setImage(found)
         }
     }
 

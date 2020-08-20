@@ -20,26 +20,32 @@ class SignUp3Fragment : Fragment(R.layout.fragment_sign_up3) {
         initializeFocusableEditText(sign_up3_age, this::onAgeChanged)
 
         sign_up3_gender_selector.addOnButtonCheckedListener { _, checkedId, isChecked ->
-            gender = if (isChecked) {
-                when (checkedId) {
-                    R.id.sign_up3_gender_male -> 0
-                    R.id.sign_up3_gender_female -> 1
-                    else -> -1
-                }
-            } else {
-                -1
+            onGenderSelected(checkedId, isChecked)
+        }
+
+        sign_up3_next.setOnClickListener { onNextClicked() }
+    }
+
+    private fun onGenderSelected(checkedId: Int, isChecked: Boolean) {
+        gender = if (isChecked) {
+            when (checkedId) {
+                R.id.sign_up3_gender_male -> 0
+                R.id.sign_up3_gender_female -> 1
+                else -> -1
             }
-            formStateChecker.setState(sign_up3_gender_selector, isChecked)
+        } else {
+            -1
         }
+        formStateChecker.setState(sign_up3_gender_selector, isChecked)
+    }
 
-        sign_up3_next.setOnClickListener {
-            val arguments = requireArguments()
-            arguments.putString("name", sign_up3_name.getText())
-            arguments.putInt("gender", gender)
-            arguments.putInt("age", sign_up3_age.getText().toInt())
+    private fun onNextClicked() {
+        val arguments = requireArguments()
+        arguments.putString("name", sign_up3_name.getText())
+        arguments.putInt("gender", gender)
+        arguments.putInt("age", sign_up3_age.getText().toInt())
 
-            findNavController().navigate(R.id.action_to_sign_up4, arguments)
-        }
+        findNavController().navigate(R.id.action_to_sign_up4, arguments)
     }
 
     private fun enableNextButton() {

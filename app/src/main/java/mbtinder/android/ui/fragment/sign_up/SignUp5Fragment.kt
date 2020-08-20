@@ -29,45 +29,54 @@ class SignUp5Fragment : Fragment(R.layout.fragment_sign_up5) {
     private var isSignInDone = false
 
     override fun initializeView() {
+        initializeMBTI()
+        initializeSignUpQuestions()
+        sign_up5_go_test.setOnClickListener { onTestClicked() }
+        switchable_next.setOnClickListener { onNextClicked() }
+    }
+
+    private fun initializeMBTI() {
         mbtiAdapter = MBTIAdapter(MBTI.toMBTIContents() as MutableList<MBTIContent>)
         sign_up5_mbti_recycler_view.layoutManager = GridLayoutManager(requireContext(), 2, HORIZONTAL, false)
         sign_up5_mbti_recycler_view.itemAnimator = DefaultItemAnimator()
         sign_up5_mbti_recycler_view.adapter = mbtiAdapter
+    }
 
+    private fun initializeSignUpQuestions() {
         signUpQuestions = CommandProcess.getSignUpQuestion().result!!
         signUpQuestionAdapter = SignUpQuestionAdapter(signUpQuestions)
         sign_up5_questions_recycler_view.layoutManager = LinearLayoutManager(requireContext())
         sign_up5_questions_recycler_view.itemAnimator = DefaultItemAnimator()
         sign_up5_questions_recycler_view.adapter = signUpQuestionAdapter
         sign_up5_questions_recycler_view.isNestedScrollingEnabled = false
+    }
 
-        sign_up5_go_test.setOnClickListener {
-            val intent = Intent(requireContext(), WebViewActivity::class.java)
-            intent.putExtra("url", URL_MBTI_TEST)
-            startActivity(intent)
+    private fun onTestClicked() {
+        val intent = Intent(requireContext(), WebViewActivity::class.java)
+        intent.putExtra("url", URL_MBTI_TEST)
+        startActivity(intent)
+    }
+
+    private fun onNextClicked() {
+        val positions = signUpQuestionAdapter.getCheckedItemPositions()
+        if (positions.contains(-1)) {
+            Toast.makeText(requireContext(), R.string.sign_up5_empty_question, Toast.LENGTH_SHORT).show()
+            return
         }
 
-        switchable_next.setOnClickListener {
-            val positions = signUpQuestionAdapter.getCheckedItemPositions()
-            if (positions.contains(-1)) {
-                Toast.makeText(requireContext(), R.string.sign_up5_empty_question, Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
+        ViewUtil.switchNextButton(layout_sign_up5)
+        runOnBackground {
+            if (isSignInDone || signUp()) {
+                isSignInDone = true
 
-            ViewUtil.switchNextButton(layout_sign_up5)
-            runOnBackground {
-                if (isSignInDone || signUp()) {
-                    isSignInDone = true
+                (0 until signUpQuestions.size).forEach { signUpQuestions[it].selected = positions[it] }
+                val mbtiResult = setMBTI()
+                val questionResult = setSignUpQuestion()
 
-                    (0 until signUpQuestions.size).forEach { signUpQuestions[it].selected = positions[it] }
-                    val mbtiResult = setMBTI()
-                    val questionResult = setSignUpQuestion()
-
-                    if (!(mbtiResult && questionResult)) {
-                        runOnUiThread {
-                            ViewUtil.switchNextButton(layout_sign_up5)
-                            Toast.makeText(requireContext(), R.string.sign_up5_failed, Toast.LENGTH_SHORT).show()
-                        }
+                if (!(mbtiResult && questionResult)) {
+                    runOnUiThread {
+                        ViewUtil.switchNextButton(layout_sign_up5)
+                        Toast.makeText(requireContext(), R.string.sign_up5_failed, Toast.LENGTH_SHORT).show()
                     }
                 }
             }

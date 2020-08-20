@@ -428,8 +428,8 @@ object CommandProcess {
 
     /**
      * 카드스택 내용 불러오기
-     * @param command: 인수는 다음을 포함해야함: 사용자 ID
-     * @return 전체 사용자 중 자신, 이미 노출된 적 있는 사용자, 매장 점수가 30점 미만인 사용자, 프로필 사진이 없는 사용자를 제외한 모든 사용자
+     * @param command: 인수는 다음을 포함해야함: 사용자 ID, 사용자 좌표, 사용자 검색 필터
+     * @return 전체 사용자 중 자신, 이미 노출된 적 있는 사용자, 매장 점수가 30점 미만인 사용자를 제외한 모든 사용자
      */
     private fun getMatchableUsers(command: CommandContent): JSONObject {
         // 탐색을 시도하는 사용자 ID
@@ -464,6 +464,12 @@ object CommandProcess {
         )
     }
 
+    /**
+     * 매칭가능한 사용자 목록 갱신
+     * @see getMatchableUsers
+     * @param command: 인수는 다음을 포함해야함: 사용자 ID, 사용자 좌표, 사용자 검색필터, 현재 클라이언트 목록에 존재하는 사용자 목록
+     * @return 전체 사용자 중 자신, 이미 노출된 적 있는 사용자, 매장 점수가 30점 미만인 사용자를 제외한 모든 사용자
+     */
     private fun refreshMatchableUsers(command: CommandContent): JSONObject {
         val userId = command.arguments.getUUID("user_id")
         val userCoordinator = Coordinator(command.arguments.getJSONObject("coordinator"))
@@ -485,6 +491,11 @@ object CommandProcess {
         )
     }
 
+    /**
+     * 일일 질문 탐색
+     * @param command: 인수는 다음을 포함해야함: 사용자 로컬에 저장된 질문의 마지막 날짜
+     * @return 사용자 로컬에 저장된 마지막 질문 이후의 질문 목록
+     */
     private fun getDailyQuestions(command: CommandContent): JSONObject {
         val lastDate = command.arguments.getDate("last_date")
         val sql = "SELECT * FROM `daily_questions` WHERE date > str_to_date('$lastDate', '%Y-%m-%d')"
@@ -495,6 +506,11 @@ object CommandProcess {
         return Connection.makePositiveResponse(command.uuid, JSONObject().apply { put("daily_questions", questions) })
     }
 
+    /**
+     * 질문이 답변된 적 있는지 확인
+     * @param command: 인수는 다음을 포함해야함: 사용자 ID, 답변 여부를 확인할 질문 ID
+     * @return 답변 여부
+     */
     private fun isAnsweredQuestion(command: CommandContent): JSONObject {
         val userId = command.arguments.getUUID("user_id")
         val questionId = command.arguments.getUUID("question_id")
@@ -510,6 +526,10 @@ object CommandProcess {
         )
     }
 
+    /**
+     * 일일 질문을 답변
+     * @param command: 인수는 다음을 포함해야함: 사용자 ID, 답변할 질문 ID, 답변
+     */
     private fun answerQuestion(command: CommandContent): JSONObject {
         val userId = command.arguments.getUUID("user_id")
         val questionId = command.arguments.getUUID("question_id")
@@ -610,6 +630,9 @@ object CommandProcess {
         return Connection.makePositiveResponse(command.uuid, JSONObject().apply { put("chat_id", chatId.toString()) })
     }
 
+    /**
+     * 채팅 삭제. 사용되지 않음.
+     */
     private fun deleteChat(command: CommandContent): JSONObject {
         val chatContent = ChatContent(command.arguments.getJSONObject("chat_content"))
         val dropSql = "DROP TABLE ${chatContent.chatId}"
@@ -622,6 +645,11 @@ object CommandProcess {
         return Connection.makePositiveResponse(command.uuid)
     }
 
+    /**
+     * 메시지 목록 요청
+     * @param command: 인수는 다음을 포함해야함: 사용자 ID, 채팅 ID
+     * @return 최신 20개의 메시지
+     */
     private fun getMessages(command: CommandContent): JSONObject {
         val userId = UUID.fromString(command.arguments.getString("user_id"))
         val chatId = UUID.fromString(command.arguments.getString("chat_id"))
@@ -645,13 +673,18 @@ object CommandProcess {
         return Connection.makePositiveResponse(command.uuid, JSONObject().apply { put("messages", result) })
     }
 
+    /**
+     * 메시지 갱신
+     * @param command: 인수는 다음을 포함해야함: 사용자 ID, 채팅 ID, 최신 메시지의 시간
+     * @return last_timestamp 이후의 모든 메시지
+     */
     private fun refreshMessages(command: CommandContent): JSONObject {
         val userId = UUID.fromString(command.arguments.getString("user_id"))
         val chatId = UUID.fromString(command.arguments.getString("chat_id"))
         val lastTimestamp = command.arguments.getLong("last_timestamp")
 
         val sqlConnection = SQLiteConnection.getConnection(userId)
-        val sql = "SELECT * from '$chatId' where timestamp > $lastTimestamp"
+        val sql = "SELECT * from '$chatId' where timestamp < $lastTimestamp"
         val queryResult = sqlConnection.getResult(sqlConnection.addQuery(sql))
         val result = queryResult.content
             .map { MessageUtil.buildMessage(it, chatId, userId) }
@@ -661,6 +694,11 @@ object CommandProcess {
         return Connection.makePositiveResponse(command.uuid, JSONObject().apply { put("messages", result) })
     }
 
+    /**
+     * MessageListFragment에 표시될 마지막 메시지의 목록 갱신
+     * @param command: 인수는 다음을 포함해야함: 사용자 ID
+     * @return 모든 채팅의 마지막 메시지
+     */
     private fun getLastMessages(command: CommandContent): JSONObject {
         val userId = UUID.fromString(command.arguments.getString("user_id"))
 
@@ -676,6 +714,10 @@ object CommandProcess {
         return Connection.makePositiveResponse(command.uuid, JSONObject().apply { put("messages", lastMessages.toJSONArray()) })
     }
 
+    /**
+     * 메시지 전송, 알림 발송
+     * @param command: 인수는 다음을 포함해야함: 채팅 ID, 송신자 ID, 수신자 ID, 상대방 이름, 채팅 내용
+     */
     private fun sendMessage(command: CommandContent): JSONObject {
         val timestamp = System.currentTimeMillis()
         val chatId = UUID.fromString(command.arguments.getString("chat_id"))

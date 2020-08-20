@@ -6,6 +6,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.graphics.BitmapFactory
 import android.os.Build
+import android.os.Bundle
 import androidx.annotation.DrawableRes
 import androidx.core.app.NotificationCompat
 import androidx.navigation.fragment.findNavController
@@ -13,6 +14,7 @@ import mbtinder.android.R
 import mbtinder.android.component.NotificationContent.Companion.makeNotification
 import mbtinder.android.ui.fragment.chat.ChatFragment
 import mbtinder.android.ui.fragment.message_list.MessageListFragment
+import mbtinder.android.util.putUUID
 import mbtinder.android.util.runOnUiThread
 import mbtinder.lib.component.IDContent
 import mbtinder.lib.component.MessageContent
@@ -23,32 +25,49 @@ import org.json.JSONObject
 
 val notifications = idListOf(
     NotificationContent(Notification.MATCHED) { context, title, content, _ ->
+//        val pendingIntent = NavDeepLinkBuilder(context)
+//            .setGraph(R.navigation.navigation_main)
+//            .setDestination(R.id.action_to_message_list)
+//            .createPendingIntent()
+
         val builder = makeNotification(
-            context,
-            R.mipmap.ic_launcher,
-            title,
-            content,
-            NotificationCompat.PRIORITY_HIGH,
-            null,
-            true,
-            NotificationManager.IMPORTANCE_HIGH
+            context = context,
+            icon = R.mipmap.ic_launcher,
+            title = title,
+            content = content,
+            priority = NotificationCompat.PRIORITY_HIGH,
+//            contentIntent = pendingIntent,
+            contentIntent = null,
+            autoCancel = true,
+            importance = NotificationManager.IMPORTANCE_HIGH
         )
         (context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).notify(0, builder.build())
     },
     NotificationContent(Notification.MESSAGE_RECEIVED) { context, title, content, extra ->
+        val arguments = Bundle()
+        arguments.putUUID("chat_id", extra!!.getUUID("chat_id"))
+
         runOnUiThread {
-            val messageContent = MessageContent(extra!!)
+//            val pendingIntent = NavDeepLinkBuilder(context.applicationContext)
+//                .setComponentName(MainActivity::class.java)
+//                .setArguments(arguments)
+//                .setDestination(R.id.action_to_home)
+//                .setGraph(R.navigation.navigation_main)
+//                .createPendingIntent()
+
+            val messageContent = MessageContent(extra)
             // 현재 채팅방이 실행중일 경우 알림을 보내지 않음
             if (ChatFragment.addMessage(messageContent)) {
                 val builder = makeNotification(
-                    context,
-                    R.mipmap.ic_launcher,
-                    title,
-                    content,
-                    NotificationCompat.PRIORITY_HIGH,
-                    null,
-                    true,
-                    NotificationManager.IMPORTANCE_HIGH
+                    context = context,
+                    icon = R.mipmap.ic_launcher,
+                    title = title,
+                    content = content,
+                    priority = NotificationCompat.PRIORITY_HIGH,
+//                    contentIntent = pendingIntent,
+                    contentIntent = null,
+                    autoCancel = true,
+                    importance = NotificationManager.IMPORTANCE_HIGH
                 )
                 (context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).notify(0, builder.build())
             }

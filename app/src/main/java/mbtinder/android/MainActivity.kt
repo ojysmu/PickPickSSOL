@@ -2,6 +2,7 @@ package mbtinder.android
 
 import android.content.Intent
 import android.os.Bundle
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -13,6 +14,7 @@ import mbtinder.android.util.LocationUtil
 import mbtinder.android.util.Log
 import mbtinder.android.util.runOnBackground
 import mbtinder.lib.component.user.Coordinator
+import mbtinder.lib.constant.Notification
 import mbtinder.lib.constant.ServerPath
 import java.io.IOException
 import java.lang.RuntimeException

@@ -5,6 +5,9 @@ import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatImageView
 import mbtinder.android.io.http.ImageDownloader
 import mbtinder.android.util.ImageUtil
+import mbtinder.android.util.Log
+import mbtinder.android.util.runOnBackground
+import mbtinder.android.util.runOnUiThread
 import mbtinder.lib.component.ImageComponent
 
 class AsyncImageView: AppCompatImageView {
@@ -14,12 +17,9 @@ class AsyncImageView: AppCompatImageView {
 
     constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int): super(context, attrs, defStyleAttr)
 
-    fun setImageFromServer(imageComponent: ImageComponent) {
-        val result = ImageDownloader(imageComponent).execute().get()
-        result?.let {
-            setImageBitmap(ImageUtil.byteArrayToBitmap(result))
-            imageComponent.setImage(result)
-        }
+    private fun setImageFromServer(imageComponent: ImageComponent) {
+        ImageDownloader(imageComponent, this).execute()
+//        ImageDownloader(imageComponent, this).start()
     }
 
     fun setImage(imageComponent: ImageComponent) {

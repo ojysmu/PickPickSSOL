@@ -19,12 +19,10 @@ class AccountFragment : Fragment(R.layout.fragment_account) {
     private val resultCodeAlbum = 0x00
 
     override fun initializeView() {
-        account_profile.setImage(StaticComponent.getUserImage(StaticComponent.user.userId))
+        StaticComponent.setUserImage(StaticComponent.user.userId, account_profile)
         account_name.text = getString(R.string.account_name_format, StaticComponent.user.name, StaticComponent.user.age)
         account_description.editText!!.setText(StaticComponent.user.description)
         account_gender_selector.check(genderToId(StaticComponent.user.searchFilter.gender))
-//        account_age_selector.valueFrom = StaticComponent.user.searchFilter.ageStart.toFloat()
-//        account_age_selector.valueTo = StaticComponent.user.searchFilter.ageEnd.toFloat()
         account_age_selector.values = listOf(StaticComponent.user.searchFilter.ageStart.toFloat(), StaticComponent.user.searchFilter.ageEnd.toFloat())
         account_age_indicator.text = getString(R.string.account_age_indicator, account_age_selector.getStart(), account_age_selector.getEnd())
         account_distance_selector.value = StaticComponent.user.searchFilter.distance.toFloat()
@@ -35,65 +33,19 @@ class AccountFragment : Fragment(R.layout.fragment_account) {
             requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), requestCodeReadExternalStorage)
         }
 
-        account_description_edit.setOnClickListener {
-            val description = account_description.getText()
+        account_description_edit.setOnClickListener { onDescriptionEditClicked() }
 
-            if (description.isBlank()) {
-                account_description.error = getString(R.string.account_description_error)
-                account_description.isErrorEnabled = true
-            } else {
-                hideIme()
-                account_description.isErrorEnabled = false
-                account_description.clearFocus()
-                runOnBackground { CommandProcess.updateUserDescription(StaticComponent.user.userId, description) }
-            }
-        }
-
-        account_gender_selector.addOnButtonCheckedListener { _, checkedId, _ ->
-            StaticComponent.user.gender = idToGender(checkedId)
-            updateSearchFilter()
-        }
+        account_gender_selector.addOnButtonCheckedListener { _, checkedId, _ -> onGenderChanged(checkedId) }
 
         account_age_selector.addOnChangeListener { _, _, _ -> updateSearchFilter() }
 
         account_distance_selector.addOnChangeListener { _, _, _ -> updateSearchFilter() }
 
-        account_notification_selector.setOnCheckedChangeListener { _, isChecked ->
-            runOnBackground { CommandProcess.updateUserNotification(StaticComponent.user.userId, isChecked) }
-        }
+        account_notification_selector.setOnCheckedChangeListener { _, isChecked -> onNotificationChanged(isChecked) }
 
-        account_delete_user.setOnClickListener {
-            DialogFactory.getContentedDialog(requireContext(), R.string.account_delete_user_alert, onPositive = {
-                val waitDialog = DialogFactory.getWaitDialog(requireContext()).apply { show() }
-                val deleteResult = runOnBackground<Boolean> {
-                    CommandProcess.deleteUser(StaticComponent.user.userId).isSucceed
-                }
+        account_delete_user.setOnClickListener { onDeleteClicked() }
 
-                if (deleteResult) {
-                    SharedPreferencesUtil
-                        .getContext(requireContext(), SharedPreferencesUtil.PREF_ACCOUNT)
-                        .removePreference()
-                    waitDialog.dismiss()
-                    Toast.makeText(requireActivity(), R.string.account_delete_succeed, Toast.LENGTH_SHORT).show()
-                    requireActivity().finish()
-                } else {
-                    waitDialog.dismiss()
-                    Toast.makeText(requireContext(), R.string.account_delete_failed, Toast.LENGTH_SHORT).show()
-                }
-            }).show()
-        }
-
-        account_sign_out.setOnClickListener {
-            DialogFactory.getContentedDialog(requireContext(), R.string.account_sign_out_alert, onPositive = {
-                val waitDialog = DialogFactory.getWaitDialog(requireContext()).apply { show() }
-                SharedPreferencesUtil
-                    .getContext(requireContext(), SharedPreferencesUtil.PREF_ACCOUNT)
-                    .removePreference()
-                waitDialog.dismiss()
-                Toast.makeText(requireActivity(), R.string.account_sign_out_succeed, Toast.LENGTH_SHORT).show()
-                requireActivity().finish()
-            }).show()
-        }
+        account_sign_out.setOnClickListener { onSignOutClicked() }
     }
 
     @IdRes
@@ -118,6 +70,62 @@ class AccountFragment : Fragment(R.layout.fragment_account) {
         account_age_indicator.text = getString(R.string.account_age_indicator, built.ageStart, built.ageEnd)
         account_distance_indicator.text = getString(R.string.account_distance_indicator, built.distance)
         StaticComponent.user.searchFilter = built
+    }
+
+    private fun onDeleteClicked() {
+        DialogFactory.getContentedDialog(requireContext(), R.string.account_delete_user_alert, onPositive = {
+            val waitDialog = DialogFactory.getWaitDialog(requireContext()).apply { show() }
+            val deleteResult = runOnBackground<Boolean> {
+                CommandProcess.deleteUser(StaticComponent.user.userId).isSucceed
+            }
+
+            if (deleteResult) {
+                SharedPreferencesUtil
+                    .getContext(requireContext(), SharedPreferencesUtil.PREF_ACCOUNT)
+                    .removePreference()
+                waitDialog.dismiss()
+                Toast.makeText(requireActivity(), R.string.account_delete_succeed, Toast.LENGTH_SHORT).show()
+                requireActivity().finish()
+            } else {
+                waitDialog.dismiss()
+                Toast.makeText(requireContext(), R.string.account_delete_failed, Toast.LENGTH_SHORT).show()
+            }
+        }).show()
+    }
+
+    private fun onSignOutClicked() {
+        DialogFactory.getContentedDialog(requireContext(), R.string.account_sign_out_alert, onPositive = {
+            val waitDialog = DialogFactory.getWaitDialog(requireContext()).apply { show() }
+            SharedPreferencesUtil
+                .getContext(requireContext(), SharedPreferencesUtil.PREF_ACCOUNT)
+                .removePreference()
+            waitDialog.dismiss()
+            Toast.makeText(requireActivity(), R.string.account_sign_out_succeed, Toast.LENGTH_SHORT).show()
+            requireActivity().finish()
+        }).show()
+    }
+
+    private fun onNotificationChanged(isChecked: Boolean) {
+        runOnBackground { CommandProcess.updateUserNotification(StaticComponent.user.userId, isChecked) }
+    }
+
+    private fun onGenderChanged(@IdRes genderId: Int) {
+        StaticComponent.user.searchFilter.gender = idToGender(genderId)
+        updateSearchFilter()
+    }
+
+    private fun onDescriptionEditClicked() {
+        val description = account_description.getText()
+
+        if (description.isBlank()) {
+            account_description.error = getString(R.string.account_description_error)
+            account_description.isErrorEnabled = true
+        } else {
+            hideIme()
+            account_description.isErrorEnabled = false
+            account_description.clearFocus()
+            runOnBackground { CommandProcess.updateUserDescription(StaticComponent.user.userId, description) }
+        }
     }
 
     private fun buildSearchFilter() = SearchFilter(

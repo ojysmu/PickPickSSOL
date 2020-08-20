@@ -16,32 +16,37 @@ import mbtinder.lib.constant.PasswordQuestion
 
 class FindPasswordFragment : Fragment(R.layout.fragment_find_password) {
     private val formStateChecker by lazy { FormStateChecker(find_password_email, find_password_answer) }
+    private val questionSelector by lazy { find_password_question_selector.findViewById<Spinner>(R.id.spinner) }
 
     override fun initializeView() {
-        val questionSelector = find_password_question_selector.findViewById<Spinner>(R.id.spinner)
-
         initializeFocusableEditText(find_password_email, this::onEmailChanged, this::onLeaveEmail)
         initializeFocusableEditText(find_password_answer, this::onAnswerChanged)
 
-        questionSelector.adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, PasswordQuestion.values().map { it.question })
+        questionSelector.adapter = ArrayAdapter(
+            requireContext(),
+            android.R.layout.simple_dropdown_item_1line,
+            PasswordQuestion.values().map { it.question }
+        )
 
-        switchable_next.setOnClickListener {
-            ViewUtil.switchNextButton(layout_find_password)
-            val email = find_password_email.getText()
-            val questionId = PasswordQuestion.findQuestion(questionSelector.selectedItem as String)!!.questionId
-            val answer = find_password_answer.getText()
+        switchable_next.setOnClickListener { onNextClicked() }
+    }
 
-            runOnBackground {
-                val findResult = CommandProcess.findPassword(email, questionId, answer)
+    private fun onNextClicked() {
+        ViewUtil.switchNextButton(layout_find_password)
+        val email = find_password_email.getText()
+        val questionId = PasswordQuestion.findQuestion(questionSelector.selectedItem as String)!!.questionId
+        val answer = find_password_answer.getText()
 
-                if (findResult.isSucceed) {
-                    val bundle = Bundle().apply { putString("user_id", findResult.result!!.toString()) }
-                    runOnUiThread { findNavController().navigate(R.id.action_to_update_password, bundle) }
-                } else {
-                    runOnUiThread {
-                        ViewUtil.switchNextButton(layout_find_password)
-                        Toast.makeText(requireContext(), R.string.find_password_failed, Toast.LENGTH_SHORT).show()
-                    }
+        runOnBackground {
+            val findResult = CommandProcess.findPassword(email, questionId, answer)
+
+            if (findResult.isSucceed) {
+                val bundle = Bundle().apply { putString("user_id", findResult.result!!.toString()) }
+                runOnUiThread { findNavController().navigate(R.id.action_to_update_password, bundle) }
+            } else {
+                runOnUiThread {
+                    ViewUtil.switchNextButton(layout_find_password)
+                    Toast.makeText(requireContext(), R.string.find_password_failed, Toast.LENGTH_SHORT).show()
                 }
             }
         }

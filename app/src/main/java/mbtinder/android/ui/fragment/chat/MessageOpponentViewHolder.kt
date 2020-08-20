@@ -8,4 +8,5 @@ import mbtinder.android.ui.view.AsyncImageView
 class MessageOpponentViewHolder(itemView: View) : MessageViewHolder(itemView) {
     val opponentImageView: AsyncImageView = itemView.findViewById(R.id.card_chat_opponent_image)
     val contentTextView: TextView = itemView.findViewById(R.id.card_chat_content)
+    val timestampTextView: TextView = itemView.findViewById(R.id.card_chat_timestamp)
 }

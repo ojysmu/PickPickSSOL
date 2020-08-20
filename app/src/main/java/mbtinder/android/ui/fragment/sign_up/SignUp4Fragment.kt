@@ -26,21 +26,21 @@ class SignUp4Fragment : Fragment(R.layout.fragment_sign_up4) {
         initializeFocusableEditText(sign_up4_description, this::onDescriptionChanged)
 
         sign_up4_profile.clipToOutline = true
-        sign_up4_profile.setOnClickListener {
-            requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), requestCodeReadExternalStorage)
-        }
+        sign_up4_profile.setOnClickListener { onProfileClicked() }
+        sign_up4_profile_select.setOnClickListener { onProfileClicked() }
+        sign_up4_next.setOnClickListener { onNextClicked() }
+    }
 
-        sign_up4_profile_select.setOnClickListener {
-            requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), requestCodeReadExternalStorage)
-        }
+    private fun onProfileClicked() {
+        requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), requestCodeReadExternalStorage)
+    }
 
-        sign_up4_next.setOnClickListener {
-            val arguments = requireArguments()
-            arguments.putByteArray("profile", selectedProfileImage)
-            arguments.putString("description", sign_up4_description.getText())
+    private fun onNextClicked() {
+        val arguments = requireArguments()
+        arguments.putByteArray("profile", selectedProfileImage)
+        arguments.putString("description", sign_up4_description.getText())
 
-            findNavController().navigate(R.id.action_to_sign_up5, arguments)
-        }
+        findNavController().navigate(R.id.action_to_sign_up5, arguments)
     }
 
     private fun enableNextButton() {

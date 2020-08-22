@@ -66,13 +66,12 @@ class SQLiteConnection private constructor(val userId: UUID): CloseableThread(),
                 alive += intervalInMillis.toInt()
             } else {
                 alive = 0
-                val query = sync(queries) { it.removeAt(0) }
+                val query = queries.removeAt(0)
 
                 if (query.needResult) {
                     try {
                         val resultSet = statement.executeQuery(query.sql)
-                        val queryResult =
-                            QueryResult(query, resultSet)
+                        val queryResult = QueryResult(query, resultSet)
                         resultSet.close()
                         results.add(queryResult)
                     } catch (e: SQLException) {
@@ -101,7 +100,7 @@ class SQLiteConnection private constructor(val userId: UUID): CloseableThread(),
     fun getResult(queryId: UUID): QueryResult {
         block(results, intervalInMillis) { !it.contains(queryId) }
 
-        return sync(results) { it.remove(queryId) }
+        return results.remove(queryId)
     }
 
     override fun close() {

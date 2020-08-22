@@ -116,8 +116,6 @@ object CommandProcess {
         userRootDirectory.mkdir()
         Runtime.getRuntime().exec("sudo chmod -R 0777 $userRoot")
 
-        JSONArray().saveJSONArray(LocalFile.getUserInterestPath(userId))
-
         val sqLiteConnection = SQLiteConnection.getConnection(userId)
         run {
             // 채팅 목록 테이블 생성

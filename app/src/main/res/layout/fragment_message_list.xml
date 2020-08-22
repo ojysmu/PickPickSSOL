@@ -21,6 +21,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/activity_horizontal_margin"
         android:src="@drawable/baseline_search_black_36"
+        app:tint="@color/colorPrimary"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/message_list_search"
         app:layout_constraintBottom_toBottomOf="@id/message_list_search"/>
@@ -33,6 +34,7 @@
         android:layout_marginEnd="@dimen/activity_horizontal_margin"
         android:layout_marginStart="@dimen/card_horizontal_margin"
         android:paddingHorizontal="@dimen/card_horizontal_margin"
+        android:focusedByDefault="false"
         app:layout_constraintTop_toBottomOf="@id/message_list_title"
         app:layout_constraintStart_toEndOf="@id/message_list_search_icon"
         app:layout_constraintEnd_toEndOf="parent" />

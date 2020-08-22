@@ -92,13 +92,12 @@ class MySQLServer private constructor(url: String, database: String, id: String,
             if (queries.isEmpty()) {
                 sleep()
             } else {
-                val query = sync(queries) { it.removeAt(0) }
+                val query = queries.removeAt(0)
 
                 if (query.needResult) {
                     try {
                         val resultSet = statement.executeQuery(query.sql)
-                        val queryResult =
-                            QueryResult(query, resultSet)
+                        val queryResult = QueryResult(query, resultSet)
                         resultSet.close()
                         results.add(queryResult)
                     } catch (e: SQLException) {
@@ -140,6 +139,6 @@ class MySQLServer private constructor(url: String, database: String, id: String,
     fun getResult(queryId: UUID): QueryResult {
         block(results, intervalInMillis) { !it.contains(queryId) }
 
-        return sync(results) { it.remove(queryId) }
+        return results.remove(queryId)
     }
 }

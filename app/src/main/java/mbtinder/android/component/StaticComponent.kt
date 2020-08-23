@@ -31,7 +31,7 @@ object StaticComponent {
                 val sqlitePath = fragment.requireContext().filesDir.toString()
                 SQLiteDownloader(user.userId, sqlitePath).execute().get()
                 Log.v("StaticComponent.signIn() 1")
-                SQLiteConnection.createInstance(sqlitePath).start()
+                SQLiteConnection.createInstance(sqlitePath, true).start()
                 Log.v("StaticComponent.signIn() 2")
 
                 if (LocationUtil.checkLocationPermission(fragment.requireContext())) {

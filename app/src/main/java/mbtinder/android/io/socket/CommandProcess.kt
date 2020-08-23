@@ -308,10 +308,12 @@ object CommandProcess {
         }
     }
 
-    fun createChat(userId: UUID, opponentId: UUID): ServerResult<Void> {
+    fun createChat(userId: UUID, userName: String, opponentId: UUID, opponentName: String): ServerResult<Void> {
         val arguments = JSONObject()
         arguments.put("sender_id", userId.toString())
+        arguments.put("sender_name", userName)
         arguments.put("receiver_id", opponentId.toString())
+        arguments.put("receiver_name", opponentName)
 
         val result = SocketUtil.getServerResult(Command.CREATE_CHAT, arguments)
         if (result.getBoolean("result")) {

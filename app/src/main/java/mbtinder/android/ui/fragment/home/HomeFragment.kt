@@ -276,7 +276,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         private fun onCardContentSwiped(direction: Direction?, currentPosition: Int) {
             runOnBackground {
                 // pick nope 여부 서버 업데이트
-                val opponentId = cardStackAdapter.getUserId(currentPosition)
+                val (opponentId, opponentName) = cardStackAdapter.getUserInfo(currentPosition)
                 val isPicked = CommandProcess.pick(
                     userId = StaticComponent.user.userId,
                     opponentId = opponentId,
@@ -285,7 +285,12 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
                 // 서로 pick했을 때 서버에 채팅 생성 요청
                 if (isPicked) {
-                    CommandProcess.createChat(StaticComponent.user.userId, opponentId)
+                    CommandProcess.createChat(
+                        userId = StaticComponent.user.userId,
+                        userName = StaticComponent.user.name,
+                        opponentId = opponentId,
+                        opponentName = opponentName
+                    )
                 }
 
                 // nope된 사용자는 pool에 추가 FIXME

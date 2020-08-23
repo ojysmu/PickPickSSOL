@@ -2,7 +2,6 @@ package mbtinder.android.io.socket
 
 import android.content.Context
 import mbtinder.android.component.CommandResult
-import mbtinder.android.component.notifications
 import mbtinder.android.util.Log
 import mbtinder.lib.util.CloseableThread
 import org.json.JSONException

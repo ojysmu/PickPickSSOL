@@ -524,8 +524,8 @@ object CommandProcess {
         val receiverChatContent = ChatContent(chatId, senderId, senderName)
         val receiverFirstMessage = MessageContent(chatId, senderId, receiverId, senderName, timestamp, "매칭되었습니다")
 
-        val senderConnection = SQLiteConnection.getConnection(receiverChatContent.chatId)
-        val receiverConnection = SQLiteConnection.getConnection(senderChatContent.chatId)
+        val senderConnection = SQLiteConnection.getConnection(senderId)
+        val receiverConnection = SQLiteConnection.getConnection(receiverId)
 
         // 사용자 채팅방 생성
         senderConnection.addQuery(senderChatContent.getCreateSql())

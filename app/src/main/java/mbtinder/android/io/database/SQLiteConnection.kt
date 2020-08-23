@@ -22,10 +22,11 @@ class SQLiteConnection private constructor(filesDir: String): CloseableThread() 
             return instance!!
         }
 
-        fun createInstance(filesDir: String): SQLiteConnection {
-            if (instance == null) {
-                instance = SQLiteConnection(filesDir)
+        fun createInstance(filesDir: String, isFirst: Boolean): SQLiteConnection {
+            if (isFirst && instance != null) {
+                instance = null
             }
+            instance = SQLiteConnection(filesDir)
 
             return instance!!
         }

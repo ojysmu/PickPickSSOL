@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import mbtinder.android.R
 import mbtinder.lib.component.card_stack.CardStackContent
 import mbtinder.lib.component.card_stack.DailyQuestionContent
+import java.util.*
 
 class CardStackAdapter(private val fragment: HomeFragment): RecyclerView.Adapter<BaseCardStackViewHolder>() {
     val cardStackViewHolders = arrayListOf<CardStackViewHolder?>()
@@ -74,6 +75,11 @@ class CardStackAdapter(private val fragment: HomeFragment): RecyclerView.Adapter
     fun getLeftContents(currentPosition: Int) = itemCount - currentPosition
 
     fun getUserId(position: Int) = (HomeFragment.cardStackContents[position] as CardStackContent).userId
+
+    fun getUserInfo(position: Int): Pair<UUID, String> {
+        val cardStackContent = HomeFragment.cardStackContents[position] as CardStackContent
+        return Pair(cardStackContent.userId, cardStackContent.userName)
+    }
 
     fun removeAt(position: Int) {
         HomeFragment.cardStackContents.removeAt(position)

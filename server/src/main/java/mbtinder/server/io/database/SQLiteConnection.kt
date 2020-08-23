@@ -1,14 +1,13 @@
 package mbtinder.server.io.database
 
-import mbtinder.lib.component.ChatContent
 import mbtinder.lib.component.IDContent
+import mbtinder.lib.component.database.Query
+import mbtinder.lib.component.database.QueryResult
 import mbtinder.lib.util.CloseableThread
 import mbtinder.lib.util.IDList
 import mbtinder.lib.util.block
 import mbtinder.lib.util.sync
 import mbtinder.server.constant.LocalFile
-import mbtinder.lib.component.database.Query
-import mbtinder.lib.component.database.QueryResult
 import java.sql.DriverManager
 import java.sql.SQLException
 import java.sql.Statement
@@ -16,8 +15,6 @@ import java.util.*
 
 class SQLiteConnection private constructor(val userId: UUID): CloseableThread(), IDContent {
     companion object {
-        const val SELECT_MESSAGE_LIMIT = 20
-
         val dbHeader = "jdbc:sqlite:${LocalFile.userRoot}"
 
         private val connections = IDList<SQLiteConnection>()
@@ -26,19 +23,6 @@ class SQLiteConnection private constructor(val userId: UUID): CloseableThread(),
             connections.find { it.userId == userId } ?:
                     SQLiteConnection(userId).apply { connections.add(this); start() }
         }
-
-        fun getCreateChatSql(chatId: UUID) = "CREATE TABLE '$chatId' (" +
-                "_id         INTEGER PRIMARY KEY AUTOINCREMENT , " +
-                "sender_id   CHAR(36) NOT NULL , " +
-                "receiver_id CHAR(36) NOT NULL , " +
-                "timestamp   BIGINT NOT NULL , " +
-                "body        VARCHAR(200) NOT NULL)"
-
-        fun getInsertNewChatSql(chatContent: ChatContent) =
-            "INSERT INTO chat (" +
-                    "chat_id, receiver_id, receiver_name) VALUES (" +
-                    "'${chatContent.chatId}', '${chatContent.opponentId}', '${chatContent.opponentName}')"
-
     }
 
     private val statement: Statement

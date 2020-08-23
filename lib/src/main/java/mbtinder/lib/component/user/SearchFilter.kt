@@ -51,7 +51,7 @@ class SearchFilter: JSONParsable, IDContent {
         // 모두 또는 해당하는 성별
         (gender == 2 || gender == cardStackContent.gender)
                 // 최소 나이 이상인지
-                && ageStart <= cardStackContent.age
+                && ageStart <= cardStackContent.age // FIXME
                 // 최대 나이 이하인지
                 && ageEnd >= cardStackContent.age
                 // 설정한 거리 이내인지

@@ -84,6 +84,11 @@ class MySQLServer private constructor(url: String, database: String, id: String,
      */
     private val results = IDList<QueryResult>()
 
+    /**
+     * 주기적으로 validation query를 전송하기 위한 sleep counter
+     */
+    private var sleepCounter: Long = 0L
+
     init {
         val connection = getConnection(url, database, id, password)
         statement = connection.createStatement()
@@ -91,7 +96,14 @@ class MySQLServer private constructor(url: String, database: String, id: String,
         loop = {
             if (queries.isEmpty()) {
                 sleep()
+                sleepCounter += intervalInMillis
+
+                if (sleepCounter > 20000000L) {
+                    validateQuery()
+                    sleepCounter = 0L
+                }
             } else {
+                sleepCounter = 0L
                 val query = queries.removeAt(0)
 
                 if (query.needResult) {
@@ -140,5 +152,12 @@ class MySQLServer private constructor(url: String, database: String, id: String,
         block(results, intervalInMillis) { !it.contains(queryId) }
 
         return results.remove(queryId)
+    }
+
+    /**
+     * 8시간 이상 쿼리가 없었을 때 Connection이 종료되는 현상 개선을 위한 임시 쿼리
+     */
+    private fun validateQuery() {
+        getResult(addQuery("select 1"))
     }
 }

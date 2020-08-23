@@ -11,7 +11,17 @@ class IDList<E: IDContent>: ArrayList<E>, IDContent {
 
     constructor(collection: Collection<E>): super(collection)
 
-    fun indexOf(uuid: UUID) = (0 until size).firstOrNull { get(it).getUUID() == uuid } ?: -1
+    fun indexOf(uuid: UUID): Int {
+        return sync(this) {
+            for (element in withIndex()) {
+                if (element.value.getUUID() == uuid) {
+                    return@sync element.index
+                }
+            }
+
+            return@sync -1
+        }
+    }
 
     operator fun get(uuid: UUID) = super.get(indexOf(uuid))
 

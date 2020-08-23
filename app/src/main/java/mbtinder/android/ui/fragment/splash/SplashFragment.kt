@@ -11,7 +11,6 @@ import mbtinder.android.component.StaticComponent
 import mbtinder.android.io.socket.CommandProcess
 import mbtinder.android.ui.model.Fragment
 import mbtinder.android.util.*
-import mbtinder.lib.util.ifValue
 
 class SplashFragment : Fragment(R.layout.fragment_splash) {
     override fun initializeView() {
@@ -30,21 +29,25 @@ class SplashFragment : Fragment(R.layout.fragment_splash) {
 
     private fun loadAnimation() {
         Thread.sleep(1000)
-        val animationDuration = ifValue(isAnimated, 0L, 500L)
+        val animationDuration = 500L
 
         runOnUiThread {
-            ObjectAnimator.ofFloat(splash_logo, "translationY", -1000f).apply {
-                duration = animationDuration
-                Log.v("duration=$duration")
-            }.start()
+            val animator = ObjectAnimator.ofFloat(splash_logo, "translationY", -getAnimatingHeight())
+            animator.duration = animationDuration
+            animator.start()
 
             runOnBackground {
                 Thread.sleep(animationDuration)
-                isAnimated = true
                 Log.v("true")
                 runOnUiThread(this::initializeSignUp)
             }
         }
+    }
+
+    private fun getAnimatingHeight(): Float {
+        val (_, y) = splash_logo.location
+        val h = ViewUtil.getPercentOfHeight(requireContext(), 0.1f)
+        return y - h
     }
 
     private fun hasAccountInfo() =
@@ -66,13 +69,8 @@ class SplashFragment : Fragment(R.layout.fragment_splash) {
         splash_sign_up.visibility = View.VISIBLE
         splash_sign_in.visibility = View.VISIBLE
 
-        splash_sign_up.setOnClickListener {
-            findNavController().navigate(R.id.action_to_sign_up)
-        }
-
-        splash_sign_in.setOnClickListener {
-            findNavController().navigate(R.id.action_to_sign_in)
-        }
+        splash_sign_up.setOnClickListener { findNavController().navigate(R.id.action_to_sign_up) }
+        splash_sign_in.setOnClickListener { findNavController().navigate(R.id.action_to_sign_in) }
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -90,9 +88,5 @@ class SplashFragment : Fragment(R.layout.fragment_splash) {
             Toast.makeText(requireContext(), R.string.common_require_location_permission, Toast.LENGTH_SHORT).show()
             finish()
         }
-    }
-
-    companion object {
-        private var isAnimated = false
     }
 }

@@ -7,6 +7,8 @@
     android:layout_height="wrap_content"
     android:layout_marginBottom="@dimen/card_vertical_margin"
     android:layout_marginStart="@dimen/card_horizontal_margin"
+    android:outlineProvider="bounds"
+    android:elevation="4dp"
     app:cardBackgroundColor="@android:color/transparent"
     app:strokeWidth="4dp"
     app:strokeColor="@android:color/white"
@@ -19,8 +21,13 @@
         android:layout_height="wrap_content"
         android:layout_marginVertical="@dimen/card_vertical_margin"
         android:layout_marginHorizontal="@dimen/card_horizontal_margin"
+        android:text="abababababababababab"
         android:textSize="@dimen/text_large4"
         android:textColor="@android:color/white"
+        android:shadowColor="@color/card_background_gray"
+        android:shadowRadius="4"
+        android:shadowDx="1"
+        android:shadowDy="1"
         android:fontFamily="@font/noto_sans_cjk_kr_bold"
         android:includeFontPadding="false"/>
 </com.google.android.material.card.MaterialCardView>

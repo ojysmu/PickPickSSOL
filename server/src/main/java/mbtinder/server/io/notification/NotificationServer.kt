@@ -55,7 +55,7 @@ class NotificationServer private constructor(): CloseableThread() {
         if (!UserUtil.getUser(form.receiverId)!!.notification) {
             false
         } else {
-            sync(notifications) { notifications.add(form) }
+            notifications.add(form)
         }
 
     /**

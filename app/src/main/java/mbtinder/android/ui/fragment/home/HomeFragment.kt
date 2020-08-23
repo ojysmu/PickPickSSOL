@@ -2,7 +2,6 @@ package mbtinder.android.ui.fragment.home
 
 import android.view.View
 import android.view.animation.LinearInterpolator
-import android.widget.ProgressBar
 import androidx.annotation.AnyThread
 import androidx.annotation.WorkerThread
 import androidx.recyclerview.widget.DefaultItemAnimator
@@ -29,6 +28,7 @@ import java.sql.Date
 class HomeFragment : Fragment(R.layout.fragment_home) {
     companion object {
         val cardStackContents = arrayListOf<BaseCardStackContent>()
+        private var isStopped: Boolean = true
     }
 
     private lateinit var cardStackLayoutManager: CardStackLayoutManager
@@ -37,6 +37,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     private val todayQuestions by lazy { getNotAnsweredQuestion(getTodayDailyQuestions()) }
 
     override fun initializeView() {
+        isStopped = false
         cardStackContents.clear()
 
         requireActivity().findViewById<BottomNavigationView>(R.id.nav_view).visibility = View.VISIBLE
@@ -138,6 +139,12 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 runOnUiThread { cardStackAdapter.notifyDataSetChanged() }
             }
         }
+    }
+
+    override fun onStop() {
+        super.onStop()
+
+        isStopped = true
     }
 
     /**
@@ -285,7 +292,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                     CommandProcess.createChat(StaticComponent.user.userId, opponentId)
                 }
 
-                // nope된 사용자는 pool에 추가
+                // nope된 사용자는 pool에 추가 FIXME
                 if (direction == Direction.Right) {
                     runOnUiThread { cardStackAdapter.removeAt(currentPosition) }
                 }

@@ -472,7 +472,7 @@ object CommandProcess {
         val userId = command.arguments.getUUID("user_id")
         val userCoordinator = Coordinator(command.arguments.getJSONObject("coordinator"))
         val searchFilter = SearchFilter(command.arguments.getJSONObject("search_filter"))
-        val currentMetList = command.arguments.getJSONArray("current_met_list").toUUIDList()
+        val currentMetList = command.arguments.getJSONArray("current_met_list").toUUIDList() // FIXME
 
         val sqLiteConnection = SQLiteConnection.getConnection(userId)
         val sql = "SELECT opponent_id FROM pick"
@@ -721,7 +721,7 @@ object CommandProcess {
         val chatId = UUID.fromString(command.arguments.getString("chat_id"))
         val senderId = UUID.fromString(command.arguments.getString("sender_id"))
         val receiverId = UUID.fromString(command.arguments.getString("receiver_id"))
-        val opponentName = command.arguments.getString("opponent_name")
+        val opponentName = command.arguments.getString("opponent_name") // FIXME
         val body = command.arguments.getString("body")
         val messageContent = MessageContent(
             chatId = chatId,

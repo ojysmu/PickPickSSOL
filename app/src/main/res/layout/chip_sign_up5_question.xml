@@ -5,4 +5,5 @@
     android:layout_height="wrap_content"
     android:checkable="true"
     app:checkedIcon="@drawable/chip_checked_icon"
-    app:chipStrokeColor="@color/colorPrimary" />
+    app:chipStrokeColor="@color/colorPrimary"
+    android:backgroundTint="@color/card_background_gray" />

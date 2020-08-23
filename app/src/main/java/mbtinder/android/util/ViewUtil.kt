@@ -7,13 +7,13 @@ import android.text.InputType
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.EditText
 import android.widget.ProgressBar
 import androidx.core.view.children
 import com.google.android.material.slider.RangeSlider
 import com.google.android.material.textfield.TextInputLayout
 import mbtinder.android.R
 import mbtinder.android.ui.model.Fragment
+
 
 object ViewUtil {
     private fun enableRecursively(viewGroup: ViewGroup): Unit = viewGroup.children.forEach {
@@ -68,7 +68,23 @@ object ViewUtil {
     }
 
     fun dp2px(context: Context, dp: Int) = (dp * context.resources.displayMetrics.density + 0.5f)
+
+    fun getDisplaySize(context: Context): Pair<Int, Int> {
+        val displayMetrics = context.resources.displayMetrics
+        return Pair(displayMetrics.widthPixels, displayMetrics.heightPixels)
+    }
+
+    fun getPercentOfHeight(context: Context, ratio: Float): Float {
+        return getDisplaySize(context).second * ratio
+    }
 }
+
+val View.location: Pair<Int, Int>
+    get() {
+        val location = intArrayOf(-1, -1)
+        getLocationOnScreen(location)
+        return Pair(location[0], location[1])
+    }
 
 fun RangeSlider.getStart() = values[0].toInt()
 

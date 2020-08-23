@@ -1,6 +1,7 @@
 package mbtinder.android.ui.fragment.account
 
 import android.Manifest
+import android.animation.ObjectAnimator
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.widget.Toast
@@ -28,6 +29,8 @@ class AccountFragment : Fragment(R.layout.fragment_account) {
         account_distance_selector.value = StaticComponent.user.searchFilter.distance.toFloat()
         account_distance_indicator.text = getString(R.string.account_distance_indicator, account_distance_selector.value.toInt())
         account_notification_selector.isChecked = StaticComponent.user.notification
+
+        ObjectAnimator.ofFloat(account_profile_container, "translationZ", -100f).start()
 
         account_profile_edit.setOnClickListener {
             requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), requestCodeReadExternalStorage)

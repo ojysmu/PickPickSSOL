@@ -7,7 +7,6 @@ import mbtinder.lib.io.component.CommandContent
 import mbtinder.lib.util.CloseableThread
 import mbtinder.lib.util.IDList
 import mbtinder.lib.util.block
-import org.json.JSONObject
 import java.io.DataInputStream
 import java.io.DataOutputStream
 import java.io.IOException
@@ -78,8 +77,9 @@ class SocketClient private constructor(private val address: String, private val 
 
         loop = {
             block(commandPool) { it.isEmpty() }
+
             val command = commandPool.removeAt(0)
-            val clientMessage = command.jsonObject.toString()
+            val clientMessage = command.toJSONObject().toString()
             Log.v("clientMessage=$clientMessage")
 
             try {
@@ -88,7 +88,7 @@ class SocketClient private constructor(private val address: String, private val 
             } catch (e: IOException) {
                 stopThread()
                 close()
-                onDisconnected?.let { it(e) }
+                onDisconnected?.invoke(e)
             }
         }
     }
@@ -107,11 +107,8 @@ class SocketClient private constructor(private val address: String, private val 
 
     fun addResult(commandResult: CommandResult) = resultPool.add(commandResult)
 
-    fun getResult(commandId: UUID): JSONObject {
-        block(resultPool, intervalInMillis) { !it.contains(commandId) }
-
-        return resultPool.remove(commandId).arguments
-    }
+    fun getResult(commandId: UUID) =
+        block(resultPool, intervalInMillis) { !it.contains(commandId) }.remove(commandId).arguments
 
     override fun pauseThread() {
         super.pauseThread()

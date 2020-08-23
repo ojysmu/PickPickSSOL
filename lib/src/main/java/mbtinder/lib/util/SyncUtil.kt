@@ -29,7 +29,9 @@ fun <T> block(variable: T, duration: Long = 100, flag: (T) -> Boolean): T {
 
 fun block(duration: Long = 100, flag: () -> Boolean) {
     while (flag.invoke()) {
-        Thread.sleep(duration)
+        try {
+            Thread.sleep(duration)
+        } catch (e: InterruptedException) {}
     }
 }
 

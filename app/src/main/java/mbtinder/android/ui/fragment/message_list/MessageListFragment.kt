@@ -2,7 +2,6 @@ package mbtinder.android.ui.fragment.message_list
 
 import android.text.Editable
 import android.view.View
-import android.widget.Toast
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -11,7 +10,6 @@ import mbtinder.android.R
 import mbtinder.android.component.StaticComponent
 import mbtinder.android.io.socket.CommandProcess
 import mbtinder.android.ui.model.Fragment
-import mbtinder.android.util.Log
 import mbtinder.android.util.runOnBackground
 import mbtinder.android.util.runOnUiThread
 import mbtinder.lib.component.MessageContent
@@ -52,9 +50,9 @@ class MessageListFragment: Fragment(R.layout.fragment_message_list) {
         aliveAdapter = ChatAdapter(this, lastMessages!!)
 
         runOnUiThread {
-            message_list_recycler_view.adapter = aliveAdapter
-            message_list_recycler_view.visibility = View.VISIBLE
-            message_list_progress_bar.visibility = View.INVISIBLE
+            message_list_recycler_view?.adapter = aliveAdapter
+            message_list_recycler_view?.visibility = View.VISIBLE
+            message_list_progress_bar?.visibility = View.INVISIBLE
         }
     }
 

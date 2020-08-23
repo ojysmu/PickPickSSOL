@@ -451,26 +451,6 @@ object CommandProcess {
     }
 
     /**
-     * 질문이 답변된 적 있는지 확인
-     * @param command: 인수는 다음을 포함해야함: 사용자 ID, 답변 여부를 확인할 질문 ID
-     * @return 답변 여부
-     */
-    private fun isAnsweredQuestion(command: CommandContent): JSONObject {
-        val userId = command.arguments.getUUID("user_id")
-        val questionId = command.arguments.getUUID("question_id")
-
-        val sql = "SELECT _id FROM daily_questions WHERE question_id='$questionId'"
-        val sqLiteConnection = SQLiteConnection.getConnection(userId)
-        val queryId = sqLiteConnection.addQuery(sql)
-        val queryResult = sqLiteConnection.getResult(queryId)
-
-        return Connection.makePositiveResponse(
-            command.uuid,
-            JSONObject().apply { put("answered", queryResult.getRowCount() != 0) }
-        )
-    }
-
-    /**
      * 일일 질문을 답변
      * @param command: 인수는 다음을 포함해야함: 사용자 ID, 답변할 질문 ID, 답변
      */
@@ -572,75 +552,6 @@ object CommandProcess {
         ))
 
         return Connection.makePositiveResponse(command.uuid, JSONObject().apply { put("chat_id", chatId.toString()) })
-    }
-
-    /**
-     * 메시지 목록 요청
-     * @param command: 인수는 다음을 포함해야함: 사용자 ID, 채팅 ID
-     * @return 최신 20개의 메시지
-     */
-    private fun getMessages(command: CommandContent): JSONObject {
-        val userId = UUID.fromString(command.arguments.getString("user_id"))
-        val chatId = UUID.fromString(command.arguments.getString("chat_id"))
-
-        val connection = SQLiteConnection.getConnection(userId)
-        // 채팅 전체 열 수를 가져옴
-        val rows = connection.getResult(connection.addQuery("SELECT count(_id) from '$chatId'")).content[0].getInt("count(_id)")
-        val sql = if (rows <= SQLiteConnection.SELECT_MESSAGE_LIMIT) {
-            // 전체가 20보다 작거나 같을 때 전부 읽음
-            "SELECT * FROM '$chatId'"
-        } else {
-            // 전체가 20보다 클 때 마지막부터 20개를 읽음
-            SQLiteConnection.getSelectMessageSql(chatId, rows)
-        }
-        val queryResult = connection.getResult(connection.addQuery(sql))
-        val result = queryResult.content
-            .map { MessageUtil.buildMessage(it, chatId, userId) }
-            .sorted()
-            .toJSONArray()
-
-        return Connection.makePositiveResponse(command.uuid, JSONObject().apply { put("messages", result) })
-    }
-
-    /**
-     * 메시지 갱신
-     * @param command: 인수는 다음을 포함해야함: 사용자 ID, 채팅 ID, 최신 메시지의 시간
-     * @return last_timestamp 이후의 모든 메시지
-     */
-    private fun refreshMessages(command: CommandContent): JSONObject {
-        val userId = UUID.fromString(command.arguments.getString("user_id"))
-        val chatId = UUID.fromString(command.arguments.getString("chat_id"))
-        val lastTimestamp = command.arguments.getLong("last_timestamp")
-
-        val sqlConnection = SQLiteConnection.getConnection(userId)
-        val sql = "SELECT * from '$chatId' where timestamp < $lastTimestamp"
-        val queryResult = sqlConnection.getResult(sqlConnection.addQuery(sql))
-        val result = queryResult.content
-            .map { MessageUtil.buildMessage(it, chatId, userId) }
-            .sortedBy { it.timestamp }
-            .toJSONArray()
-
-        return Connection.makePositiveResponse(command.uuid, JSONObject().apply { put("messages", result) })
-    }
-
-    /**
-     * MessageListFragment에 표시될 마지막 메시지의 목록 갱신
-     * @param command: 인수는 다음을 포함해야함: 사용자 ID
-     * @return 모든 채팅의 마지막 메시지
-     */
-    private fun getLastMessages(command: CommandContent): JSONObject {
-        val userId = UUID.fromString(command.arguments.getString("user_id"))
-
-        val connection = SQLiteConnection.getConnection(userId)
-        val chatIds = connection.getResult(connection.addQuery("SELECT chat_id from chat")).content.map { it.getUUID("chat_id") }
-        val lastMessages = JSONList<MessageContent>().also { list: JSONList<MessageContent> ->
-            chatIds.forEach {
-                val sql = "SELECT * FROM '$it' where _id = (SELECT MAX(_id) FROM '$it')"
-                list.add(MessageUtil.buildMessage(connection.getResult(connection.addQuery(sql)).content[0], it, userId))
-            }
-        }
-
-        return Connection.makePositiveResponse(command.uuid, JSONObject().apply { put("messages", lastMessages.toJSONArray()) })
     }
 
     /**

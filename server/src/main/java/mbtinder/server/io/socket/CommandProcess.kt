@@ -1,5 +1,6 @@
 package mbtinder.server.io.socket
 
+import mbtinder.lib.component.ChatContent
 import mbtinder.lib.component.MessageContent
 import mbtinder.lib.component.user.Coordinator
 import mbtinder.lib.component.user.SearchFilter
@@ -510,25 +511,35 @@ object CommandProcess {
      */
     private fun createChat(command: CommandContent): JSONObject {
         val chatId = UUID.randomUUID()
-        val senderId = UUID.fromString(command.arguments.getString("sender_id"))
-        val receiverId = UUID.fromString(command.arguments.getString("receiver_id"))
+        val senderId = command.arguments.getUUID("sender_id")
+        val senderName = command.arguments.getString("sender_name")
+        val receiverId = command.arguments.getUUID("receiver_id")
+        val receiverName = command.arguments.getString("receiver_name")
+        val timestamp = System.currentTimeMillis()
 
-        val senderConnection = SQLiteConnection.getConnection(senderId)
-        val receiverConnection = SQLiteConnection.getConnection(receiverId)
+        // 채팅을 생성하는 본인 기준의 ChatContent, MessageContent
+        val senderChatContent = ChatContent(chatId, receiverId, receiverName)
+        val senderFirstMessage = MessageContent(chatId, senderId, receiverId, receiverName, timestamp, "매칭되었습니다")
+        // 채팅을 생성당하는 상대방 기준의 ChatContent, MessageContent
+        val receiverChatContent = ChatContent(chatId, senderId, senderName)
+        val receiverFirstMessage = MessageContent(chatId, senderId, receiverId, senderName, timestamp, "매칭되었습니다")
+
+        val senderConnection = SQLiteConnection.getConnection(receiverChatContent.chatId)
+        val receiverConnection = SQLiteConnection.getConnection(senderChatContent.chatId)
 
         // 사용자 채팅방 생성
-        senderConnection.addQuery(SQLiteConnection.getCreateChatSql(chatId))
+        senderConnection.addQuery(senderChatContent.getCreateSql())
         // 사용자 채팅방 정보 삽입
-        senderConnection.addQuery(SQLiteConnection.getInsertNewChatSql(chatId, receiverId))
+        senderConnection.addQuery(senderChatContent.getInsertSql())
         // 첫 메시지 삽입
-        senderConnection.addQuery(SQLiteConnection.getInsertFirstMessageSql(chatId, senderId, receiverId))
+        senderConnection.addQuery(senderFirstMessage.getLocalInsertMessageSql())
 
         // 상대방 채팅방 생성
-        receiverConnection.addQuery(SQLiteConnection.getCreateChatSql(chatId))
+        receiverConnection.addQuery(receiverChatContent.getCreateSql())
         // 상대방 채팅방 정보 삽입
-        receiverConnection.addQuery(SQLiteConnection.getInsertNewChatSql(chatId, senderId))
+        receiverConnection.addQuery(receiverChatContent.getInsertSql())
         // 첫 메시지 삽입
-        receiverConnection.addQuery(SQLiteConnection.getInsertFirstMessageSql(chatId, senderId, receiverId))
+        receiverConnection.addQuery(receiverFirstMessage.getLocalInsertMessageSql())
 
         // MySQL 채팅 정보 삽입
         MySQLServer.getInstance().addQuery("INSERT INTO pickpick.chat (" +
@@ -548,7 +559,11 @@ object CommandProcess {
             notification = Notification.MATCHED,
             receiverId = receiverId,
             title = "매칭되었습니다.",
-            content = "내가 PICK한 사용자가 나를 PICK했어요! 메시지를 확인해보세요."
+            content = "내가 PICK한 사용자가 나를 PICK했어요! 메시지를 확인해보세요.",
+            extra = JSONObject().apply {
+                put("chat_content", receiverChatContent.toJSONObject())
+                put("message_content", receiverFirstMessage.toJSONObject())
+            }
         ))
 
         return Connection.makePositiveResponse(command.uuid, JSONObject().apply { put("chat_id", chatId.toString()) })

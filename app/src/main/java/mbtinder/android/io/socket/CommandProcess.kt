@@ -266,9 +266,9 @@ object CommandProcess {
     }
 
     fun isAnsweredQuestion(questionId: UUID): Boolean {
+        val connection = SQLiteConnection.getInstance()
         val sql = "SELECT _id FROM daily_questions WHERE question_id='$questionId'"
-        val queryId = SQLiteConnection.getInstance().addQuery(sql)
-        val queryResult = SQLiteConnection.getInstance().getResult(queryId)
+        val queryResult = connection.executeQuery(sql)
 
         return queryResult.getRowCount() != 0
     }
@@ -276,16 +276,13 @@ object CommandProcess {
     fun answerQuestion(userId: UUID, questionId: UUID, isPick: Boolean): ServerResult<Void> {
         val connection = SQLiteConnection.getInstance()
 
-        val selectSql = "SELECT _id FROM daily_questions"
-        val selectId = connection.addQuery(selectSql)
-        val selectResult = connection.getResult(selectId)
-        if (selectResult.getRowCount() == 28) {
-            val deleteSql = "DELETE FROM daily_questions WHERE _id=${selectResult.content[0].getInt("_id")}"
-            connection.addQuery(deleteSql)
+        val (length, id) = getAnsweredHead()
+        if (length == 28) {
+            connection.executeUpdate("DELETE FROM daily_questions WHERE _id=$id")
         }
 
         val insertSql = "INSERT INTO daily_questions (question_id, is_picked) VALUES ('$questionId', $isPick)"
-        connection.addQuery(insertSql)
+        connection.executeUpdate(insertSql)
 
         val arguments = JSONObject()
         arguments.putUUID("user_id", userId)
@@ -320,14 +317,14 @@ object CommandProcess {
         if (result.getBoolean("result")) {
             val chatId = result.getUUID("chat_id")
             val connection = SQLiteConnection.getInstance()
-            connection.addQuery("CREATE TABLE '$chatId' (" +
+            connection.executeUpdate("CREATE TABLE '$chatId' (" +
                     "_id         INTEGER PRIMARY KEY AUTOINCREMENT , " +
                     "sender_id   CHAR(36) NOT NULL , " +
                     "receiver_id CHAR(36) NOT NULL , " +
                     "timestamp   BIGINT NOT NULL , " +
                     "body        VARCHAR(200) NOT NULL)")
-            connection.addQuery("INSERT INTO chat (chat_id, receiver_id) VALUES ('$chatId', '$opponentId')")
-            connection.addQuery("INSERT INTO '$chatId' " +
+            connection.executeUpdate("INSERT INTO chat (chat_id, receiver_id) VALUES ('$chatId', '$opponentId')")
+            connection.executeUpdate("INSERT INTO '$chatId' " +
                     "(sender_id, receiver_id, timestamp, body) VALUES " +
                     "('$userId', '$opponentId', ${System.currentTimeMillis()}, '매칭되었습니다.')")
 
@@ -338,11 +335,8 @@ object CommandProcess {
     }
 
     fun getMessages(chatId: UUID, opponentName: String): IDList<MessageContent> {
-        val connection = SQLiteConnection.getInstance()
-
         val sql = "SELECT * FROM '$chatId'"
-        val queryId = connection.addQuery(sql)
-        val queryResult = SQLiteConnection.getInstance().getResult(queryId)
+        val queryResult = SQLiteConnection.getInstance().executeQuery(sql)
 
         return queryResult.content
             .map { MessageContent(it, chatId, opponentName) }
@@ -356,8 +350,7 @@ object CommandProcess {
         val chatIds = getChatContents()
         return chatIds.map {
             val sql = "SELECT * FROM '${it.chatId}' where _id = (SELECT MAX(_id) FROM '${it.chatId}')"
-            val queryId = connection.addQuery(sql)
-            val queryResult = connection.getResult(queryId)
+            val queryResult = connection.executeQuery(sql)
 
             MessageContent(queryResult.content[0], it.chatId, it.opponentName)
         }.sorted().toIDList()
@@ -381,10 +374,18 @@ object CommandProcess {
 
     private fun getChatContents(): List<ChatContent> {
         val connection = SQLiteConnection.getInstance()
-        val sql = "SELECT chat_id, opponent_name from chat"
-        val queryId = connection.addQuery(sql)
-        val queryResult = connection.getResult(queryId)
+        val sql = "SELECT chat_id, opponent_name FROM chat"
+        val queryResult = connection.executeQuery(sql)
 
         return queryResult.content.map { ChatContent(it) }
+    }
+
+    private fun getAnsweredHead(): Pair<Int, Int> {
+        val connection = SQLiteConnection.getInstance()
+        val sql = "SELECT _id FROM daily_questions"
+        val queryResult = connection.executeQuery(sql)
+        val firstId = if (queryResult.getRowCount() > 0) queryResult.content[0].getInt("_id") else -1
+
+        return Pair(queryResult.getRowCount(), firstId)
     }
 }

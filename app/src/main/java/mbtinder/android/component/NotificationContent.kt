@@ -12,10 +12,12 @@ import androidx.core.app.NotificationCompat
 import androidx.navigation.fragment.findNavController
 import mbtinder.android.R
 import mbtinder.android.component.NotificationContent.Companion.makeNotification
+import mbtinder.android.io.database.SQLiteConnection
 import mbtinder.android.ui.fragment.chat.ChatFragment
 import mbtinder.android.ui.fragment.message_list.MessageListFragment
 import mbtinder.android.util.putUUID
 import mbtinder.android.util.runOnUiThread
+import mbtinder.lib.component.ChatContent
 import mbtinder.lib.component.IDContent
 import mbtinder.lib.component.MessageContent
 import mbtinder.lib.constant.Notification
@@ -24,7 +26,7 @@ import mbtinder.lib.util.idListOf
 import org.json.JSONObject
 
 val notifications = idListOf(
-    NotificationContent(Notification.MATCHED) { context, title, content, _ ->
+    NotificationContent(Notification.MATCHED) { context, title, content, extra ->
 //        val pendingIntent = NavDeepLinkBuilder(context)
 //            .setGraph(R.navigation.navigation_main)
 //            .setDestination(R.id.action_to_message_list)
@@ -42,6 +44,14 @@ val notifications = idListOf(
             importance = NotificationManager.IMPORTANCE_HIGH
         )
         (context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).notify(0, builder.build())
+
+        extra?.let {
+            val chatContent = ChatContent(extra.getJSONObject("chat_content"))
+            val messageContent = MessageContent(extra.getJSONObject("message_content"))
+            SQLiteConnection.getInstance().executeUpdate(chatContent.getCreateSql())
+            SQLiteConnection.getInstance().executeUpdate(chatContent.getInsertSql())
+            SQLiteConnection.getInstance().executeUpdate(messageContent.getLocalInsertMessageSql())
+        }
     },
     NotificationContent(Notification.MESSAGE_RECEIVED) { context, title, content, extra ->
         val arguments = Bundle()
@@ -72,6 +82,7 @@ val notifications = idListOf(
                 (context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).notify(0, builder.build())
             }
             // 채팅 목록 마지막 채팅 갱신
+            SQLiteConnection.getInstance().executeUpdate(messageContent.getLocalInsertMessageSql())
             MessageListFragment.setLastMessage(messageContent)
         }
     },

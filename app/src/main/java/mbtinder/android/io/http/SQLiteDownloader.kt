@@ -17,7 +17,7 @@ class SQLiteDownloader(private val userId: UUID, private val filesDir: String) :
         try {
             val inputStream = connection.getInputStream()
             val bytes = inputStream.readBytes()
-            val destFile = File("$filesDir/table.db")
+            val destFile = File("$filesDir/tables.db")
             if (destFile.exists()) {
                 destFile.delete()
             }

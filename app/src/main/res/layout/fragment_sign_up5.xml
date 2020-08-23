@@ -12,15 +12,15 @@
         android:layout_height="wrap_content">
 
         <TextView
-            style="@style/FragmentContent.Title"
             android:id="@+id/sign_up5_title"
+            style="@style/FragmentContent.Title"
             android:text="@string/sign_up5_title"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <Button
-            style="@style/Widget.MaterialComponents.Button.TextButton"
             android:id="@+id/sign_up5_go_test"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/activity_horizontal_margin"
@@ -30,22 +30,22 @@
             app:layout_constraintEnd_toEndOf="parent" />
 
         <TextView
-            style="@style/FragmentContent.Medium"
             android:id="@+id/sign_up5_mbti_title"
+            style="@style/FragmentContent.Medium"
             android:text="@string/sign_up5_mbti_title"
-            app:layout_constraintTop_toBottomOf="@id/sign_up5_title"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/sign_up5_title" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/sign_up5_mbti_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/card_vertical_margin"
-            android:paddingHorizontal="@dimen/activity_horizontal_margin"
             android:clipToPadding="false"
+            android:paddingHorizontal="@dimen/activity_horizontal_margin"
             app:layout_constraintTop_toBottomOf="@id/sign_up5_mbti_title"
-            tools:listitem="@layout/card_sign_up5_mbti"
-            tools:itemCount="2" />
+            tools:itemCount="2"
+            tools:listitem="@layout/card_sign_up5_mbti" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/sign_up5_questions_recycler_view"
@@ -53,29 +53,29 @@
             android:layout_height="wrap_content"
             android:clipToPadding="false"
             app:layout_constraintTop_toBottomOf="@id/sign_up5_mbti_recycler_view"
-            tools:listitem="@layout/card_sign_up5_questions"
-            tools:itemCount="3" />
+            tools:itemCount="3"
+            tools:listitem="@layout/card_sign_up5_questions" />
 
         <Button
-            style="@style/ButtonNext"
             android:id="@+id/switchable_next"
+            style="@style/ButtonNext"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/activity_vertical_margin"
             android:layout_marginEnd="@dimen/activity_horizontal_margin"
-            app:layout_constraintTop_toBottomOf="@id/sign_up5_questions_recycler_view"
+            android:text="@string/common_done"
             app:layout_constraintEnd_toEndOf="parent"
-            android:text="@string/common_done" />
+            app:layout_constraintTop_toBottomOf="@id/sign_up5_questions_recycler_view" />
 
         <ProgressBar
-            style="?android:attr/progressBarStyleSmall"
             android:id="@+id/switchable_waiting"
+            style="?android:attr/progressBarStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="gone"
-            app:layout_constraintTop_toTopOf="@id/switchable_next"
             app:layout_constraintBottom_toBottomOf="@id/switchable_next"
+            app:layout_constraintEnd_toEndOf="@id/switchable_next"
             app:layout_constraintStart_toStartOf="@id/switchable_next"
-            app:layout_constraintEnd_toEndOf="@id/switchable_next" />
+            app:layout_constraintTop_toTopOf="@id/switchable_next" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>

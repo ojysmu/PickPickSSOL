@@ -1,5 +1,6 @@
 package mbtinder.server.io.database
 
+import mbtinder.lib.component.ChatContent
 import mbtinder.lib.component.IDContent
 import mbtinder.lib.util.CloseableThread
 import mbtinder.lib.util.IDList
@@ -33,16 +34,11 @@ class SQLiteConnection private constructor(val userId: UUID): CloseableThread(),
                 "timestamp   BIGINT NOT NULL , " +
                 "body        VARCHAR(200) NOT NULL)"
 
-        fun getInsertNewChatSql(chatId: UUID, participantId: UUID) =
-            "INSERT INTO chat (chat_id, receiver_id) VALUES ('$chatId', '$participantId')"
+        fun getInsertNewChatSql(chatContent: ChatContent) =
+            "INSERT INTO chat (" +
+                    "chat_id, receiver_id, receiver_name) VALUES (" +
+                    "'${chatContent.chatId}', '${chatContent.opponentId}', '${chatContent.opponentName}')"
 
-        fun getSelectMessageSql(chatId: UUID, endIndex: Int) =
-            "SELECT * FROM '$chatId' LIMIT ${endIndex - SELECT_MESSAGE_LIMIT}, $SELECT_MESSAGE_LIMIT"
-
-        fun getInsertFirstMessageSql(chatId: UUID, senderId: UUID, receiverId: UUID) =
-            "INSERT INTO '$chatId' " +
-                    "(sender_id, receiver_id, timestamp, body) VALUES " +
-                    "('$senderId', '$receiverId', ${System.currentTimeMillis()}, '매칭되었습니다.')"
     }
 
     private val statement: Statement
@@ -97,11 +93,7 @@ class SQLiteConnection private constructor(val userId: UUID): CloseableThread(),
         return queryId
     }
 
-    fun getResult(queryId: UUID): QueryResult {
-        block(results, intervalInMillis) { !it.contains(queryId) }
-
-        return results.remove(queryId)
-    }
+    fun getResult(queryId: UUID) = block(results, intervalInMillis) { !it.contains(queryId) }.remove(queryId)
 
     override fun close() {
         super.close()

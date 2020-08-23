@@ -40,6 +40,8 @@ class MessageAdapter(val recyclerView: RecyclerView, private val contents: Array
     override fun getItemViewType(position: Int) =
         if (contents[position].senderId == StaticComponent.user.userId) { TYPE_USER } else { TYPE_OPPONENT }
 
+    override fun getItemId(position: Int) = contents[position].timestamp
+
     fun addContent(messageContent: MessageContent) {
         contents.add(messageContent)
         notifyItemInserted(contents.size - 1)

@@ -1,5 +1,6 @@
 package mbtinder.lib.component
 
+import mbtinder.lib.component.database.Row
 import mbtinder.lib.component.json.JSONParsable
 import org.json.JSONObject
 import java.util.*
@@ -13,6 +14,17 @@ class MessageContent: JSONParsable, Comparable<MessageContent>, IDContent {
     lateinit var body: String
 
     constructor(jsonObject: JSONObject): super(jsonObject)
+
+    constructor(row: Row, chatId: UUID, opponentName: String) {
+        this.chatId = chatId
+        this.senderId = row.getUUID("sender_id")
+        this.receiverId = row.getUUID("receiver_id")
+        this.opponentName = opponentName
+        this.timestamp = row.getLong("timestamp")
+        this.body = row.getString("body")
+
+        updateJSONObject()
+    }
 
     constructor(chatId: UUID, senderId: UUID, receiverId: UUID, opponentName: String, timestamp: Long, body: String) {
         this.chatId = chatId

@@ -27,8 +27,10 @@ object StaticComponent {
                     it.put("email", email)
                     it.put("password", password)
                 }
-                SQLiteDownloader(user.userId, fragment.requireContext().filesDir.toString())
-                SQLiteConnection.createInstance(fragment.requireContext().filesDir.toString())
+
+                val sqlitePath = fragment.requireContext().filesDir.toString()
+                SQLiteDownloader(user.userId, sqlitePath)
+                SQLiteConnection.createInstance(sqlitePath)
 
                 if (LocationUtil.checkLocationPermission(fragment.requireContext())) {
                     runOnBackground {

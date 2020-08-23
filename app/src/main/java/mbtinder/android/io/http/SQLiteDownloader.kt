@@ -1,6 +1,5 @@
 package mbtinder.android.io.http
 
-import android.content.Context
 import android.os.AsyncTask
 import mbtinder.android.util.Log
 import mbtinder.lib.constant.ServerPath

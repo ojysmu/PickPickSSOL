@@ -1,6 +1,5 @@
 package mbtinder.server.io.socket
 
-import mbtinder.lib.component.ChatContent
 import mbtinder.lib.component.MessageContent
 import mbtinder.lib.component.user.Coordinator
 import mbtinder.lib.component.user.SearchFilter
@@ -16,7 +15,6 @@ import mbtinder.server.io.database.MySQLServer
 import mbtinder.server.io.database.SQLiteConnection
 import mbtinder.server.io.notification.NotificationServer
 import mbtinder.server.util.*
-import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
 import java.util.*
@@ -38,8 +36,6 @@ object CommandProcess {
             Command.UPDATE_USER_NOTIFICATION -> updateUserNotification(command)
             Command.DELETE_USER -> deleteUser(command)
             Command.BLOCK_USER -> blockUser(command)
-            Command.GET_USER_IMAGES -> TODO() // getUserImages(command)
-            Command.DELETE_USER_IMAGE -> deleteUserImage(command)
             Command.SIGN_IN -> signIn(command, connection)
             Command.SET_COORDINATOR -> setCoordinator(command)
             Command.FIND_PASSWORD -> findPassword(command)
@@ -50,15 +46,10 @@ object CommandProcess {
             Command.GET_MATCHABLE_USERS -> getMatchableUsers(command)
             Command.REFRESH_MATCHABLE_USERS -> refreshMatchableUsers(command)
             Command.GET_DAILY_QUESTIONS -> getDailyQuestions(command)
-            Command.IS_ANSWERED_QUESTION -> isAnsweredQuestion(command)
             Command.ANSWER_QUESTION -> answerQuestion(command)
             Command.PICK -> pick(command)
 
             Command.CREATE_CHAT -> createChat(command)
-            Command.DELETE_CHAT -> deleteChat(command)
-            Command.GET_MESSAGES -> getMessages(command)
-            Command.REFRESH_MESSAGES -> refreshMessages(command)
-            Command.GET_LAST_MESSAGES -> getLastMessages(command)
             Command.SEND_MESSAGE -> sendMessage(command)
         }
     }
@@ -122,7 +113,7 @@ object CommandProcess {
             val createTableSql = "CREATE TABLE chat (" +
                     "_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     "chat_id CHAR(36) NOT NULL, " +
-                    "receiver_id CHAR(36) NOT NULL)"
+                    "opponent_name VARCHAR(10) NOT NULL)"
             sqLiteConnection.addQuery(createTableSql)
         }
         run {
@@ -272,51 +263,6 @@ object CommandProcess {
         ))
 
         return Connection.makePositiveResponse(command.uuid)
-    }
-
-//    /**
-//     * 사용자 프로필 이미지 경로 반환
-//     * @param command: 인수는 다음이 포함되어야 함: 사용자 ID
-//     * @return 이미지 ID 목록. 이미지가 존재하지 않을 때 [ServerResponse.IMAGE_NOT_FOUND]
-//     */
-//    private fun getUserImages(command: CommandContent): JSONObject {
-//        val userId = UUID.fromString(command.arguments.getString("user_id"))
-//
-//        val images = File(LocalFile.getUserImagePath(userId)).list()?.map {
-//            val splited = it.split(File.pathSeparator)
-//            val imageName = splited[splited.size - 1]
-//            val imageId = UUID.fromString(imageName.split(".")[0])
-//
-//            UserImageContent(userId, imageId, imageName, ServerPath.getUserImageUrl(userId, imageName))
-//        }?.toJSONList()
-//
-//        return if (images != null && images.isNotEmpty()) {
-//            Connection.makePositiveResponse(command.uuid, JSONObject().apply { put("images", images.toJSONArray()) })
-//        } else {
-//            Connection.makeNegativeResponse(command.uuid, ServerResponse.IMAGE_NOT_FOUND)
-//        }
-//    }
-
-    /**
-     * 사용자 프로필 이미지 삭제
-     * @param command: 인수는 다음이 포함되어야 함: 사용자 ID, 삭제할 이미지 ID
-     * @return 삭제했을 때 true. 이미지가 존재하지 않을 때 [ServerResponse.IMAGE_ID_NOT_FOUND]
-     */
-    private fun deleteUserImage(command: CommandContent): JSONObject {
-        val userId = UUID.fromString(command.arguments.getString("user_id"))
-        val imageId = UUID.fromString(command.arguments.getString("image_id"))
-
-        File(LocalFile.getUserImagePath(userId)).listFiles()?.forEach {
-            val name = it.absolutePath
-            val splited = name.split(File.pathSeparator)
-            val imageName = splited[splited.size - 1]
-            if (imageName.contains(imageId.toString())) {
-                it.delete()
-                return Connection.makePositiveResponse(command.uuid)
-            }
-        }
-
-        return Connection.makeNegativeResponse(command.uuid, ServerResponse.IMAGE_ID_NOT_FOUND)
     }
 
     /**
@@ -546,7 +492,7 @@ object CommandProcess {
         }
 
         val insertSql = "INSERT INTO daily_questions (question_id, is_picked) VALUES ('$questionId', $isPick)"
-        SQLiteConnection.getConnection(userId).addQuery(insertSql)
+        connection.addQuery(insertSql)
 
         return Connection.makePositiveResponse(command.uuid)
     }
@@ -629,21 +575,6 @@ object CommandProcess {
     }
 
     /**
-     * 채팅 삭제. 사용되지 않음.
-     */
-    private fun deleteChat(command: CommandContent): JSONObject {
-        val chatContent = ChatContent(command.arguments.getJSONObject("chat_content"))
-        val dropSql = "DROP TABLE ${chatContent.chatId}"
-        val deleteSql = "DELETE FROM pickpick.chat WHERE chat_id='${chatContent.chatId}'"
-
-        SQLiteConnection.getConnection(chatContent.participant1).addQuery(dropSql)
-        SQLiteConnection.getConnection(chatContent.participant2).addQuery(dropSql)
-        MySQLServer.getInstance().addQuery(deleteSql)
-
-        return Connection.makePositiveResponse(command.uuid)
-    }
-
-    /**
      * 메시지 목록 요청
      * @param command: 인수는 다음을 포함해야함: 사용자 ID, 채팅 ID
      * @return 최신 20개의 메시지
@@ -652,9 +583,9 @@ object CommandProcess {
         val userId = UUID.fromString(command.arguments.getString("user_id"))
         val chatId = UUID.fromString(command.arguments.getString("chat_id"))
 
-        val sqlConnection = SQLiteConnection.getConnection(userId)
+        val connection = SQLiteConnection.getConnection(userId)
         // 채팅 전체 열 수를 가져옴
-        val rows = sqlConnection.getResult(sqlConnection.addQuery("SELECT count(_id) from '$chatId'")).content[0].getInt("count(_id)")
+        val rows = connection.getResult(connection.addQuery("SELECT count(_id) from '$chatId'")).content[0].getInt("count(_id)")
         val sql = if (rows <= SQLiteConnection.SELECT_MESSAGE_LIMIT) {
             // 전체가 20보다 작거나 같을 때 전부 읽음
             "SELECT * FROM '$chatId'"
@@ -662,7 +593,7 @@ object CommandProcess {
             // 전체가 20보다 클 때 마지막부터 20개를 읽음
             SQLiteConnection.getSelectMessageSql(chatId, rows)
         }
-        val queryResult = sqlConnection.getResult(sqlConnection.addQuery(sql))
+        val queryResult = connection.getResult(connection.addQuery(sql))
         val result = queryResult.content
             .map { MessageUtil.buildMessage(it, chatId, userId) }
             .sorted()

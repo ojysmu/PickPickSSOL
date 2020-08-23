@@ -20,7 +20,6 @@ import mbtinder.lib.component.card_stack.BaseCardStackContent
 import mbtinder.lib.component.card_stack.CardStackContent
 import mbtinder.lib.component.card_stack.DailyQuestionContent
 import mbtinder.lib.component.user.Coordinator
-import mbtinder.lib.util.findAll
 import mbtinder.lib.util.mapBase
 import org.json.JSONObject
 import java.sql.Date
@@ -34,7 +33,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     private lateinit var cardStackLayoutManager: CardStackLayoutManager
     private val cardStackAdapter by lazy { CardStackAdapter(this) }
     private var currentPosition = 0
-    private val todayQuestions by lazy { getNotAnsweredQuestion(getTodayDailyQuestions()) }
+    private val todayQuestions by lazy { getNotAnsweredQuestion(getTodayDailyQuestions()).toMutableList() }
 
     override fun initializeView() {
         isStopped = false
@@ -176,10 +175,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
      */
     @WorkerThread
     private fun getNotAnsweredQuestion(questions: List<DailyQuestionContent>) =
-        questions.findAll {
-            val isAnsweredResult = CommandProcess.isAnsweredQuestion(StaticComponent.user.userId, it.questionId)
-            isAnsweredResult.isSucceed && !isAnsweredResult.result!!
-        }
+        questions.filter { !CommandProcess.isAnsweredQuestion(it.questionId) }
 
     /**
      * 로컬에서 오늘의 일일 질문 반환. [getDailyQuestions]이 같은 날 선행되었음이 보장되어야 함

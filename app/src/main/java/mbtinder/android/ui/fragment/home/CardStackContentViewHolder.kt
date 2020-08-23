@@ -1,13 +1,10 @@
 package mbtinder.android.ui.fragment.home
 
-import android.graphics.Outline
 import android.view.View
-import android.view.ViewOutlineProvider
 import android.widget.TextView
 import com.google.android.material.card.MaterialCardView
 import mbtinder.android.R
 import mbtinder.android.ui.model.recycler_view.AdaptableViewHolder
-import mbtinder.android.util.Log
 
 class CardStackContentViewHolder(view: View): AdaptableViewHolder<String>(view) {
     var isDark: Boolean = true

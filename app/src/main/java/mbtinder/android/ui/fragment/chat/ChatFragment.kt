@@ -9,6 +9,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.fragment_chat.*
 import mbtinder.android.R
 import mbtinder.android.component.StaticComponent
+import mbtinder.android.io.database.SQLiteConnection
 import mbtinder.android.io.socket.CommandProcess
 import mbtinder.android.ui.model.Fragment
 import mbtinder.android.util.DialogFactory
@@ -17,7 +18,6 @@ import mbtinder.android.util.runOnBackground
 import mbtinder.android.util.runOnUiThread
 import mbtinder.lib.component.MessageContent
 import mbtinder.lib.util.IDList
-import mbtinder.lib.util.toIDList
 import java.util.*
 
 class ChatFragment : Fragment(R.layout.fragment_chat) {
@@ -34,11 +34,7 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
         chat_recycler_view.layoutManager = LinearLayoutManager(requireContext()).apply { stackFromEnd = true }
         chat_recycler_view.itemAnimator = DefaultItemAnimator()
 
-        runOnBackground {
-            if (updateMessages()) {
-                runOnUiThread(this::onMessageUpdated)
-            }
-        }
+        runOnBackground { updateMessages() }
 
         chat_block.setOnClickListener { onBlockClicked() }
         chat_send.setOnClickListener { onSendClicked() }
@@ -74,7 +70,7 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
             chat_content.setText("")
         }
 
-        val (isSucceed, result) = runOnBackground<Pair<Boolean, Long?>> {
+        runOnBackground {
             val result = CommandProcess.sendMessage(
                 chatId = chatId,
                 senderId = StaticComponent.user.userId,
@@ -82,50 +78,35 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
                 opponentName = opponentName,
                 body = body
             )
-            Pair(result.isSucceed, result.result)
-        }
 
-        if (isSucceed) {
-            aliveAdapter!!.addContent(MessageContent(
-                chatId = chatId,
-                senderId = StaticComponent.user.userId,
-                receiverId = opponentId,
-                opponentName = opponentName,
-                timestamp = result!!,
-                body = body
-            ))
-            chat_recycler_view.scrollToPosition(aliveAdapter!!.getLastIndex())
-        } else {
-            Toast.makeText(requireContext(), R.string.chat_failed_to_send, Toast.LENGTH_SHORT).show()
+            if (result.isSucceed) {
+                val messageContent = MessageContent(
+                    chatId = chatId,
+                    senderId = StaticComponent.user.userId,
+                    receiverId = opponentId,
+                    opponentName = opponentName,
+                    timestamp = result.result!!,
+                    body = body
+                )
+
+                aliveAdapter!!.addContent(messageContent)
+                SQLiteConnection.getInstance().addQuery(messageContent.getLocalInsertMessageSql())
+
+                chat_recycler_view.scrollToPosition(aliveAdapter!!.getLastIndex())
+            } else {
+                Toast.makeText(requireContext(), R.string.chat_failed_to_send, Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
-    private fun updateMessages(): Boolean {
-        if (messages.contains(chatId)) {
-            val messages = messages[chatId]
-            val refreshResult = CommandProcess.refreshMessage(
-                userId = StaticComponent.user.userId,
-                chatId = chatId,
-                lastTimestamp = messages.last().timestamp
-            )
-
-            if (refreshResult.isSucceed) {
-                messages.addAll(refreshResult.result!!)
-            }
-
-            return refreshResult.isSucceed
-        } else {
-            val getResult = CommandProcess.getMessages(StaticComponent.user.userId, chatId)
-            if (getResult.isSucceed) {
-                messages.add(getResult.result!!.toIDList().apply { uuid = chatId })
-            }
-
-            return getResult.isSucceed
-        }
+    private fun updateMessages() {
+        messages.add(CommandProcess.getMessages(chatId, opponentName))
+        runOnUiThread(this::onMessageUpdated)
     }
 
     private fun onMessageUpdated() {
         aliveAdapter = MessageAdapter(chat_recycler_view, messages[chatId])
+        aliveAdapter!!.setHasStableIds(true)
 
         chat_send.isEnabled = true
         chat_recycler_view.adapter = aliveAdapter!!

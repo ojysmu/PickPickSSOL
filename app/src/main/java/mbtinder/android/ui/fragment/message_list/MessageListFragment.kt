@@ -7,14 +7,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.fragment_message_list.*
 import mbtinder.android.R
-import mbtinder.android.component.StaticComponent
 import mbtinder.android.io.socket.CommandProcess
 import mbtinder.android.ui.model.Fragment
 import mbtinder.android.util.runOnBackground
 import mbtinder.android.util.runOnUiThread
 import mbtinder.lib.component.MessageContent
 import mbtinder.lib.util.IDList
-import mbtinder.lib.util.toIDList
 import java.util.*
 
 class MessageListFragment: Fragment(R.layout.fragment_message_list) {
@@ -26,24 +24,13 @@ class MessageListFragment: Fragment(R.layout.fragment_message_list) {
         message_list_recycler_view.layoutManager = LinearLayoutManager(requireContext())
         message_list_recycler_view.itemAnimator = DefaultItemAnimator()
 
-        runOnBackground {
-            if (updateLastMessages()) {
-                onLastMessageUpdated()
-            }
-        }
+        runOnBackground { updateLastMessages() }
     }
 
-    private fun updateLastMessages(): Boolean {
-        val getResult = CommandProcess.getLastMessages(StaticComponent.user.userId)
+    private fun updateLastMessages() {
+        lastMessages = CommandProcess.getLastMessages()
 
-        if (getResult.isSucceed) {
-            lastMessages = getResult.result!!
-                .sorted()
-                .reversed()
-                .toIDList()
-        }
-
-        return getResult.isSucceed
+        onLastMessageUpdated()
     }
 
     private fun onLastMessageUpdated() {

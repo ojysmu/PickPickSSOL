@@ -3,12 +3,11 @@ package mbtinder.lib.component.card_stack
 import mbtinder.lib.component.IDContent
 import mbtinder.lib.component.database.Row
 import mbtinder.lib.component.json.JSONParsable
-import mbtinder.lib.util.getUUID
 import org.json.JSONObject
 import java.sql.Date
 import java.util.*
 
-class DailyQuestionContent: BaseCardStackContent, JSONParsable, IDContent, Comparable<DailyQuestionContent> {
+open class DailyQuestionContent: BaseCardStackContent, JSONParsable, IDContent, Comparable<DailyQuestionContent> {
     lateinit var questionId: UUID
     lateinit var title: String
     lateinit var nopeContent: String

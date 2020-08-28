@@ -90,20 +90,20 @@ class SocketServer private constructor(private val port: Int): CloseableThread()
     }
 
     /**
-     * token에 해당하는 Connection이 연결중인지 확인
-     *
-     * @param token: 연결여부를 확인할 token
-     * @return token 연결 여부
-     */
-    fun isAlive(token: UUID) = connections.contains(token)
-
-    /**
      * Connection token에 해당하는 Connection 반환
      *
      * @param token: 탐색할 token
      * @return token에 해당하는 Connection
      */
     fun getConnection(token: UUID) = connections[token]
+
+    /**
+     * Connection token에 해당하는 Connection이 접속중인지 확인
+     *
+     * @param token: 탐색할 token
+     * @return 접속 여부
+     */
+    fun hasConnection(token: UUID) = connections.contains(token)
 
     /**
      * 저장된 Connection 삭제
@@ -136,20 +136,23 @@ class SocketServer private constructor(private val port: Int): CloseableThread()
     fun getConnectionCount() = connections.size
 
     /**
+     * Index에 해당하는 connection 반환
+     *
+     * @param index 탐색할 index
+     * @return 탐색된 connection
+     */
+    fun getConnection(index: Int) = connections[index]
+
+    /**
      * 인수의 token들에 해당하는 connection이 있는지 탐색
      *
      * @param tokens: 연결되었는지 확인할 token
      * @return 탐색된 connection의 index, 없을 경우 -1
      */
-    fun containsConnections(tokens: List<UUID>): Int {
-        for ((index, token) in tokens.withIndex()) {
-            if (connections.contains(token)) {
-                // 탐색되었을 경우 index 반환
-                return index
-            }
-        }
-        // 탐색된 connection이 없을 경우 -1 반환
-        return -1
+    fun containsConnections(tokens: List<UUID>): UUID? {
+        // 탐색된 connection이 없을 경우 null 반환
+        // 탐색되었을 경우 token 반환
+        return tokens.firstOrNull { connections.contains(it) }
     }
 
     /**

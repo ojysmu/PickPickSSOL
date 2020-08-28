@@ -50,10 +50,8 @@ class SearchFilter: JSONParsable, IDContent {
     fun isInRange(userCoordinator: Coordinator, cardStackContent: CardStackContent) =
         // 모두 또는 해당하는 성별
         (gender == 2 || gender == cardStackContent.gender)
-                // 최소 나이 이상인지
-                && ageStart <= cardStackContent.age // FIXME
-                // 최대 나이 이하인지
-                && ageEnd >= cardStackContent.age
+                // 최소 나이 이내인지
+                && cardStackContent.age in ageStart .. ageEnd
                 // 설정한 거리 이내인지
                 && distance > (userCoordinator.getDistance(cardStackContent.coordinator) / 1000)
 

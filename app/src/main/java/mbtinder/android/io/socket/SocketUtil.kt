@@ -28,8 +28,6 @@ object SocketUtil {
     }
 
     fun getVoidResult(result: JSONObject): ServerResult<Void> {
-        Log.v("getVoidResult: result=$result")
-
         return if (result.getBoolean("result")) {
             ServerResult(true)
         } else {

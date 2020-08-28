@@ -2,6 +2,7 @@ package mbtinder.lib.component.database
 
 import org.json.JSONArray
 import org.json.JSONObject
+import java.lang.ClassCastException
 import java.sql.Date
 import java.util.*
 import kotlin.collections.HashMap
@@ -11,7 +12,12 @@ class Row : HashMap<String, Any>() {
 
     fun getInt(column: String) = get(column) as Int
 
-    fun getLong(column: String) = get(column) as Long
+//    fun getLong(column: String) = try { get(column) as Long } catch (e: ClassCastException) { get(column).toLong() }
+fun getLong(column: String) = get(column) as Long
+
+    fun x() {
+        getValue("")
+    }
 
     fun getDouble(column: String) = get(column) as Double
 

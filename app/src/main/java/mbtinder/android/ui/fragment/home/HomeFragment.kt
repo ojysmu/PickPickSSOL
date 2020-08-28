@@ -1,12 +1,18 @@
 package mbtinder.android.ui.fragment.home
 
 import android.view.View
+import android.view.animation.DecelerateInterpolator
 import android.view.animation.LinearInterpolator
 import androidx.annotation.AnyThread
 import androidx.annotation.WorkerThread
 import androidx.recyclerview.widget.DefaultItemAnimator
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.yuyakaido.android.cardstackview.*
+import com.yuyakaido.android.cardstackview.CardStackLayoutManager
+import com.yuyakaido.android.cardstackview.CardStackListener
+import com.yuyakaido.android.cardstackview.Direction
+import com.yuyakaido.android.cardstackview.RewindAnimationSetting
+import com.yuyakaido.android.cardstackview.StackFrom
+import com.yuyakaido.android.cardstackview.SwipeableMethod
 import kotlinx.android.synthetic.main.fragment_home.*
 import mbtinder.android.R
 import mbtinder.android.component.StaticComponent
@@ -24,10 +30,10 @@ import mbtinder.lib.util.mapBase
 import org.json.JSONObject
 import java.sql.Date
 
+
 class HomeFragment : Fragment(R.layout.fragment_home) {
     companion object {
         val cardStackContents = arrayListOf<BaseCardStackContent>()
-        private var isStopped: Boolean = true
     }
 
     private lateinit var cardStackLayoutManager: CardStackLayoutManager
@@ -36,7 +42,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     private val todayQuestions by lazy { getNotAnsweredQuestion(getTodayDailyQuestions()).toMutableList() }
 
     override fun initializeView() {
-        isStopped = false
         cardStackContents.clear()
 
         requireActivity().findViewById<BottomNavigationView>(R.id.nav_view).visibility = View.VISIBLE
@@ -73,6 +78,13 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     }
 
     private fun onRewindClicked() {
+        val setting = RewindAnimationSetting.Builder()
+            .setDirection(Direction.Left)
+            .setDuration(200)
+            .setInterpolator(DecelerateInterpolator())
+            .build()
+        cardStackLayoutManager.setRewindAnimationSetting(setting)
+
         home_card_stack_view.rewind()
     }
 
@@ -102,7 +114,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                         // 맨뒤에 empty 추가
                         add(EmptyContent())
                     }
-                Log.v("HomeFragment.getCardStacks(): todayQuestions=$todayQuestions")
                 cardStackContents.addAll(mapped)
                 runOnUiThread {
                     cardStackAdapter.notifyDataSetChanged()
@@ -138,12 +149,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 runOnUiThread { cardStackAdapter.notifyDataSetChanged() }
             }
         }
-    }
-
-    override fun onStop() {
-        super.onStop()
-
-        isStopped = true
     }
 
     /**
@@ -183,12 +188,10 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
      */
     @AnyThread
     private fun getTodayDailyQuestions(): List<DailyQuestionContent> {
-        val context = SharedPreferencesUtil.getContext(requireContext(), SharedPreferencesUtil.PREF_QUESTIONS)
-        val saved = context.getStringList("questions").map { DailyQuestionContent(JSONObject(it)) }
-        Log.v("HomeFragment.getTodayDailyQuestions(): saved=$saved")
-        return saved.filterTo(ArrayList()) { Log.v("HomeFragment.getTodayDailyQuestions(): a=${it.date.time}, b=${Date(System.currentTimeMillis()).time}"); it.date.toString() == Date(System.currentTimeMillis()).toString() }.apply {
-            Log.v("HomeFragment.getTodayDailyQuestions(): found=$this")
-        }
+        return SharedPreferencesUtil.getContext(requireContext(), SharedPreferencesUtil.PREF_QUESTIONS)
+            .getStringList("questions")
+            .map { DailyQuestionContent(JSONObject(it)) }
+            .filter { it.date.toString() == Date(System.currentTimeMillis()).toString() }
     }
 
     /**
@@ -202,10 +205,22 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
          */
         override fun onCardAppeared(view: View?, position: Int) {
             when (cardStackContents[position]) {
-                is TutorialContent -> cardStackLayoutManager.setCanScrollHorizontal(true)
-                is CardStackContent -> cardStackLayoutManager.setCanScrollHorizontal(true)
-                is DailyQuestionContent -> cardStackLayoutManager.setCanScrollHorizontal(true)
-                else -> cardStackLayoutManager.setCanScrollHorizontal(false)
+                is TutorialContent -> {
+                    Log.v("HomeFragment.onCardAppeared(): TutorialContent")
+                    cardStackLayoutManager.setCanScrollHorizontal(true)
+                }
+                is CardStackContent -> {
+                    Log.v("HomeFragment.onCardAppeared(): CardStackContent")
+                    cardStackLayoutManager.setCanScrollHorizontal(true)
+                }
+                is DailyQuestionContent -> {
+                    Log.v("HomeFragment.onCardAppeared(): DailyQuestionContent")
+                    cardStackLayoutManager.setCanScrollHorizontal(true)
+                }
+                else -> {
+                    Log.v("HomeFragment.onCardAppeared(): not all above")
+                    cardStackLayoutManager.setCanScrollHorizontal(false)
+                }
             }
             currentPosition = position
         }
@@ -277,14 +292,15 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             runOnBackground {
                 // pick nope 여부 서버 업데이트
                 val (opponentId, opponentName) = cardStackAdapter.getUserInfo(currentPosition)
+                val picked = direction == Direction.Right
                 val isPicked = CommandProcess.pick(
                     userId = StaticComponent.user.userId,
                     opponentId = opponentId,
-                    isPick = direction == Direction.Right
+                    isPick = picked
                 ).result!!
 
                 // 서로 pick했을 때 서버에 채팅 생성 요청
-                if (isPicked) {
+                if (picked && isPicked) {
                     CommandProcess.createChat(
                         userId = StaticComponent.user.userId,
                         userName = StaticComponent.user.name,

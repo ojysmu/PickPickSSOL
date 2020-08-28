@@ -28,11 +28,8 @@ object StaticComponent {
                     it.put("password", password)
                 }
 
-                val sqlitePath = fragment.requireContext().filesDir.toString()
+                val sqlitePath = fragment.requireContext().getDatabasePath("tables.db")
                 SQLiteDownloader(user.userId, sqlitePath).execute().get()
-                Log.v("StaticComponent.signIn() 1")
-                SQLiteConnection.createInstance(sqlitePath, true).start()
-                Log.v("StaticComponent.signIn() 2")
 
                 if (LocationUtil.checkLocationPermission(fragment.requireContext())) {
                     runOnBackground {

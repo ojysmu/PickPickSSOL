@@ -1,6 +1,7 @@
 package mbtinder.android.io.http
 
 import android.os.AsyncTask
+import mbtinder.android.io.database.SQLiteConnection
 import mbtinder.android.util.Log
 import mbtinder.lib.constant.ServerPath
 import java.io.File
@@ -8,7 +9,7 @@ import java.io.FileNotFoundException
 import java.net.URL
 import java.util.*
 
-class SQLiteDownloader(private val userId: UUID, private val filesDir: String) : AsyncTask<Void, Void, Unit>() {
+class SQLiteDownloader(private val userId: UUID, private val databaseDir: File) : AsyncTask<Void, Void, Unit>() {
     override fun doInBackground(vararg params: Void?) {
         val url = URL(ServerPath.getUserDatabaseUrl(userId))
         val connection = url.openConnection()
@@ -17,13 +18,14 @@ class SQLiteDownloader(private val userId: UUID, private val filesDir: String) :
         try {
             val inputStream = connection.getInputStream()
             val bytes = inputStream.readBytes()
-            val destFile = File("$filesDir/tables.db")
-            if (destFile.exists()) {
-                destFile.delete()
+            if (databaseDir.exists()) {
+                databaseDir.delete()
             }
-            destFile.createNewFile()
-            destFile.outputStream().write(bytes)
+            databaseDir.createNewFile()
+            databaseDir.outputStream().write(bytes)
             inputStream.close()
+
+            SQLiteConnection.createInstance(databaseDir)
         } catch (e: FileNotFoundException) {
             Log.e("Failed to download database", e)
         }

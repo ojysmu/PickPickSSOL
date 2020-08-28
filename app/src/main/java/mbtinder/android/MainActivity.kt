@@ -2,7 +2,6 @@ package mbtinder.android
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -10,14 +9,11 @@ import mbtinder.android.io.socket.SocketClient
 import mbtinder.android.service.ThreadService
 import mbtinder.android.ui.model.Activity
 import mbtinder.android.util.DialogFactory
-import mbtinder.android.util.LocationUtil
 import mbtinder.android.util.Log
 import mbtinder.android.util.runOnBackground
-import mbtinder.lib.component.user.Coordinator
-import mbtinder.lib.constant.Notification
 import mbtinder.lib.constant.ServerPath
+import mbtinder.lib.util.block
 import java.io.IOException
-import java.lang.RuntimeException
 
 class MainActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,7 +23,7 @@ class MainActivity : Activity() {
         try {
             initializeSocketClient()
         } catch (e: RuntimeException) {
-            SocketClient.releaseInstance()
+            SocketClient.releaseInstance(false)
             initializeSocketClient()
         }
 
@@ -55,7 +51,7 @@ class MainActivity : Activity() {
     private fun onConnectionFailed(e: IOException) {
         Log.e("onConnectionFailed", e)
 
-        SocketClient.releaseInstance()
+        SocketClient.releaseInstance(false)
         runOnUiThread {
             DialogFactory.getContentedDialog(this, R.string.socket_on_connection_failed, this::finish).show()
         }
@@ -64,7 +60,7 @@ class MainActivity : Activity() {
     private fun onDisconnected(e: IOException) {
         Log.e("onDisconnected", e)
 
-        SocketClient.releaseInstance()
+        SocketClient.releaseInstance(false)
         runOnBackground {
             val result = retryConnection(0)
             if (result) {
@@ -93,15 +89,13 @@ class MainActivity : Activity() {
             }
             onConnectionFailed = {
                 Log.v("retryConnection: onConnectionFailed depth=$depth")
-                SocketClient.releaseInstance()
+                SocketClient.releaseInstance(false)
                 Thread.sleep(1000)
                 result = retryConnection(depth + 1)
             }
         }.start()
 
-        while (result == null) { // TODO: Use block
-            Thread.sleep(500)
-        }
+        block(500) { result == null }
 
         return result!!
     }

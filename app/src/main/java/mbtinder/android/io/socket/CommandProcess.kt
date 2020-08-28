@@ -1,12 +1,17 @@
 package mbtinder.android.io.socket
 
+import mbtinder.android.component.LocalChatContent
+import mbtinder.android.component.LocalDailyQuestionContent
+import mbtinder.android.component.LocalMessageContent
 import mbtinder.android.io.component.ServerResult
 import mbtinder.android.io.database.SQLiteConnection
 import mbtinder.android.io.http.ImageUploader
 import mbtinder.android.ui.fragment.account.AccountFragment
 import mbtinder.android.ui.fragment.chat.ChatFragment
 import mbtinder.android.ui.fragment.sign_up.SignUp5Fragment
-import mbtinder.lib.component.*
+import mbtinder.android.util.CryptoUtil
+import mbtinder.lib.component.ChatContent
+import mbtinder.lib.component.MessageContent
 import mbtinder.lib.component.card_stack.CardStackContent
 import mbtinder.lib.component.card_stack.DailyQuestionContent
 import mbtinder.lib.component.user.Coordinator
@@ -46,13 +51,13 @@ object CommandProcess {
     fun signUp(email: String, password: String, name: String, age: Int, gender: Int, description: String, passwordQuestionId: Int, passwordAnswer: String): ServerResult<UUID> {
         val arguments = JSONObject()
         arguments.put("email", email)
-        arguments.put("password", password)
+        arguments.put("password", CryptoUtil.encrypt(password))
         arguments.put("name", name)
         arguments.put("age", age)
         arguments.put("gender", gender)
         arguments.put("description", description)
         arguments.put("password_question_id", passwordQuestionId)
-        arguments.put("password_answer", passwordAnswer)
+        arguments.put("password_answer", CryptoUtil.encrypt(passwordAnswer))
 
         val result = SocketUtil.getServerResult(Command.ADD_USER, arguments)
         return if (result.getBoolean("result")) {
@@ -164,7 +169,7 @@ object CommandProcess {
     fun signIn(email: String, password: String): ServerResult<UserContent> {
         val arguments = JSONObject()
         arguments.put("email", email)
-        arguments.put("password", password)
+        arguments.put("password", CryptoUtil.encrypt(password))
 
         return SocketUtil.getSingleResult(
             SocketUtil.getServerResult(Command.SIGN_IN, arguments),
@@ -186,7 +191,7 @@ object CommandProcess {
         val arguments = JSONObject()
         arguments.put("email", email)
         arguments.put("password_question_id", passwordQuestionId)
-        arguments.put("password_answer", passwordAnswer)
+        arguments.put("password_answer", CryptoUtil.encrypt(passwordAnswer))
 
         val result = SocketUtil.getServerResult(Command.FIND_PASSWORD, arguments)
         return if (result.getBoolean("result")) {
@@ -199,7 +204,7 @@ object CommandProcess {
     fun updatePassword(userId: UUID, password: String): ServerResult<Void> {
         val arguments = JSONObject()
         arguments.put("user_id", userId.toString())
-        arguments.put("password", password)
+        arguments.put("password", CryptoUtil.encrypt(password))
 
         return SocketUtil.getVoidResult(
             SocketUtil.getServerResult(Command.UPDATE_PASSWORD, arguments)
@@ -268,7 +273,7 @@ object CommandProcess {
     fun isAnsweredQuestion(questionId: UUID): Boolean {
         val connection = SQLiteConnection.getInstance()
         val sql = "SELECT _id FROM daily_questions WHERE question_id='$questionId'"
-        val queryResult = connection.executeQuery(sql)
+        val queryResult = connection.executeQuery<LocalDailyQuestionContent>(sql)
 
         return queryResult.getRowCount() != 0
     }
@@ -316,32 +321,29 @@ object CommandProcess {
         arguments.put("receiver_name", opponentName)
 
         val result = SocketUtil.getServerResult(Command.CREATE_CHAT, arguments)
-        if (result.getBoolean("result")) {
-            val chatId = result.getUUID("chat_id")
+        return if (result.getBoolean("result")) {
+            val chatContent = ChatContent(result.getUUID("chat_id"), opponentId, opponentName)
+            val messageContent = MessageContent(result.getJSONObject("message_content"))
             val connection = SQLiteConnection.getInstance()
-            connection.executeUpdate("CREATE TABLE '$chatId' (" +
-                    "_id         INTEGER PRIMARY KEY AUTOINCREMENT , " +
-                    "sender_id   CHAR(36) NOT NULL , " +
-                    "receiver_id CHAR(36) NOT NULL , " +
-                    "timestamp   BIGINT NOT NULL , " +
-                    "body        VARCHAR(200) NOT NULL)")
-            connection.executeUpdate("INSERT INTO chat (chat_id, receiver_id) VALUES ('$chatId', '$opponentId')")
-            connection.executeUpdate("INSERT INTO '$chatId' " +
-                    "(sender_id, receiver_id, timestamp, body) VALUES " +
-                    "('$userId', '$opponentId', ${System.currentTimeMillis()}, '매칭되었습니다.')")
+            connection.executeUpdate(chatContent.getCreateSql())
+            connection.executeUpdate(chatContent.getInsertSql())
+            connection.executeUpdate(messageContent.getLocalInsertMessageSql())
 
-            return ServerResult(true)
+            ServerResult(true)
         } else {
-            return ServerResult(false, result.getInt("code"))
+            ServerResult(false, result.getInt("code"))
         }
     }
 
     fun getMessages(chatId: UUID, opponentName: String): IDList<MessageContent> {
         val sql = "SELECT * FROM '$chatId'"
-        val queryResult = SQLiteConnection.getInstance().executeQuery(sql)
+        val queryResult = SQLiteConnection.getInstance().executeQuery<LocalMessageContent>(sql)
 
         return queryResult.content
-            .map { MessageContent(it, chatId, opponentName) }
+            .map { it.toMessageContent().apply {
+                this.chatId = chatId
+                this.opponentName = opponentName
+            }}
             .sorted()
             .toIDList()
             .apply { uuid = chatId }
@@ -352,10 +354,10 @@ object CommandProcess {
         val chatIds = getChatContents()
         return chatIds.map {
             val sql = "SELECT * FROM '${it.chatId}' where _id = (SELECT MAX(_id) FROM '${it.chatId}')"
-            val queryResult = connection.executeQuery(sql)
+            val queryResult = connection.executeQuery<LocalMessageContent>(sql)
 
-            MessageContent(queryResult.content[0], it.chatId, it.opponentName)
-        }.sorted().toIDList()
+            queryResult.content[0].toMessageContent().apply { this.chatId = it.chatId; this.opponentName = it.opponentName }
+        }.sorted().reversed().toIDList()
     }
 
     fun sendMessage(chatId: UUID, senderId: UUID, receiverId: UUID, opponentName: String, body: String): ServerResult<Long> {
@@ -376,17 +378,17 @@ object CommandProcess {
 
     private fun getChatContents(): List<ChatContent> {
         val connection = SQLiteConnection.getInstance()
-        val sql = "SELECT chat_id, opponent_name FROM chat"
-        val queryResult = connection.executeQuery(sql)
+        val sql = "SELECT * FROM chat"
+        val queryResult = connection.executeQuery<LocalChatContent>(sql)
 
-        return queryResult.content.map { ChatContent(it) }
+        return queryResult.content.map { it.toChatContent() }
     }
 
     private fun getAnsweredHead(): Pair<Int, Int> {
         val connection = SQLiteConnection.getInstance()
         val sql = "SELECT _id FROM daily_questions"
-        val queryResult = connection.executeQuery(sql)
-        val firstId = if (queryResult.getRowCount() > 0) queryResult.content[0].getInt("_id") else -1
+        val queryResult = connection.executeQuery<LocalDailyQuestionContent>(sql)
+        val firstId = if (queryResult.getRowCount() > 0) queryResult.content[0]._id else -1
 
         return Pair(queryResult.getRowCount(), firstId)
     }

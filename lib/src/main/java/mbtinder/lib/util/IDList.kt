@@ -45,3 +45,13 @@ class IDList<E: IDContent>: ArrayList<E>, IDContent {
 fun <E: IDContent> Collection<E>.toIDList() = IDList(this)
 
 fun <E: IDContent> idListOf(vararg elements: E) = IDList(elements.toList())
+
+fun <E: IDContent> List<E>.indexOf(uuid: UUID): Int {
+    for ((index, element) in withIndex()) {
+        if (element.getUUID() == uuid) {
+            return index
+        }
+    }
+
+    return -1
+}

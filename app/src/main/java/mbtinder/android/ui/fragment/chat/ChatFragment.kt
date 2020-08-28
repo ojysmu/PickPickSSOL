@@ -25,6 +25,8 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
     private val opponentId by lazy { requireArguments().getUUID("opponent_id")!! }
     private val opponentName by lazy { requireArguments().getString("opponent_name")!! }
 
+    private val messages = IDList<MessageContent>()
+
     override fun initializeView() {
         fragment = this
         requireActivity().findViewById<BottomNavigationView>(R.id.nav_view).visibility = View.GONE
@@ -89,24 +91,27 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
                     body = body
                 )
 
-                aliveAdapter!!.addContent(messageContent)
-//                SQLiteConnection.getInstance().addQuery(messageContent.getLocalInsertMessageSql())
                 SQLiteConnection.getInstance().executeUpdate(messageContent.getLocalInsertMessageSql())
 
-                chat_recycler_view.scrollToPosition(aliveAdapter!!.getLastIndex())
+                runOnUiThread {
+                    aliveAdapter!!.addContent(messageContent)
+                    chat_recycler_view.scrollToPosition(aliveAdapter!!.getLastIndex())
+                }
             } else {
-                Toast.makeText(requireContext(), R.string.chat_failed_to_send, Toast.LENGTH_SHORT).show()
+                runOnUiThread {
+                    Toast.makeText(requireContext(), R.string.chat_failed_to_send, Toast.LENGTH_SHORT).show()
+                }
             }
         }
     }
 
     private fun updateMessages() {
-        messages.add(CommandProcess.getMessages(chatId, opponentName))
+        messages.addAll(CommandProcess.getMessages(chatId, opponentName))
         runOnUiThread(this::onMessageUpdated)
     }
 
     private fun onMessageUpdated() {
-        aliveAdapter = MessageAdapter(chat_recycler_view, messages[chatId])
+        aliveAdapter = MessageAdapter(chat_recycler_view, messages)
         aliveAdapter!!.setHasStableIds(true)
 
         chat_send.isEnabled = true
@@ -118,7 +123,6 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
 
     companion object {
         // Chat ID 단위로 구별되는 cache
-        private val messages = IDList<IDList<MessageContent>>()
         private var aliveAdapter: MessageAdapter? = null
         private var fragment: ChatFragment? = null
 
@@ -126,22 +130,9 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
             aliveAdapter?.let {
                 it.addContent(messageContent)
                 it.recyclerView.scrollToPosition(it.getLastIndex())
-            } ?: let {
-                if (messages.contains(messageContent.chatId)) {
-                    messages[messageContent.chatId].add(messageContent)
-                } else {
-                    val newChat = IDList<MessageContent>()
-                    newChat.uuid = messageContent.chatId
-                    newChat.add(messageContent)
-                    messages.add(newChat)
-                }
             }
 
             return aliveAdapter == null
-        }
-
-        fun deleteMessage(chatId: UUID) {
-            messages.remove(chatId)
         }
 
         fun isAlive(chatId: UUID) = aliveAdapter?.getChatId() == chatId

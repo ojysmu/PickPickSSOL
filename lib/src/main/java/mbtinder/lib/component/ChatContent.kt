@@ -5,7 +5,7 @@ import mbtinder.lib.component.json.JSONParsable
 import org.json.JSONObject
 import java.util.*
 
-class ChatContent: JSONParsable, IDContent, Comparable<ChatContent> {
+open class ChatContent: JSONParsable, IDContent, Comparable<ChatContent> {
     lateinit var chatId: UUID
     lateinit var opponentId: UUID
     lateinit var opponentName: String
@@ -29,14 +29,14 @@ class ChatContent: JSONParsable, IDContent, Comparable<ChatContent> {
     }
 
     fun getCreateSql() = "CREATE TABLE '$chatId' (" +
-            "_id         INTEGER PRIMARY KEY AUTOINCREMENT , " +
-            "sender_id   CHAR(36) NOT NULL , " +
+            "_id INTEGER PRIMARY KEY AUTOINCREMENT , " +
+            "sender_id CHAR(36) NOT NULL , " +
             "receiver_id CHAR(36) NOT NULL , " +
-            "timestamp   BIGINT NOT NULL , " +
-            "body        VARCHAR(200) NOT NULL)"
+            "timestamp BIGINT NOT NULL , " +
+            "body VARCHAR(200) NOT NULL)"
 
     fun getInsertSql() = "INSERT INTO chat (" +
-            "chat_id, receiver_id, receiver_name) VALUES (" +
+            "chat_id, opponent_id, opponent_name) VALUES (" +
             "'${chatId}', '${opponentId}', '${opponentName}')"
 
     override fun getUUID() = chatId

@@ -3,16 +3,21 @@ package mbtinder.android.io.database
 import mbtinder.android.util.Log
 import mbtinder.lib.component.database.Query
 import mbtinder.lib.component.database.QueryResult
-import mbtinder.lib.util.CloseableThread
-import java.sql.Driver
-import java.sql.DriverManager
-import java.sql.SQLException
-import java.sql.Statement
+import org.sqldroid.SQLDroidConnection
+import org.sqldroid.SQLDroidResultSet
+import org.sqldroid.SQLDroidStatement
+import java.io.File
+import java.sql.*
 import java.util.*
 
-class SQLiteConnection private constructor(filesDir: String): CloseableThread() {
+class SQLiteConnection private constructor(databaseDir: File): AutoCloseable {
     companion object {
         private var instance: SQLiteConnection? = null
+
+        fun releaseInstance() {
+            instance?.close()
+            instance = null
+        }
 
         fun getInstance(): SQLiteConnection {
             if (instance == null) {
@@ -22,50 +27,49 @@ class SQLiteConnection private constructor(filesDir: String): CloseableThread() 
             return instance!!
         }
 
-        fun createInstance(filesDir: String, isFirst: Boolean): SQLiteConnection {
-            if (isFirst && instance != null) {
+        fun createInstance(databaseDir: File): SQLiteConnection {
+            instance?.let {
+                it.close()
                 instance = null
             }
-            instance = SQLiteConnection(filesDir)
+            instance = SQLiteConnection(databaseDir)
 
             return instance!!
         }
-
-        fun isAlive() = instance != null
     }
 
-    private val statement: Statement
+    private val connection: SQLDroidConnection
+    private val statement: SQLDroidStatement
 
     init {
-        Log.v("SQLiteConnection.init 0")
         DriverManager.registerDriver(Class.forName("org.sqldroid.SQLDroidDriver").newInstance() as Driver)
-        Log.v("SQLiteConnection.init 1")
-        val connection = DriverManager.getConnection("jdbc:sqldroid:$filesDir/tables.db")
-        Log.v("SQLiteConnection.init 2")
-        statement = connection.createStatement()
-        Log.v("SQLiteConnection.init 3")
+        connection = DriverManager.getConnection("jdbc:sqldroid:${databaseDir.absolutePath}") as SQLDroidConnection
+        statement = connection.createStatement() as SQLDroidStatement
     }
 
-    fun executeQuery(sql: String): QueryResult {
+    fun <T: RowContent> executeQuery(sql: String, clazz: Class<T>): SQLiteResult<T> {
         val query = Query(UUID.randomUUID(), sql)
         val resultSet = try {
-            statement.executeQuery(sql)
+            statement.executeQuery(sql) as SQLDroidResultSet
         } catch (e: SQLException) {
             Log.e("Error occurred while running query: ${query.sql}", e)
             throw e
         }
 
-        val queryResult = QueryResult(query, resultSet)
+        val queryResult = SQLiteResult(query, resultSet, clazz)
         resultSet.close()
 
         return queryResult
     }
 
+    inline fun <reified T: RowContent> executeQuery(sql: String): SQLiteResult<T> {
+        return executeQuery(sql, T::class.java)
+    }
+
     fun executeUpdate(sql: String) = statement.executeUpdate(sql)
 
     override fun close() {
-        super.close()
-
         statement.close()
+        connection.close()
     }
 }

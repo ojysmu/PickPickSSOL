@@ -16,6 +16,7 @@ internal class ListeningThread(private val context: Context,
     init {
         loop = {
             try {
+                Log.v("ListeningThread: Waiting...")
                 val rawResponse = dataInputStream.readUTF()
                 val response = JSONObject(rawResponse)
                 Log.v("ListeningThread: $response")

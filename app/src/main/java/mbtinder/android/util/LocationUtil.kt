@@ -74,16 +74,12 @@ object LocationUtil {
         requestCode == LOCATION_REQUEST_CODE && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED
 
     fun onLocationPermissionGranted(context: Context): Coordinator {
-        Log.v("LocationUtil.onLocationPermissionGranted()")
-
         var coordinator: Coordinator? = null
 
-        getLocation(context) { location ->
-            Log.v("LocationUtil.onLocationPermissionGranted(): received")
+        getLocation(context) {
             if (coordinator == null) {
-                coordinator = Coordinator(location.longitude, location.latitude)
+                coordinator = Coordinator(it.longitude, it.latitude)
             }
-            Log.v("LocationUtil.onLocationPermissionGranted(): coordinator=$coordinator")
         }
 
         block { coordinator == null }

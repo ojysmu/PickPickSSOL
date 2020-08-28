@@ -114,6 +114,7 @@ object CommandProcess {
             val createTableSql = "CREATE TABLE chat (" +
                     "_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     "chat_id CHAR(36) NOT NULL, " +
+                    "opponent_id CHAR(36) NOT NULL, " +
                     "opponent_name VARCHAR(10) NOT NULL)"
             sqLiteConnection.addQuery(createTableSql)
         }
@@ -186,7 +187,6 @@ object CommandProcess {
 
     private fun updateSearchFilter(command: CommandContent): JSONObject {
         val searchFilter = SearchFilter(command.arguments.getJSONObject("search_filter"))
-        println("updateSearchFilter(): searchFilter=${searchFilter.userId}, gender=${searchFilter.gender}, age_start=${searchFilter.ageStart}, age_end=${searchFilter.ageEnd}, distance=${searchFilter.distance}")
         MySQLServer.getInstance().addQuery(searchFilter.getUpdateSql())
 
         return JSONObject()
@@ -215,7 +215,7 @@ object CommandProcess {
         // 채팅 목록 불러오기
         val chatIdsSql = "SELECT * FROM chat"
         sqLiteConnection.getResult(sqLiteConnection.addQuery(chatIdsSql)).content
-            .map { Pair(it.getUUID("chat_id"), it.getUUID("receiver_id")) }
+            .map { it.getUUID("chat_id") to it.getUUID("opponent_id") }
             .forEach {
                 // 채팅 상대방 SQLiteConnection 탐색
                 val opponentConnection = SQLiteConnection.getConnection(it.second)
@@ -229,6 +229,14 @@ object CommandProcess {
                 opponentConnection.addQuery("DELETE FROM chat where chat_id='${it.first}'")
                 // 채팅 테이블 삭제
                 opponentConnection.addQuery("DROP TABLE '${it.first}'")
+
+                NotificationServer.getInstance().addNotification(NotificationForm(
+                    notification = Notification.CHAT_REMOVED,
+                    receiverId = it.second,
+                    title = "",
+                    content = "",
+                    extra = JSONObject().apply { putUUID("chat_id", it.first) }
+                ))
             }
         sqLiteConnection.close()
         // 사용자 모든 파일 삭제
@@ -308,7 +316,6 @@ object CommandProcess {
      */
     private fun signIn(command: CommandContent, connection: Connection): JSONObject {
         val email = command.arguments.getString("email")
-        // TODO: Encrypt
         val password = command.arguments.getString("password")
 
         return UserUtil.getUserByEmail(email, true)?.let {
@@ -566,7 +573,10 @@ object CommandProcess {
             }
         ))
 
-        return Connection.makePositiveResponse(command.uuid, JSONObject().apply { put("chat_id", chatId.toString()) })
+        return Connection.makePositiveResponse(command.uuid, JSONObject().apply {
+            put("chat_id", chatId.toString())
+            put("message_content", senderFirstMessage.toJSONObject())
+        })
     }
 
     /**

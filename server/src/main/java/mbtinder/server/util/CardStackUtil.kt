@@ -66,8 +66,6 @@ object CardStackUtil {
         return cardStacks!!.clone()
             .asSequence()
             .filter {
-                // 10명까지만
-                if (index == 10) return@filter false
                 // 점수 계산
                 it.score = UserUtil.getMatchingScore(finderMBTI, finderSignUpQuestionContents, finderDailyQuestionContents, it)
                 // 자기 자신 제외
@@ -78,10 +76,9 @@ object CardStackUtil {
                         && filter.isInRange(finderCoordinator, it)
                         // 매칭 점수가 30점 미만일 때 제외
                         && it.score >= 30
-                        // 10명까지만
-                        && index++ < 10
             }
             .sortedBy { it.score } // 점수 정렬
+            .apply { toMutableList().removeIf { index++ > 10 } }
             .toList()
     }
 

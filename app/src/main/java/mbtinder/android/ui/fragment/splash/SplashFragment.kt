@@ -11,6 +11,7 @@ import mbtinder.android.component.StaticComponent
 import mbtinder.android.io.socket.CommandProcess
 import mbtinder.android.ui.model.Fragment
 import mbtinder.android.util.*
+import java.io.File
 
 class SplashFragment : Fragment(R.layout.fragment_splash) {
     override fun initializeView() {
@@ -59,9 +60,8 @@ class SplashFragment : Fragment(R.layout.fragment_splash) {
     )
 
     private fun removeAccountInfo() {
-        SharedPreferencesUtil.getContext(requireContext(), SharedPreferencesUtil.PREF_ACCOUNT)
-            .removeField("email")
-            .removeField("password")
+        SharedPreferencesUtil.getContext(requireContext(), SharedPreferencesUtil.PREF_ACCOUNT).removePreference()
+        File("${requireContext().filesDir}/tables.db").delete()
     }
 
     private fun initializeSignUp() {

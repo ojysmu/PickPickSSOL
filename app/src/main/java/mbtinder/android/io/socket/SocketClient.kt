@@ -4,9 +4,11 @@ import android.content.Context
 import mbtinder.android.component.CommandResult
 import mbtinder.android.util.Log
 import mbtinder.lib.io.component.CommandContent
+import mbtinder.lib.io.constant.Command
 import mbtinder.lib.util.CloseableThread
 import mbtinder.lib.util.IDList
 import mbtinder.lib.util.block
+import org.json.JSONObject
 import java.io.DataInputStream
 import java.io.DataOutputStream
 import java.io.IOException
@@ -22,8 +24,7 @@ class SocketClient private constructor(private val address: String, private val 
 
         fun createInstance(address: String, port: Int, context: Context): SocketClient {
             if (instance == null) {
-                instance =
-                    SocketClient(address, port, context)
+                instance = SocketClient(address, port, context)
 
                 return instance!!
             } else {
@@ -39,7 +40,13 @@ class SocketClient private constructor(private val address: String, private val 
             }
         }
 
-        fun releaseInstance() {
+        fun releaseInstance(needClose: Boolean) {
+            Log.v("SocketClient.releaseInstance(): ${currentThread().stackTrace.toList()[3]}")
+            try {
+                if (needClose) {
+                    instance?.addCommand(CommandContent(UUID.randomUUID(), Command.CLOSE.name, JSONObject()))
+                }
+            } catch (e: Exception) {}
             instance = null
         }
 
@@ -76,7 +83,7 @@ class SocketClient private constructor(private val address: String, private val 
         }
 
         loop = {
-            block(commandPool) { it.isEmpty() }
+            block(commandPool, intervalInMillis) { it.isEmpty() }
 
             val command = commandPool.removeAt(0)
             val clientMessage = command.toJSONObject().toString()

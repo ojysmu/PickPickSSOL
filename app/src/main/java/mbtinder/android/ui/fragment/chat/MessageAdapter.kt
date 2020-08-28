@@ -9,8 +9,6 @@ import mbtinder.android.component.StaticComponent
 import mbtinder.android.util.Log
 import mbtinder.lib.component.MessageContent
 import java.util.*
-import java.util.concurrent.TimeUnit
-import kotlin.collections.ArrayList
 
 class MessageAdapter(val recyclerView: RecyclerView, private val contents: ArrayList<MessageContent>) : RecyclerView.Adapter<MessageViewHolder>() {
     private lateinit var context: Context

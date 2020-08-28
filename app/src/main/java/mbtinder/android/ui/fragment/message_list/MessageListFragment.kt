@@ -16,6 +16,8 @@ import mbtinder.lib.util.IDList
 import java.util.*
 
 class MessageListFragment: Fragment(R.layout.fragment_message_list) {
+    private val lastMessages = IDList<MessageContent>()
+
     override fun initializeView() {
         requireActivity().findViewById<BottomNavigationView>(R.id.nav_view).visibility = View.VISIBLE
 
@@ -28,13 +30,15 @@ class MessageListFragment: Fragment(R.layout.fragment_message_list) {
     }
 
     private fun updateLastMessages() {
-        lastMessages = CommandProcess.getLastMessages()
+        lastMessages.clear()
+        lastMessages.addAll(CommandProcess.getLastMessages())
 
         onLastMessageUpdated()
     }
 
     private fun onLastMessageUpdated() {
-        aliveAdapter = ChatAdapter(this, lastMessages!!)
+        aliveAdapter = ChatAdapter(this, lastMessages)
+        aliveAdapter!!.setHasStableIds(true)
 
         runOnUiThread {
             message_list_recycler_view?.adapter = aliveAdapter
@@ -45,42 +49,25 @@ class MessageListFragment: Fragment(R.layout.fragment_message_list) {
 
     private fun onSearchChanged(editable: Editable?) {
         editable?.let {
-            if (editable.isNotBlank()) {
-                aliveAdapter!!.updateFilter(editable.toString())
-            } else {
-                aliveAdapter!!.updateContents(lastMessages!!)
-            }
+            aliveAdapter?.filter?.filter(it)
         }
     }
 
+    override fun onStop() {
+        super.onStop()
+
+        aliveAdapter = null
+    }
+
     companion object {
-        var lastMessages: IDList<MessageContent>? = null
         private var aliveAdapter: ChatAdapter? = null
 
         fun setLastMessage(messageContent: MessageContent) {
-            lastMessages?.let { messages ->
-                val found = lastMessages!!.find { it.chatId == messageContent.chatId }
-                if (found != null) {
-                    messages.remove(found)
-                    messages.add(messageContent)
-                    messages.sort()
-                    messages.reverse()
-                    aliveAdapter?.notifyDataSetChanged()
-                } else {
-                    messages.add(messageContent)
-                    messages.sort()
-                    messages.reverse()
-                    aliveAdapter?.notifyItemInserted(lastMessages!!.size - 1)
-                }
-            }
+            aliveAdapter?.addContent(messageContent)
         }
 
-        fun deleteLastMessage(chatId: UUID) {
-            lastMessages?.let {
-                it.find { messageContent -> messageContent.chatId == chatId }
-                    ?.let { messageContent -> it.remove(messageContent) }
-            }
-            aliveAdapter?.notifyDataSetChanged()
+        fun deleteLastMessage(chatId: UUID): MessageContent? {
+            return aliveAdapter?.removeContent(chatId)
         }
     }
 }

@@ -26,7 +26,7 @@ class UpdatePasswordFragment : Fragment(R.layout.fragment_update_password) {
 
         ViewUtil.switchNextButton(layout_update_password)
         runOnBackground {
-            val password = update_password_password.getText() // TODO: encrypt
+            val password = update_password_password.getText()
             val updateResult = CommandProcess.updatePassword(userId, password)
             if (updateResult.isSucceed) {
                 runOnUiThread {

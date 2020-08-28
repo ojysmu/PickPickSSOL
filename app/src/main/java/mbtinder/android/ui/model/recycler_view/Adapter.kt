@@ -4,14 +4,22 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Filter
+import android.widget.Filterable
 import androidx.annotation.LayoutRes
 import androidx.recyclerview.widget.RecyclerView
+import mbtinder.android.util.Log
+import mbtinder.lib.component.MessageContent
+import mbtinder.lib.util.toArrayList
 import java.lang.reflect.Constructor
 
 abstract class Adapter<T>(@LayoutRes private val rootView: Int,
                           private var contents: MutableList<T>,
                           private val clazz: Class<out AdaptableViewHolder<T>>): RecyclerView.Adapter<AdaptableViewHolder<T>>() {
     protected lateinit var context: Context
+    private var isFiltered = false
+//    private var filterMap = HashMap<String, MutableList<T>>()
+    private var filterMap = hashMapOf(Pair("", contents))
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AdaptableViewHolder<T> {
         context = parent.context
@@ -20,13 +28,16 @@ abstract class Adapter<T>(@LayoutRes private val rootView: Int,
         return clazz.getDeclaredConstructor(View::class.java).newInstance(view)
     }
 
-    override fun getItemCount(): Int {
-        return contents.size
-    }
+    override fun getItemCount() = contents.size
 
-    fun addContent(element: T) {
+    open fun addContent(element: T) {
         contents.add(element)
         notifyItemInserted(contents.size - 1)
+    }
+
+    fun addContent(index: Int, element: T) {
+        contents.add(index, element)
+        notifyItemInserted(index)
     }
 
     fun addContents(elements: Collection<T>) {
@@ -39,8 +50,15 @@ abstract class Adapter<T>(@LayoutRes private val rootView: Int,
         notifyItemRemoved(index)
     }
 
-    fun updateContents(content: MutableList<T>) {
+    fun updateContents(content: MutableList<T>, insertedIndices: List<Int>? = null, removedIndices: List<Int>? = null) {
         this.contents = content
-        notifyDataSetChanged()
+
+        insertedIndices?.reversed()?.forEach { notifyItemChanged(it) }
+        removedIndices?.reversed()?.forEach { notifyItemRemoved(it) }
+        if (insertedIndices == null && removedIndices == null) {
+            notifyDataSetChanged()
+        }
     }
+
+    fun getParentContents() = contents
 }

@@ -164,7 +164,7 @@ abstract class JSONParsable: JSONContent {
      * @return [JSONObject.toString]
      */
     override fun toString(): String {
-        return jsonObject.toString()
+        return toJSONObject().toString()
     }
 
     companion object {

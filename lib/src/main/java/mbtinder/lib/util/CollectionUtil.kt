@@ -17,3 +17,5 @@ fun <T> Collection<T>.merge(collection: Collection<T>): Collection<T> {
 fun <T> List<T>.merge(list: List<T>): List<T> {
     return toMutableList().apply { addAll(list) }
 }
+
+fun <T> List<T>.toArrayList() = ArrayList(this)

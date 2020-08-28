@@ -9,11 +9,14 @@ import androidx.annotation.IdRes
 import kotlinx.android.synthetic.main.fragment_account.*
 import mbtinder.android.R
 import mbtinder.android.component.StaticComponent
+import mbtinder.android.io.database.SQLiteConnection
 import mbtinder.android.io.socket.CommandProcess
+import mbtinder.android.io.socket.SocketClient
 import mbtinder.android.ui.model.Fragment
 import mbtinder.android.util.*
 import mbtinder.lib.component.user.SearchFilter
 import java.io.FileInputStream
+import java.sql.Date
 
 class AccountFragment : Fragment(R.layout.fragment_account) {
     private val requestCodeReadExternalStorage = 0x00
@@ -63,7 +66,7 @@ class AccountFragment : Fragment(R.layout.fragment_account) {
             R.id.account_gender_male -> 0
             R.id.account_gender_female -> 1
             R.id.account_gender_all -> 2
-            else -> throw AssertionError("gender should be in [0,1]")
+            else -> throw AssertionError("gender should be in [0,2]")
         }
     }
 
@@ -87,7 +90,15 @@ class AccountFragment : Fragment(R.layout.fragment_account) {
                     .getContext(requireContext(), SharedPreferencesUtil.PREF_ACCOUNT)
                     .removePreference()
                 waitDialog.dismiss()
-                Toast.makeText(requireActivity(), R.string.account_delete_succeed, Toast.LENGTH_SHORT).show()
+                val tokenized = Date(System.currentTimeMillis()).toString().split("-").map { it.toInt() }
+                Toast.makeText(
+                    requireActivity(),
+                    getString(
+                        R.string.account_delete_succeed,
+                        tokenized[0], tokenized[1], tokenized[2], StaticComponent.user.name
+                    ),
+                    Toast.LENGTH_SHORT
+                ).show()
                 finish()
             } else {
                 waitDialog.dismiss()
@@ -102,6 +113,9 @@ class AccountFragment : Fragment(R.layout.fragment_account) {
             SharedPreferencesUtil
                 .getContext(requireContext(), SharedPreferencesUtil.PREF_ACCOUNT)
                 .removePreference()
+            SQLiteConnection.releaseInstance()
+            requireContext().getDatabasePath("tables.db").delete()
+            SocketClient.releaseInstance(true)
             waitDialog.dismiss()
             Toast.makeText(requireActivity(), R.string.account_sign_out_succeed, Toast.LENGTH_SHORT).show()
             finish()
@@ -133,7 +147,7 @@ class AccountFragment : Fragment(R.layout.fragment_account) {
 
     private fun buildSearchFilter() = SearchFilter(
         StaticComponent.user.userId,
-        StaticComponent.user.gender,
+        StaticComponent.user.searchFilter.gender,
         account_age_selector.getStart(),
         account_age_selector.getEnd(),
         account_distance_selector.value.toInt()

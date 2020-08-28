@@ -1,7 +1,5 @@
 <resources>
     <string name="app_name">PickPick</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 
     <string name="nav_menu_home">홈</string>
     <string name="nav_menu_message_list">메시지</string>
@@ -157,7 +155,7 @@
     <string name="account_notification_title">알림 허용</string>
     <string name="account_delete_user">회원탈퇴</string>
     <string name="account_delete_user_alert">정말 탈퇴하시겠어요?</string>
-    <string name="account_delete_succeed">$4d년 %2d월 %2d일 %s 회원을 탈퇴처리하였습니다.</string>
+    <string name="account_delete_succeed">%4d년 %2d월 %2d일 %s 회원을 탈퇴처리하였습니다.</string>
     <string name="account_delete_failed">회원 탈퇴를 실패했습니다. 잠시 후 다시 시도해주세요.</string>
     <string name="account_sign_out">로그아웃</string>
     <string name="account_sign_out_alert">로그아웃하시겠어요?</string>

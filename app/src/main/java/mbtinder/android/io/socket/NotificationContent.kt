@@ -11,6 +11,7 @@ import androidx.core.app.NotificationCompat.FLAG_NO_CLEAR
 import androidx.core.app.NotificationCompat.FLAG_ONGOING_EVENT
 import androidx.navigation.NavDeepLinkBuilder
 import mbtinder.android.R
+import mbtinder.android.component.StaticComponent
 import mbtinder.android.io.socket.NotificationContent.Companion.makeNotification
 import mbtinder.android.ui.fragment.chat.ChatFragment
 import mbtinder.android.util.putUUID
@@ -30,18 +31,19 @@ private fun Context.getNotificationManager(): NotificationManager {
 val notifications = idListOf(
     NotificationContent(Notification.MATCHED) { context, title, content, extra ->
         NotificationProcess.onMatchReceived(extra)
-
-        val pendingIntent = NavDeepLinkBuilder(context)
-            .setGraph(R.navigation.navigation_main)
-            .setDestination(R.id.nav_message_list) // 메시지 목록으로 이동
-            .createPendingIntent()
-        val notification = makeNotification(
-            context = context,
-            title = title,
-            content = content,
-            contentIntent = pendingIntent
-        )
-        context.getNotificationManager().notify(0, notification)
+        if (StaticComponent.user.notification) {
+            val pendingIntent = NavDeepLinkBuilder(context)
+                .setGraph(R.navigation.navigation_main)
+                .setDestination(R.id.nav_message_list) // 메시지 목록으로 이동
+                .createPendingIntent()
+            val notification = makeNotification(
+                context = context,
+                title = title,
+                content = content,
+                contentIntent = pendingIntent
+            )
+            context.getNotificationManager().notify(0, notification)
+        }
     },
     NotificationContent(Notification.MESSAGE_RECEIVED) { context, title, content, extra ->
         val messageContent = NotificationProcess.onMessageReceived(extra!!)
@@ -58,14 +60,18 @@ val notifications = idListOf(
                 .setGraph(R.navigation.navigation_main)
                 .setArguments(arguments)
                 .createPendingIntent()
-            if (ChatFragment.addMessage(messageContent)) {
-                val notification = makeNotification(
-                    context = context,
-                    title = title,
-                    content = content,
-                    contentIntent = pendingIntent
-                )
-                context.getNotificationManager().notify(0, notification)
+            if (StaticComponent.user.notification) {
+                if (ChatFragment.addMessage(messageContent)) {
+                    val notification = makeNotification(
+                        context = context,
+                        title = title,
+                        content = content,
+                        contentIntent = pendingIntent
+                    )
+                    context.getNotificationManager().notify(0, notification)
+                }
+            } else {
+                ChatFragment.addMessage(messageContent)
             }
         }
     },

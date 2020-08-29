@@ -309,7 +309,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                     )
                 }
 
-                // nope된 사용자는 pool에 추가 FIXME
+                // nope된 사용자는 pool에 추가
                 if (direction == Direction.Right) {
                     runOnUiThread { cardStackAdapter.removeAt(currentPosition) }
                 }

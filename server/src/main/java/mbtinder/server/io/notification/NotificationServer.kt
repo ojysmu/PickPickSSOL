@@ -53,16 +53,10 @@ class NotificationServer private constructor(): CloseableThread() {
      * @return 추가 성공 여부
      */
     fun addNotification(form: NotificationForm) =
-        // 알림을 수신받는 사용자인지 확인
-        if (!UserUtil.getUser(form.receiverId)!!.notification) {
-            false
+        if (SocketServer.getInstance().hasConnection(form.receiverId)) {
+            notifications.add(form)
         } else {
-            // 수신자가 연결되어있는지 확인
-            if (SocketServer.getInstance().hasConnection(form.receiverId)) {
-                notifications.add(form)
-            } else {
-                false
-            }
+            false
         }
 
     /**

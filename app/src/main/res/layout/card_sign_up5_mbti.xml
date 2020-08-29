@@ -33,11 +33,11 @@
             android:id="@+id/card_sign_up5_mbti_check"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="gone"
             android:src="@drawable/baseline_check_circle_24"
-            android:tint="@color/colorPrimary"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:tint="@color/colorPrimary" />
 
         <TextView
             android:id="@+id/card_sign_up5_mbti_content"

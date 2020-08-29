@@ -52,7 +52,7 @@ object NotificationProcess {
         val chatId = extra.getUUID("chat_id")
         MessageListFragment.deleteLastMessage(chatId)?.let {
             SQLiteConnection.getInstance().executeUpdate("DELETE FROM chat where chat_id='$chatId'")
-            SQLiteConnection.getInstance().executeUpdate("DROP TABLE '$chatId'") 
+            SQLiteConnection.getInstance().executeUpdate("DROP TABLE '$chatId'")
         }
         if (ChatFragment.isAlive(chatId)) {
             runOnUiThread { ChatFragment.getFragment().findNavController().popBackStack() }

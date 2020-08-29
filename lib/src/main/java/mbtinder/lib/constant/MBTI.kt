@@ -1,7 +1,6 @@
 package mbtinder.lib.constant
 
 import mbtinder.lib.component.user.MBTIContent
-import java.util.*
 
 enum class MBTI(private val map: Array<Int>, private val content: String) {
     INFP(arrayOf(4, 4, 4, 3, 4, 3, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0), "열정적인 중재자"),

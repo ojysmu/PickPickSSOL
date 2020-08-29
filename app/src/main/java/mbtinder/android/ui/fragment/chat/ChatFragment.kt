@@ -94,8 +94,8 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
                 SQLiteConnection.getInstance().executeUpdate(messageContent.getLocalInsertMessageSql())
 
                 runOnUiThread {
-                    aliveAdapter!!.addContent(messageContent)
-                    chat_recycler_view.scrollToPosition(aliveAdapter!!.getLastIndex())
+                    aliveAdapter?.addContent(messageContent)
+                    chat_recycler_view.scrollToPosition(aliveAdapter?.getLastIndex() ?: 0)
                 }
             } else {
                 runOnUiThread {

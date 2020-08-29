@@ -1,13 +1,12 @@
 package mbtinder.lib.util
 
-import mbtinder.lib.component.json.JSONContent
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.sql.Date
-import java.util.UUID
+import java.util.*
 
 fun JSONObject.clone(): JSONObject {
     val cloned = JSONObject()
@@ -18,17 +17,17 @@ fun JSONObject.clone(): JSONObject {
     return cloned
 }
 
-fun JSONObject.getUUID(key: String) = UUID.fromString(getString(key))
+fun JSONObject.getUUID(key: String): UUID = UUID.fromString(getString(key))
 
-fun JSONObject.putUUID(key: String, uuid: UUID) = put(key, uuid.toString())
+fun JSONObject.putUUID(key: String, uuid: UUID): JSONObject = put(key, uuid.toString())
 
-fun JSONObject.getDate(key: String) = Date.valueOf(getString(key))
+fun JSONObject.getDate(key: String): Date = Date.valueOf(getString(key))
 
-fun JSONObject.putDate(key: String, date: Date) = put(key, date.toString())
+fun JSONObject.putDate(key: String, date: Date): JSONObject = put(key, date.toString())
 
-fun JSONArray.getUUID(index: Int) = UUID.fromString(getString(index))
+fun JSONArray.getUUID(index: Int): UUID = UUID.fromString(getString(index))
 
-fun JSONArray.putUUID(uuid: UUID) = put(uuid.toString())
+fun JSONArray.putUUID(uuid: UUID): JSONArray = put(uuid.toString())
 
 fun List<UUID>.toJSONArray() = JSONArray().also {
     forEach { element -> it.putUUID(element) }
@@ -52,10 +51,6 @@ fun loadJSONArray(path: String): JSONArray {
         return result
     }
 }
-
-fun <T: JSONContent> JSONList<T>.saveJSONList(path: String) = saveJSONString(toJSONArray().toString(), path)
-
-inline fun <reified T: JSONContent> loadJSONList(path: String) = loadJSONArray(path).toJSONList<T>()
 
 fun JSONObject.saveJSONObject(path: String) = saveJSONString(toString(), path)
 

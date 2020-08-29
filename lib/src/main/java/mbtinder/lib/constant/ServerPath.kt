@@ -4,8 +4,6 @@ import java.util.*
 
 object ServerPath {
     const val WEB_PROTOCOL = "http"
-//    const val ADDRESS = "==========FILL HERE=========="
-//    const val ADDRESS = "10.211.55.6"
     const val ADDRESS = "3.34.135.175"
     const val PORT_WEB = 80
     const val PORT_SOCKET = 8080

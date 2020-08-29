@@ -26,23 +26,3 @@ inline fun <R> runOnBackground(crossinline process: () -> R): R {
 
     return result!!
 }
-
-@AnyThread
-fun runEach(processes: Array<() -> Unit>) {
-    processes.forEach { runOnBackground(it) }
-}
-
-fun getStackTrace(): String {
-    val stackTraceElements = Thread.currentThread().stackTrace
-    val traceBuilder = StringBuilder()
-    for (i in 3 until stackTraceElements.size) {
-        traceBuilder.append(stackTraceElements[i].fileName)
-        traceBuilder.append(":")
-        traceBuilder.append(stackTraceElements[i].lineNumber)
-        traceBuilder.append(":")
-        traceBuilder.append(stackTraceElements[i].methodName)
-        traceBuilder.append(" => ")
-    }
-
-    return traceBuilder.toString()
-}

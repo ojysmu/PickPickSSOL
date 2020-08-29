@@ -63,7 +63,9 @@ class MessageListFragment: Fragment(R.layout.fragment_message_list) {
         private var aliveAdapter: ChatAdapter? = null
 
         fun setLastMessage(messageContent: MessageContent) {
-            aliveAdapter?.addContent(messageContent)
+            val opponentName = aliveAdapter?.getContent(messageContent.getUUID())?.opponentName
+            opponentName?.let { messageContent.opponentName = opponentName }
+            aliveAdapter?.addContent(messageContent) { it.timestamp }
         }
 
         fun deleteLastMessage(chatId: UUID): MessageContent? {

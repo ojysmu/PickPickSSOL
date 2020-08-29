@@ -126,7 +126,12 @@ class SocketServer private constructor(private val port: Int): CloseableThread()
      *
      * @param token: 삭제할 connection
      */
-    fun removeConnection(token: UUID) = connections.remove(token)
+    fun removeConnection(token: UUID) = try {
+        connections.remove(token)
+    } catch (e: IndexOutOfBoundsException) {
+        System.err.println("IOOOB on ${e.apply { printStackTrace() }}")
+        null
+    }
 
     /**
      * 현재 pool에 저장된 connection의 수를 반환

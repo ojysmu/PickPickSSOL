@@ -37,8 +37,6 @@ class IDList<E: IDContent>: ArrayList<E>, IDContent {
 
     fun remove(uuid: UUID) = sync(this) { super.removeAt(indexOf(uuid)) }
 
-    fun getIds() = map { it.getUUID() }
-
     override fun getUUID(): UUID = uuid
 }
 

@@ -26,7 +26,11 @@ internal class ListeningThread(private val context: Context,
                     val content = response.getString("content")
                     val extra = hasNotificationExtra(response)
 
-                    notifications[id].perform(context, title, content, extra)
+                    try {
+                        notifications[id].perform(context, title, content, extra)
+                    } catch (e: Exception) {
+                        stopThread()
+                    }
                 } else {
                     SocketClient.getInstance().addResult(CommandResult(response))
                 }

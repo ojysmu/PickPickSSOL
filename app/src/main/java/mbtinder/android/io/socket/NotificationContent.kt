@@ -4,11 +4,10 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent.FLAG_ACTIVITY_SINGLE_TOP
 import android.graphics.BitmapFactory
 import android.os.Bundle
-import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationCompat.FLAG_NO_CLEAR
-import androidx.core.app.NotificationCompat.FLAG_ONGOING_EVENT
+import androidx.core.app.NotificationCompat.*
 import androidx.navigation.NavDeepLinkBuilder
 import mbtinder.android.R
 import mbtinder.android.component.StaticComponent
@@ -77,6 +76,7 @@ val notifications = idListOf(
     },
     NotificationContent(Notification.BLOCKED) { _, _, _, extra -> NotificationProcess.onBlockReceived(extra!!) },
     NotificationContent(Notification.CHAT_REMOVED) { _, _, _, extra -> NotificationProcess.onChatRemoveReceived(extra!!) }
+//    NotificationContent(Notification.SOCKET_CLOSED) { _, _, _, _ -> NotificationProcess.onSocketClosed() }
 )
 
 data class NotificationContent(
@@ -86,8 +86,8 @@ data class NotificationContent(
     override fun getUUID() = notification.notificationId
 
     companion object {
-        private const val CHANNEL_ID = "pickpick_channel_id"
-        private const val CHANNEL_NAME = "pickpick_channel_name"
+        private const val CHANNEL_ID = "PickPick"
+        private const val CHANNEL_NAME = "PickPick"
 
         fun makeNotification(
             context: Context,
@@ -95,20 +95,20 @@ data class NotificationContent(
             content: CharSequence,
             contentIntent: PendingIntent
         ): android.app.Notification {
-            val builder = NotificationCompat.Builder(context, CHANNEL_ID)
+            val builder = Builder(context, CHANNEL_ID)
                 .setLargeIcon(BitmapFactory.decodeResource(context.resources, R.mipmap.ic_launcher))
                 .setContentTitle(title)
                 .setContentText(content)
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setPriority(PRIORITY_DEFAULT)
                 .setContentIntent(contentIntent)
                 .setAutoCancel(true)
 
             builder.setSmallIcon(R.mipmap.ic_launcher)
-            val channel = NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH)
+            val channel = NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT)
             context.getNotificationManager().createNotificationChannel(channel)
 
             val notification = builder.build()
-            notification.flags = FLAG_ONGOING_EVENT or FLAG_NO_CLEAR
+            notification.flags = FLAG_ACTIVITY_SINGLE_TOP or FLAG_ONGOING_EVENT or FLAG_NO_CLEAR or FLAG_AUTO_CANCEL
 
             return notification
         }

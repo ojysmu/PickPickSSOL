@@ -5,7 +5,6 @@ import java.util.*
 
 class Query(private val queryId: UUID, val sql: String): IDContent {
     companion object {
-        private val NO_RESULT = arrayOf("INSERT", "UPDATE", "DELETE")
         private val NEED_RESULT = arrayOf("SHOW", "SELECT")
     }
 

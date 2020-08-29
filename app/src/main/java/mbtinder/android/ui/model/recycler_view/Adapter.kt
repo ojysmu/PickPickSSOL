@@ -4,21 +4,14 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Filter
-import android.widget.Filterable
 import androidx.annotation.LayoutRes
 import androidx.recyclerview.widget.RecyclerView
-import mbtinder.android.util.Log
-import mbtinder.lib.component.MessageContent
-import mbtinder.lib.util.toArrayList
-import java.lang.reflect.Constructor
 
 abstract class Adapter<T>(@LayoutRes private val rootView: Int,
                           private var contents: MutableList<T>,
                           private val clazz: Class<out AdaptableViewHolder<T>>): RecyclerView.Adapter<AdaptableViewHolder<T>>() {
     protected lateinit var context: Context
     private var isFiltered = false
-//    private var filterMap = HashMap<String, MutableList<T>>()
     private var filterMap = hashMapOf(Pair("", contents))
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AdaptableViewHolder<T> {

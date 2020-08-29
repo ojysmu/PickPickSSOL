@@ -4,9 +4,7 @@ import mbtinder.lib.constant.NotificationForm
 import mbtinder.lib.util.CloseableThread
 import mbtinder.lib.util.IDList
 import mbtinder.lib.util.block
-import mbtinder.lib.util.sync
 import mbtinder.server.io.socket.SocketServer
-import mbtinder.server.util.UserUtil
 import java.util.*
 
 class NotificationServer private constructor(): CloseableThread() {

@@ -55,7 +55,10 @@ object NotificationProcess {
             SQLiteConnection.getInstance().executeUpdate("DROP TABLE '$chatId'")
         }
         if (ChatFragment.isAlive(chatId)) {
-            runOnUiThread { ChatFragment.getFragment().findNavController().popBackStack() }
+            runOnUiThread {
+                ChatFragment.getFragment().findNavController().popBackStack()
+                MessageListFragment.deleteLastMessage(chatId)
+            }
         }
     }
 
@@ -75,7 +78,14 @@ object NotificationProcess {
             SQLiteConnection.getInstance().executeUpdate("DROP TABLE '$chatId'")
         }
         if (ChatFragment.isAlive(chatId)) {
-            runOnUiThread { ChatFragment.getFragment().findNavController().popBackStack() }
+            runOnUiThread {
+                ChatFragment.getFragment().findNavController().popBackStack()
+                MessageListFragment.deleteLastMessage(chatId)
+            }
         }
+    }
+
+    fun onSocketClosed() {
+        SocketClient.releaseInstance(false)
     }
 }

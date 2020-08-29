@@ -3,15 +3,18 @@
     <item
         android:id="@+id/nav_account"
         android:icon="@drawable/baseline_person_24"
-        android:title="@string/nav_menu_account" />
+        android:title="@string/nav_menu_account"
+        android:menuCategory="secondary"/>
 
     <item
         android:id="@+id/nav_home"
         android:icon="@drawable/baseline_favorite_24"
-        android:title="@string/nav_menu_home" />
+        android:title="@string/nav_menu_home"
+        android:menuCategory="secondary"/>
 
     <item
         android:id="@+id/nav_message_list"
         android:icon="@drawable/baseline_chat_bubble_24"
-        android:title="@string/nav_menu_message_list" />
+        android:title="@string/nav_menu_message_list"
+        android:menuCategory="secondary"/>
 </menu>

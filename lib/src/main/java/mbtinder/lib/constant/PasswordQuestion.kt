@@ -18,8 +18,6 @@ enum class PasswordQuestion(val questionId: Int, val question: String): JSONCont
     companion object {
         private val questions = values()
 
-        fun findQuestion(questionId: Int) = questions.find { it.questionId == questionId }
-
         fun findQuestion(question: String) = questions.find { it.question == question }
     }
 }

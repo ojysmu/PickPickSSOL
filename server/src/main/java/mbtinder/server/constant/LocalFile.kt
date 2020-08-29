@@ -1,7 +1,5 @@
 package mbtinder.server.constant
 
-import mbtinder.lib.component.user.InterestContent
-import mbtinder.lib.util.loadJSONList
 import java.util.*
 
 object LocalFile {
@@ -16,7 +14,4 @@ object LocalFile {
     fun getUserSignUpQuestionPath(userId: String) = "$userRoot/$userId/$userSignUpQuestionList"
     fun getUserMBTIPath(userId: UUID) = "$userRoot/$userId/$userMBTIList"
     fun getUserMBTIPath(userId: String) = "$userRoot/$userId/$userMBTIList"
-    fun getUserInterestPath(userId: UUID) = "$userRoot/$userId/$userInterestList"
-    fun getUserInterestList(userId: UUID) = loadJSONList<InterestContent>(getUserInterestPath(userId))
-    fun getUserImagePath(userId: UUID) = "$userRoot/$userId"
 }

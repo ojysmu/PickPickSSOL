@@ -69,7 +69,7 @@ object ViewUtil {
 
     fun dp2px(context: Context, dp: Int) = (dp * context.resources.displayMetrics.density + 0.5f)
 
-    fun getDisplaySize(context: Context): Pair<Int, Int> {
+    private fun getDisplaySize(context: Context): Pair<Int, Int> {
         val displayMetrics = context.resources.displayMetrics
         return Pair(displayMetrics.widthPixels, displayMetrics.heightPixels)
     }

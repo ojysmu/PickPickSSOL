@@ -11,6 +11,7 @@ import mbtinder.android.R
 import mbtinder.android.component.StaticComponent
 import mbtinder.android.io.database.SQLiteConnection
 import mbtinder.android.io.socket.CommandProcess
+import mbtinder.android.ui.fragment.message_list.MessageListFragment
 import mbtinder.android.ui.model.Fragment
 import mbtinder.android.util.DialogFactory
 import mbtinder.android.util.getUUID
@@ -56,7 +57,10 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
             waitDialog.show()
             runOnBackground {
                 CommandProcess.blockUser(StaticComponent.user.userId, opponentId, chatId)
+                SQLiteConnection.getInstance().executeUpdate("DELETE FROM chat where chat_id='$chatId'")
+                SQLiteConnection.getInstance().executeUpdate("DROP TABLE '$chatId'")
                 runOnUiThread {
+                    MessageListFragment.deleteLastMessage(chatId)
                     waitDialog.dismiss()
                     findNavController().popBackStack()
                 }

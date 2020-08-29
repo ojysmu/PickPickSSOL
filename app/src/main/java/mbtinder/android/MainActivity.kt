@@ -2,6 +2,10 @@ package mbtinder.android
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.Menu
+import androidx.navigation.NavDestination
+import androidx.navigation.NavGraph
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -21,10 +25,10 @@ class MainActivity : Activity() {
         setContentView(R.layout.activity_main)
 
         try {
-            initializeSocketClient()
+            initializeSocketClient(true)
         } catch (e: RuntimeException) {
             SocketClient.releaseInstance(false)
-            initializeSocketClient()
+            initializeSocketClient(false)
         }
 
         val navView = findViewById<BottomNavigationView>(R.id.nav_view)
@@ -32,15 +36,36 @@ class MainActivity : Activity() {
         val navController = navHostFragment.navController
         navView.setOnNavigationItemReselectedListener { /* 재선택시 refresh 방지 */ }
         navView.setupWithNavController(navController)
+        navView.setOnNavigationItemSelectedListener { item ->
+            val navOptionsBuilder = NavOptions.Builder()
+                .setLaunchSingleTop(true)
+                .setEnterAnim(R.anim.nav_default_enter_anim)
+                .setExitAnim(R.anim.nav_default_exit_anim)
+                .setPopEnterAnim(R.anim.nav_default_pop_enter_anim)
+                .setPopExitAnim(R.anim.nav_default_pop_exit_anim)
+            if ((item.order and Menu.CATEGORY_SECONDARY) == 0) {
+                var startDestination: NavDestination? = navController.graph
+                while (startDestination is NavGraph) {
+                    val parent = startDestination
+                    startDestination = parent.findNode(parent.startDestination)
+                }
+                navOptionsBuilder.setPopUpTo(startDestination!!.id, true)
+            }
+            navController.popBackStack()
+            navController.navigate(item.itemId, null, navOptionsBuilder.build())
+            true
+        }
 
         startForegroundService(Intent(this, ThreadService::class.java))
     }
 
-    private fun initializeSocketClient() {
+    private fun initializeSocketClient(setDisconnected: Boolean) {
         val socketClient = SocketClient.createInstance(ServerPath.ADDRESS, ServerPath.PORT_SOCKET, this)
         socketClient.onConnected = this::onConnected
-        socketClient.onConnectionFailed = this::onConnectionFailed
-        socketClient.onDisconnected = this::onDisconnected
+        if (setDisconnected) {
+            socketClient.onConnectionFailed = this::onConnectionFailed
+            socketClient.onDisconnected = this::onDisconnected
+        }
         socketClient.start()
     }
 

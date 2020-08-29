@@ -8,14 +8,6 @@ import org.json.JSONObject
 class JSONList<T: JSONContent> : ArrayList<T> {
     constructor()
 
-    constructor(list: List<T>) {
-        addAll(list)
-    }
-
-    constructor(mutableList: AbstractMutableList<T>) {
-        addAll(mutableList)
-    }
-
     constructor(collection: Collection<T>) {
         addAll(collection)
     }
@@ -44,8 +36,6 @@ class JSONList<T: JSONContent> : ArrayList<T> {
 
     override fun toString() = toJSONArray().toString()
 }
-
-fun <T: JSONContent> jsonListOf(vararg elements: T) = JSONList<T>().apply { addAll(elements) }
 
 fun <T: JSONContent> Collection<T>.toJSONList() = JSONList(this)
 

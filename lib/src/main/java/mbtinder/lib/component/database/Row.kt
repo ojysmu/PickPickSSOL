@@ -12,18 +12,13 @@ class Row : HashMap<String, Any>() {
 
     fun getInt(column: String) = get(column) as Int
 
-//    fun getLong(column: String) = try { get(column) as Long } catch (e: ClassCastException) { get(column).toLong() }
-fun getLong(column: String) = get(column) as Long
-
-    fun x() {
-        getValue("")
-    }
+    fun getLong(column: String) = get(column) as Long
 
     fun getDouble(column: String) = get(column) as Double
 
     fun getBoolean(column: String) = get(column) as Boolean
 
-    fun getUUID(column: String) = UUID.fromString(getString(column))
+    fun getUUID(column: String): UUID = UUID.fromString(getString(column))
 
     fun getJSONObject(column: String) = JSONObject(getString(column))
 

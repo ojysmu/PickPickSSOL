@@ -15,8 +15,6 @@ class FormStateChecker(vararg views: View) {
         formStatus[ViewUtil.filterEditText(it)] = false
     }
 
-    fun getState(view: View): Boolean = formStatus.getOrDefault(ViewUtil.filterEditText(view), false)
-
     fun setState(view: View, state: Boolean) {
         formStatus[ViewUtil.filterEditText(view)] = state
     }

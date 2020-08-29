@@ -199,6 +199,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
      * onCardAppeared -> onCardDragging -> onCardDisappeared -> onCardSwiped
      */
     private val cardStackListener = object : CardStackListener {
+
         /**
          * 카드가 나타났을 때 callback
          * 일반 카드일 경우 swipe 가능, 일일 질문일 경우 swipe 가능, 목록의 끝일 경우 swipe 불가능

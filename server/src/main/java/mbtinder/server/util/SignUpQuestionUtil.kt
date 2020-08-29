@@ -29,7 +29,7 @@ object SignUpQuestionUtil {
     fun parseFilled(list: List<SignUpQuestionContent.ConnectionForm>) =
         list.map { findByQuestionId(it.questionId).apply { selected = it.selected }}
 
-    fun findByQuestionId(questionId: UUID): SignUpQuestionContent {
+    private fun findByQuestionId(questionId: UUID): SignUpQuestionContent {
         if (questions == null) {
             initializeQuestions()
         }
@@ -37,7 +37,7 @@ object SignUpQuestionUtil {
         return questions!![questions!!.binarySearch { it.questionId.compareTo(questionId) }]
     }
 
-    fun buildSignUpQuestion(row: Row) = SignUpQuestionContent(
+    private fun buildSignUpQuestion(row: Row) = SignUpQuestionContent(
         categoryId = row.getUUID("category_id"),
         questionId = row.getUUID("question_id"),
         question = row.getString("question"),

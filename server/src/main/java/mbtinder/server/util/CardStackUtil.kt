@@ -1,16 +1,17 @@
 package mbtinder.server.util
 
 import mbtinder.lib.component.card_stack.CardStackContent
-import mbtinder.lib.component.card_stack.DailyQuestionContent
 import mbtinder.lib.component.database.Row
 import mbtinder.lib.component.user.Coordinator
 import mbtinder.lib.component.user.SearchFilter
-import mbtinder.lib.component.user.SignUpQuestionContent
-import mbtinder.lib.constant.MBTI
-import mbtinder.lib.util.*
-import mbtinder.server.constant.LocalFile
+import mbtinder.lib.util.ImmutableList
+import mbtinder.lib.util.toImmutableList
+import mbtinder.lib.util.toJSONList
 import mbtinder.server.io.database.MySQLServer
-import mbtinder.server.io.database.SQLiteConnection
+import mbtinder.server.util.UserUtil.findDailyQuestion
+import mbtinder.server.util.UserUtil.findMBTI
+import mbtinder.server.util.UserUtil.findScore
+import mbtinder.server.util.UserUtil.findSignUpQuestion
 import java.util.*
 
 object CardStackUtil {
@@ -37,52 +38,50 @@ object CardStackUtil {
         }
     }
 
-    fun findByUserId(userId: UUID): CardStackContent? {
-        ensureUpdate()
-
-        return findBinaryTwice(cardStacks!!) { it.userId.compareTo(userId) }
-    }
-
-    fun findByUserIds(vararg userIds: UUID): List<CardStackContent> {
-        ensureUpdate()
-
-        return userIds.map { userId ->
-            cardStacks!![cardStacks!!.binarySearch { card -> card.userId.compareTo(userId) }].getCloned()
-        }
-    }
-
     fun findAll(finderId: UUID, missList: List<UUID>, finderCoordinator: Coordinator, filter: SearchFilter): List<CardStackContent> {
         ensureUpdate()
-        // 사용자 MBTI
-        val finderMBTI = findMBTI(finderId)
-        // 가입 시 입력한 취향
-        val finderSignUpQuestionContents = findSignUpQuestion(finderId)
-        // 일일 질문
-        val finderDailyQuestionContents = findDailyQuestion(finderId)
-
         // 최대 10개 index
         var index = 0
-
         return cardStacks!!.clone()
             .asSequence()
             .filter {
-                // 점수 계산
-                it.score = UserUtil.getMatchingScore(finderMBTI, finderSignUpQuestionContents, finderDailyQuestionContents, it)
                 // 자기 자신 제외
                 it.userId != finderId
+                        && (index < 10)
                         // 이미 만난 사용자 제외
                         && !missList.contains(it.userId)
                         // 거리, 나이, 성별이 맞지 않으면 제외
                         && filter.isInRange(finderCoordinator, it)
                         // 매칭 점수가 30점 미만일 때 제외
-                        && it.score >= 30
+                        && run {
+                    // 기본 점수(MBTI, 가입 질문) 계산
+                    val basicScore = findScore(finderId, it.userId)
+                    if (basicScore >= 30) {
+                        // 30점 넘으면 일일 질문 필요없음
+                        it.score = basicScore
+                        index++
+                        true
+                    } else if (basicScore < 2) {
+                        // 2점 미만이면 일일 질문 전부 일치해도 매칭 불가
+                        false
+                    } else {
+                        // (0,30)점 일일질문 계산
+                        val dailyScore = UserUtil.getDailyScore(findDailyQuestion(finderId), it.userId)
+                        it.score = basicScore + dailyScore
+                        if (it.score >= 30) {
+                            index++
+                            true
+                        } else {
+                            false
+                        }
+                    }
+                }
             }
             .sortedBy { it.score } // 점수 정렬
-            .apply { toMutableList().removeIf { index++ > 10 } }
             .toList()
     }
 
-    fun buildCardStackContent(row: Row) = CardStackContent(
+    private fun buildCardStackContent(row: Row) = CardStackContent(
         row.getUUID("user_id"),
         row.getString("name"),
         row.getInt("age"),
@@ -92,19 +91,4 @@ object CardStackUtil {
         findMBTI(row.getUUID("user_id")),
         SignUpQuestionUtil.parseFilled(findSignUpQuestion(row.getUUID("user_id"))).toJSONList()
     )
-
-    private fun findMBTI(userId: UUID) =
-        MBTI.findByName(loadJSONObject(LocalFile.getUserMBTIPath(userId)).getString("value"))
-
-    private fun findSignUpQuestion(userId: UUID) =
-        loadJSONArray(LocalFile.getUserSignUpQuestionPath(userId)).toJSONList<SignUpQuestionContent.ConnectionForm>()
-
-    fun findDailyQuestion(userId: UUID): List<DailyQuestionContent.SaveForm> {
-        val connection = SQLiteConnection.getConnection(userId)
-        val sql = "SELECT question_id, is_picked FROM daily_questions"
-        val queryId = connection.addQuery(sql)
-        val queryResult = connection.getResult(queryId)
-
-        return queryResult.content.map { DailyQuestionContent.SaveForm(it) }
-    }
 }

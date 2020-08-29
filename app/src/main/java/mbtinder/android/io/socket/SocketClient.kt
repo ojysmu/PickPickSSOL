@@ -46,7 +46,9 @@ class SocketClient private constructor(private val address: String, private val 
                 if (needClose) {
                     instance?.addCommand(CommandContent(UUID.randomUUID(), Command.CLOSE.name, JSONObject()))
                 }
-            } catch (e: Exception) {}
+            } catch (e: Exception) {
+                Log.v("SocketClient.releaseInstance()", e)
+            }
             instance = null
         }
 

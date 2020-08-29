@@ -1,6 +1,7 @@
 package mbtinder.server.io.socket
 
 import mbtinder.lib.component.IDContent
+import mbtinder.lib.constant.Notification
 import mbtinder.lib.constant.NotificationForm
 import mbtinder.lib.constant.ServerResponse
 import mbtinder.lib.io.component.CommandContent
@@ -14,7 +15,6 @@ import java.net.Socket
 import java.util.*
 
 class Connection(private val socket: Socket): CloseableThread(), IDContent {
-    private val emptyMessage = JSONObject()
     private val dataInputStream = DataInputStream(socket.getInputStream())
     private val dataOutputStream = DataOutputStream(socket.getOutputStream())
     private var token = UUID.randomUUID()
@@ -73,10 +73,12 @@ class Connection(private val socket: Socket): CloseableThread(), IDContent {
         send(serverMessage)
     }
 
-    override fun getUUID() = token
+    override fun getUUID(): UUID = token
 
     override fun close() {
         super.close()
+
+        try { sendNotification(NotificationForm(Notification.SOCKET_CLOSED, token, "", "")) } catch (e: Exception) {}
 
         dataInputStream.close()
         dataOutputStream.close()
@@ -100,7 +102,7 @@ class Connection(private val socket: Socket): CloseableThread(), IDContent {
         fun makeNegativeResponse(uuid: UUID, response: ServerResponse) =
             makeNegativeResponse(uuid, response.ordinal, JSONObject())
 
-        fun makeNegativeResponse(uuid: UUID, code: Int, arguments: JSONObject) =
+        private fun makeNegativeResponse(uuid: UUID, code: Int, arguments: JSONObject) =
             makeServerResponse(uuid, arguments.apply {
                 put("result", false)
                 put("code", code)

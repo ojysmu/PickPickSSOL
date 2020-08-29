@@ -2,6 +2,7 @@ package mbtinder.lib.component.card_stack
 
 import mbtinder.lib.component.IDContent
 import mbtinder.lib.component.database.Row
+import mbtinder.lib.component.json.JSONContent
 import mbtinder.lib.component.json.JSONParsable
 import org.json.JSONObject
 import java.sql.Date
@@ -30,8 +31,9 @@ open class DailyQuestionContent: BaseCardStackContent, JSONParsable, IDContent, 
 
     override fun compareTo(other: DailyQuestionContent) = date.compareTo(other.date)
 
-    class SaveForm(row: Row) {
-        val questionId: UUID = row.getUUID("question_id")
-        val isPicked: Int = row.getInt("is_picked")
+    class SaveForm(val questionId: UUID, val isPicked: Int): IDContent {
+        constructor(row: Row): this(row.getUUID("question_id"), row.getInt("is_picked"))
+
+        override fun getUUID() = questionId
     }
 }

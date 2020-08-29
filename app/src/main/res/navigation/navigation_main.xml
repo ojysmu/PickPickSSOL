@@ -140,7 +140,17 @@
 
         <action
             android:id="@+id/action_to_account"
+            app:popUpTo="@id/nav_home"
+            app:popUpToInclusive="true"
+            app:launchSingleTop="true"
             app:destination="@id/nav_account" />
+
+        <action
+            android:id="@+id/action_to_message_list"
+            app:popUpTo="@id/nav_home"
+            app:popUpToInclusive="true"
+            app:launchSingleTop="true"
+            app:destination="@id/nav_message_list" />
     </fragment>
 
     <fragment
@@ -152,6 +162,20 @@
         <action
             android:id="@+id/action_to_chat"
             app:destination="@id/nav_chat" />
+
+        <action
+            android:id="@+id/action_to_home"
+            app:popUpTo="@id/nav_home"
+            app:popUpToInclusive="true"
+            app:launchSingleTop="true"
+            app:destination="@id/nav_home" />
+
+        <action
+            android:id="@+id/action_to_account"
+            app:popUpTo="@id/nav_home"
+            app:popUpToInclusive="true"
+            app:launchSingleTop="true"
+            app:destination="@id/nav_account" />
     </fragment>
 
     <fragment
@@ -170,5 +194,19 @@
             android:id="@+id/action_to_splash"
             app:popUpToInclusive="true"
             app:destination="@+id/nav_splash" />
+
+        <action
+            android:id="@+id/action_to_home"
+            app:popUpTo="@id/nav_home"
+            app:popUpToInclusive="true"
+            app:launchSingleTop="true"
+            app:destination="@id/nav_home" />
+
+        <action
+            android:id="@+id/action_to_message_list"
+            app:popUpTo="@id/nav_home"
+            app:popUpToInclusive="true"
+            app:launchSingleTop="true"
+            app:destination="@id/nav_message_list" />
     </fragment>
 </navigation>

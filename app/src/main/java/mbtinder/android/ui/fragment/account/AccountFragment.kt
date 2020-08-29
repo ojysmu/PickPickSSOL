@@ -123,6 +123,7 @@ class AccountFragment : Fragment(R.layout.fragment_account) {
     }
 
     private fun onNotificationChanged(isChecked: Boolean) {
+        StaticComponent.user.notification = false
         runOnBackground { CommandProcess.updateUserNotification(StaticComponent.user.userId, isChecked) }
     }
 

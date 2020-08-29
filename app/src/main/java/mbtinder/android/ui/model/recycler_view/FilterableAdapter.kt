@@ -5,6 +5,7 @@ import android.widget.Filterable
 import mbtinder.android.util.Log
 import mbtinder.lib.component.IDContent
 import mbtinder.lib.util.IDList
+import java.util.*
 import kotlin.reflect.KMutableProperty1
 
 abstract class FilterableAdapter<T: IDContent>(rootView: Int, contents: IDList<T>, clazz: Class<out AdaptableViewHolder<T>>) :
@@ -20,11 +21,24 @@ abstract class FilterableAdapter<T: IDContent>(rootView: Int, contents: IDList<T
 
     override fun getItemCount() = filtered.size
 
-    override fun addContent(element: T) {
-        unfiltered.add(0, element)
-        filtered.add(0, element)
-        if (filtered.size == unfiltered.size) {
-            notifyItemInserted(0)
+    fun getContent(uuid: UUID) = unfiltered.find { it.getUUID() == uuid }
+
+    fun <R: Comparable<R>> addContent(element: T, sortBy: ((T) -> R?)?) {
+        val index = unfiltered.indexOf(element.getUUID())
+        if (index != -1) {
+            unfiltered[index] = element
+            sortBy?.let { unfiltered.sortBy(it); unfiltered.reverse() }
+            if (unfiltered.size == filtered.size) {
+                filtered[index] = element
+                sortBy?.let { filtered.sortBy(it); filtered.reverse() }
+                notifyDataSetChanged()
+            }
+        } else {
+            unfiltered.add(0, element)
+            filtered.add(0, element)
+            if (filtered.size == unfiltered.size) {
+                notifyItemInserted(0)
+            }
         }
     }
 

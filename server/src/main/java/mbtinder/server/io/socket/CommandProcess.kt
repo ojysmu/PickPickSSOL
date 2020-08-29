@@ -2,6 +2,7 @@ package mbtinder.server.io.socket
 
 import mbtinder.lib.component.ChatContent
 import mbtinder.lib.component.MessageContent
+import mbtinder.lib.component.card_stack.DailyQuestionContent
 import mbtinder.lib.component.user.Coordinator
 import mbtinder.lib.component.user.SearchFilter
 import mbtinder.lib.component.user.UserContent
@@ -76,7 +77,6 @@ object CommandProcess {
     private fun addUser(command: CommandContent): JSONObject {
         val userId = UUID.randomUUID()
         val email = command.arguments.getString("email")
-        // TODO: Encrypt
         val password = command.arguments.getString("password")
         val name = command.arguments.getString("name")
         val age = command.arguments.getInt("age")
@@ -320,6 +320,9 @@ object CommandProcess {
 
         return UserUtil.getUserByEmail(email, true)?.let {
             if (it.password == password) {
+                if (SocketServer.getInstance().hasConnection(it.userId)) {
+                    SocketServer.getInstance().getConnection(it.userId).close()
+                }
                 connection.setToken(it.userId)
                 Connection.makePositiveResponse(command.uuid, JSONObject().apply { put("user", it.hidePassword().toJSONObject()) })
             } else {
@@ -350,7 +353,6 @@ object CommandProcess {
     private fun findPassword(command: CommandContent): JSONObject {
         val email = command.arguments.getString("email")
         val passwordQuestionId = command.arguments.getInt("password_question_id")
-        // TODO: Encrypt
         val passwordAnswer = command.arguments.getString("password_answer")
 
         return UserUtil.getUserByEmail(email, true)?.let {
@@ -370,7 +372,6 @@ object CommandProcess {
      */
     private fun updatePassword(command: CommandContent): JSONObject {
         val userId = command.arguments.getString("user_id")
-        // TODO: Encrypt
         val password = command.arguments.getString("password")
         val sql = "UPDATE pickpick.user SET `password`='$password' WHERE `user_id`='$userId'"
         MySQLServer.getInstance().addQuery(sql)
@@ -407,7 +408,6 @@ object CommandProcess {
         val blockedList = blockQueryResult.content.map { it.getUUID("opponent_id") }
         // 만나선 안 될 사용자 전체
         val missList = metList.merge(blockedList)
-
         val filteredCardStackContent = CardStackUtil.findAll(userId, missList, userCoordinator, searchFilter).toJSONArray()
 
         return Connection.makePositiveResponse(
@@ -426,7 +426,7 @@ object CommandProcess {
         val userId = command.arguments.getUUID("user_id")
         val userCoordinator = Coordinator(command.arguments.getJSONObject("coordinator"))
         val searchFilter = SearchFilter(command.arguments.getJSONObject("search_filter"))
-        val currentMetList = command.arguments.getJSONArray("current_met_list").toUUIDList() // FIXME
+        val currentMetList = command.arguments.getJSONArray("current_met_list").toUUIDList()
 
         val sqLiteConnection = SQLiteConnection.getConnection(userId)
         val sql = "SELECT opponent_id FROM pick"
@@ -481,6 +481,9 @@ object CommandProcess {
 
         val insertSql = "INSERT INTO daily_questions (question_id, is_picked) VALUES ('$questionId', $isPick)"
         connection.addQuery(insertSql)
+
+        // 일일 질문 캐시가 있다면 추가
+        UserUtil.dailyQuestions[userId]?.add(DailyQuestionContent.SaveForm(questionId, if (isPick) 1 else 0))
 
         return Connection.makePositiveResponse(command.uuid)
     }
@@ -588,7 +591,7 @@ object CommandProcess {
         val chatId = UUID.fromString(command.arguments.getString("chat_id"))
         val senderId = UUID.fromString(command.arguments.getString("sender_id"))
         val receiverId = UUID.fromString(command.arguments.getString("receiver_id"))
-        val opponentName = command.arguments.getString("opponent_name") // FIXME
+        val opponentName = command.arguments.getString("opponent_name")
         val body = command.arguments.getString("body")
         val messageContent = MessageContent(
             chatId = chatId,

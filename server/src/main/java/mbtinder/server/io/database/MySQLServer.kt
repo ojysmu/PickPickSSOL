@@ -1,11 +1,10 @@
 package mbtinder.server.io.database
 
+import mbtinder.lib.component.database.Query
+import mbtinder.lib.component.database.QueryResult
 import mbtinder.lib.util.CloseableThread
 import mbtinder.lib.util.IDList
 import mbtinder.lib.util.block
-import mbtinder.lib.util.sync
-import mbtinder.lib.component.database.Query
-import mbtinder.lib.component.database.QueryResult
 import java.sql.Connection
 import java.sql.DriverManager
 import java.sql.SQLException

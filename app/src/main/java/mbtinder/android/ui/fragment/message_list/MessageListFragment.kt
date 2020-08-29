@@ -7,12 +7,15 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.fragment_message_list.*
 import mbtinder.android.R
+import mbtinder.android.component.StaticComponent
+import mbtinder.android.io.database.SQLiteConnection
 import mbtinder.android.io.socket.CommandProcess
 import mbtinder.android.ui.model.Fragment
 import mbtinder.android.util.runOnBackground
 import mbtinder.android.util.runOnUiThread
 import mbtinder.lib.component.MessageContent
 import mbtinder.lib.util.IDList
+import mbtinder.lib.util.block
 import java.util.*
 
 class MessageListFragment: Fragment(R.layout.fragment_message_list) {
@@ -68,8 +71,29 @@ class MessageListFragment: Fragment(R.layout.fragment_message_list) {
             aliveAdapter?.addContent(messageContent) { it.timestamp }
         }
 
-        fun deleteLastMessage(chatId: UUID): MessageContent? {
-            return aliveAdapter?.removeContent(chatId)
+        fun deleteLastMessage(chatId: UUID, from: Int) {
+            runOnBackground {
+                block { aliveAdapter == null }
+                runOnUiThread {
+                    aliveAdapter?.removeContent(chatId)?.let {
+                        when (from) {
+                            0 -> {
+                                SQLiteConnection.getInstance().executeUpdate("DELETE FROM chat where chat_id='$chatId'")
+                                SQLiteConnection.getInstance().executeUpdate("DROP TABLE '$chatId'")
+                            }
+                            1 -> {
+                                val userId = it.getOpponentId(StaticComponent.user.userId)
+                                SQLiteConnection.getInstance().executeUpdate("DELETE FROM block where opponent_id='$userId'")
+                                SQLiteConnection.getInstance().executeUpdate("DELETE FROM pick where opponent_id='$userId'")
+                                SQLiteConnection.getInstance().executeUpdate("DELETE FROM picked where opponent_id='$userId'")
+                                SQLiteConnection.getInstance().executeUpdate("DELETE FROM chat where chat_id='$chatId'")
+                                SQLiteConnection.getInstance().executeUpdate("DROP TABLE '$chatId'")
+                            }
+                            else -> throw RuntimeException("what")
+                        }
+                    }
+                }
+            }
         }
     }
 }

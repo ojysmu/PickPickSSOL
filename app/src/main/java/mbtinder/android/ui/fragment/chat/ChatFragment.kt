@@ -57,10 +57,8 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
             waitDialog.show()
             runOnBackground {
                 CommandProcess.blockUser(StaticComponent.user.userId, opponentId, chatId)
-                SQLiteConnection.getInstance().executeUpdate("DELETE FROM chat where chat_id='$chatId'")
-                SQLiteConnection.getInstance().executeUpdate("DROP TABLE '$chatId'")
                 runOnUiThread {
-                    MessageListFragment.deleteLastMessage(chatId)
+                    MessageListFragment.deleteLastMessage(chatId, 0)
                     waitDialog.dismiss()
                     findNavController().popBackStack()
                 }

@@ -50,14 +50,10 @@ object NotificationProcess {
      */
     fun onBlockReceived(extra: JSONObject) {
         val chatId = extra.getUUID("chat_id")
-        MessageListFragment.deleteLastMessage(chatId)?.let {
-            SQLiteConnection.getInstance().executeUpdate("DELETE FROM chat where chat_id='$chatId'")
-            SQLiteConnection.getInstance().executeUpdate("DROP TABLE '$chatId'")
-        }
         if (ChatFragment.isAlive(chatId)) {
             runOnUiThread {
                 ChatFragment.getFragment().findNavController().popBackStack()
-                MessageListFragment.deleteLastMessage(chatId)
+                MessageListFragment.deleteLastMessage(chatId, 0)
             }
         }
     }
@@ -69,18 +65,10 @@ object NotificationProcess {
      */
     fun onChatRemoveReceived(extra: JSONObject) {
         val chatId = extra.getUUID("chat_id")
-        MessageListFragment.deleteLastMessage(chatId)?.let {
-            val userId = it.getOpponentId(StaticComponent.user.userId)
-            SQLiteConnection.getInstance().executeUpdate("DELETE FROM block where opponent_id='$userId'")
-            SQLiteConnection.getInstance().executeUpdate("DELETE FROM pick where opponent_id='$userId'")
-            SQLiteConnection.getInstance().executeUpdate("DELETE FROM picked where opponent_id='$userId'")
-            SQLiteConnection.getInstance().executeUpdate("DELETE FROM chat where chat_id='$chatId'")
-            SQLiteConnection.getInstance().executeUpdate("DROP TABLE '$chatId'")
-        }
         if (ChatFragment.isAlive(chatId)) {
             runOnUiThread {
                 ChatFragment.getFragment().findNavController().popBackStack()
-                MessageListFragment.deleteLastMessage(chatId)
+                MessageListFragment.deleteLastMessage(chatId, 1)
             }
         }
     }

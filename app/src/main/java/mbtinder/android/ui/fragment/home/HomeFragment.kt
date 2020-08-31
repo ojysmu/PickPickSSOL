@@ -254,7 +254,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
          */
         override fun onCardAppeared(view: View?, position: Int) {
             Log.v("HomeFragment.validateLeftContents(): from=${Thread.currentThread().stackTrace[3]}  leftContents=${leftContents.size}, visibleContents=${visibleContents.size}, swipedContents=${swipedContents.size}")
-            when (visibleContents[0]) {
+            when (visibleContents[head]) {
                 is TutorialContent -> {
                     view?.let { currentViewHolder = TutorialViewHolder(it) }
                     cardStackLayoutManager.setCanScrollHorizontal(true)
@@ -331,7 +331,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             }
 
             if (!isRewindable) {
-                cardStackAdapter.notifyItemRemoved(0)
+                cardStackAdapter.notifyItemRemoved(head)
             }
 
             if (leftContents.size == 0) {
@@ -341,7 +341,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 visibleContents.add(leftContents.removeAt(0))
                 cardStackAdapter.notifyItemInserted(visibleContents.size - 1)
             }
-
         }
 
         /**

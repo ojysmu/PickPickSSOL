@@ -24,6 +24,7 @@ import mbtinder.lib.component.user.Coordinator
 import mbtinder.lib.util.IDList
 import org.json.JSONObject
 import java.sql.Date
+import java.util.*
 
 class HomeFragment : Fragment(R.layout.fragment_home) {
     companion object {
@@ -37,6 +38,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     private val cardStackAdapter by lazy { CardStackAdapter(this) }
     private val todayQuestions by lazy { getNotAnsweredQuestion(getTodayDailyQuestions()).toMutableList() }
     private var isRefreshing = false
+    private var rewindMap = hashMapOf<UUID, Boolean>()
 
     override fun initializeView() {
         leftContents.clear()
@@ -78,6 +80,8 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     }
 
     private fun onRewindClicked() {
+        if (rewindableContents.isEmpty()) return
+
         val setting = RewindAnimationSetting.Builder()
             .setDirection(Direction.Left)
             .setDuration(200)
@@ -85,7 +89,15 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             .build()
         cardStackLayoutManager.setRewindAnimationSetting(setting)
 
+        val rewoundContent = rewindableContents.removeAt(rewindableContents.lastIndex)
+//        visibleContents.add(0, rewoundContent)
+//        cardStackAdapter.notifyItemInserted(0)
+//        val viewHolder = cardStackAdapter.createViewHolder(home_card_stack_view, CardStackAdapter.TYPE_CARD_STACK_CONTENT)
+//        cardStackAdapter.bindViewHolder(viewHolder, 0)
+        rewindMap[rewoundContent.getUUID()] = true
         home_card_stack_view.rewind()
+//        home_card_stack_view.rewind()
+//        home_card_stack_view.smoothScrollToPosition(cardStackLayoutManager.topPosition - 1)
     }
 
     /**
@@ -234,6 +246,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
      */
     private val cardStackListener = object : CardStackListener {
         private var currentViewHolder: BaseCardStackViewHolder? = null
+        private var head = 0
 
         /**
          * 카드가 나타났을 때 callback
@@ -305,18 +318,30 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
          * 일일 질문일 경우 PICK, NOPE 여부 서버 전송, 목록에서 삭제
          */
         override fun onCardSwiped(direction: Direction?) {
+            val isRewindable = visibleContents[head] is CardStackContent && direction == Direction.Left
+            val item = if (isRewindable) {
+                visibleContents[head++]
+            } else {
+                visibleContents.removeAt(head)
+            }
+
+            when (item) {
+                is CardStackContent -> onCardContentSwiped(direction, item)
+                is DailyQuestionContent -> onDailyQuestionSwiped(direction, item)
+            }
+
+            if (!isRewindable) {
+                cardStackAdapter.notifyItemRemoved(0)
+            }
+
             if (leftContents.size == 0) {
                 visibleContents.add(EmptyContent())
             } else {
                 validateLeftContents()
                 visibleContents.add(leftContents.removeAt(0))
+                cardStackAdapter.notifyItemInserted(visibleContents.size - 1)
             }
 
-            cardStackAdapter.notifyItemRemoved(0)
-            when (val removed = visibleContents.removeAt(0)) {
-                is CardStackContent -> onCardContentSwiped(direction, removed)
-                is DailyQuestionContent -> onDailyQuestionSwiped(direction, removed)
-            }
         }
 
         /**
@@ -333,6 +358,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
          * 카드가 rewind 됐을 떄 callback
          */
         override fun onCardRewound() {
+            head--
             (currentViewHolder as? CardStackViewHolder)?.setDefaultTransparency()
         }
 
@@ -355,7 +381,9 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                         opponentId = cardStackContent.userId,
                         opponentName = cardStackContent.userName
                     )
-                } else if (!picked) {
+                }
+
+                if (!picked) {
                     rewindableContents.add(cardStackContent)
                 }
             }

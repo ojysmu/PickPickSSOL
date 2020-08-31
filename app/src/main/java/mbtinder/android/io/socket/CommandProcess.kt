@@ -286,7 +286,7 @@ object CommandProcess {
             connection.executeUpdate("DELETE FROM daily_questions WHERE _id=$id")
         }
 
-        val insertSql = "INSERT INTO daily_questions (question_id, is_picked) VALUES ('$questionId', $isPick)"
+        val insertSql = "INSERT INTO daily_questions (question_id, is_picked) VALUES ('$questionId', ${if (isPick) 1 else 0})"
         connection.executeUpdate(insertSql)
 
         val arguments = JSONObject()

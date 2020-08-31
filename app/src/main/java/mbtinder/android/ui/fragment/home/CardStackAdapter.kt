@@ -9,10 +9,6 @@ import mbtinder.lib.component.card_stack.DailyQuestionContent
 import java.util.*
 
 class CardStackAdapter(private val fragment: HomeFragment): RecyclerView.Adapter<BaseCardStackViewHolder>() {
-    val cardStackViewHolders = arrayListOf<CardStackViewHolder?>()
-    val dailyQuestionViewHolders = arrayListOf<DailyQuestionViewHolder?>()
-
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseCardStackViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(viewType, parent, false)
 
@@ -27,25 +23,10 @@ class CardStackAdapter(private val fragment: HomeFragment): RecyclerView.Adapter
 
     override fun onBindViewHolder(holder: BaseCardStackViewHolder, position: Int) {
         when (holder) {
-            is CardStackViewHolder -> {
-                holder.bind(HomeFragment.cardStackContents[position] as CardStackContent)
-                cardStackViewHolders.add(holder)
-                dailyQuestionViewHolders.add(null)
-            }
-            is DailyQuestionViewHolder -> {
-                holder.bind(HomeFragment.cardStackContents[position] as DailyQuestionContent)
-                cardStackViewHolders.add(null)
-                dailyQuestionViewHolders.add(holder)
-            }
-            is TutorialViewHolder -> {
-                cardStackViewHolders.add(null)
-                dailyQuestionViewHolders.add(null)
-            }
-            is EmptyViewHolder -> {
-                holder.bind()
-                cardStackViewHolders.add(null)
-                dailyQuestionViewHolders.add(null)
-            }
+            is CardStackViewHolder -> holder.bind(HomeFragment.cardStackContents[position] as CardStackContent)
+            is DailyQuestionViewHolder -> holder.bind(HomeFragment.cardStackContents[position] as DailyQuestionContent)
+            is TutorialViewHolder -> {}
+            is EmptyViewHolder -> holder.bind()
         }
     }
 
@@ -73,8 +54,6 @@ class CardStackAdapter(private val fragment: HomeFragment): RecyclerView.Adapter
     fun getUserIds() = HomeFragment.cardStackContents.map { it.getUUID() }
 
     fun getLeftContents(currentPosition: Int) = itemCount - currentPosition
-
-    fun getUserId(position: Int) = (HomeFragment.cardStackContents[position] as CardStackContent).userId
 
     fun getUserInfo(position: Int): Pair<UUID, String> {
         val cardStackContent = HomeFragment.cardStackContents[position] as CardStackContent

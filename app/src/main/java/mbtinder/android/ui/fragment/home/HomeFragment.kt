@@ -7,12 +7,7 @@ import androidx.annotation.AnyThread
 import androidx.annotation.WorkerThread
 import androidx.recyclerview.widget.DefaultItemAnimator
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.yuyakaido.android.cardstackview.CardStackLayoutManager
-import com.yuyakaido.android.cardstackview.CardStackListener
-import com.yuyakaido.android.cardstackview.Direction
-import com.yuyakaido.android.cardstackview.RewindAnimationSetting
-import com.yuyakaido.android.cardstackview.StackFrom
-import com.yuyakaido.android.cardstackview.SwipeableMethod
+import com.yuyakaido.android.cardstackview.*
 import kotlinx.android.synthetic.main.fragment_home.*
 import mbtinder.android.R
 import mbtinder.android.component.StaticComponent
@@ -140,13 +135,21 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             )
 
             if (refreshResult.isSucceed && refreshResult.result!!.isNotEmpty()) {
+                val lastIndex = cardStackContents.size - 1
                 cardStackContents.removeAll { it is EmptyContent }
+                var added = 0
                 if (todayQuestions.isNotEmpty()) {
                     cardStackContents.add(todayQuestions.removeAt(0))
+                    added++
                 }
                 cardStackContents.addAll(refreshResult.result!!)
+                added += refreshResult.result!!.size
                 cardStackContents.add(EmptyContent())
-                runOnUiThread { cardStackAdapter.notifyDataSetChanged() }
+                added++
+                runOnUiThread {
+                    cardStackAdapter.notifyItemRemoved(lastIndex)
+                    cardStackAdapter.notifyItemRangeInserted(lastIndex, lastIndex + added)
+                }
             }
         }
     }
@@ -199,31 +202,36 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
      * onCardAppeared -> onCardDragging -> onCardDisappeared -> onCardSwiped
      */
     private val cardStackListener = object : CardStackListener {
+        private lateinit var currentViewHolder: BaseCardStackViewHolder
 
         /**
          * 카드가 나타났을 때 callback
          * 일반 카드일 경우 swipe 가능, 일일 질문일 경우 swipe 가능, 목록의 끝일 경우 swipe 불가능
          */
         override fun onCardAppeared(view: View?, position: Int) {
+            currentPosition = position
             when (cardStackContents[position]) {
                 is TutorialContent -> {
-                    Log.v("HomeFragment.onCardAppeared(): TutorialContent")
+                    Log.v("HomeFragment.onCardAppeared(): TutorialContent $currentPosition")
+                    view?.let { currentViewHolder = TutorialViewHolder(it) }
                     cardStackLayoutManager.setCanScrollHorizontal(true)
                 }
                 is CardStackContent -> {
-                    Log.v("HomeFragment.onCardAppeared(): CardStackContent")
+                    Log.v("HomeFragment.onCardAppeared(): CardStackContent $currentPosition")
+                    view?.let { currentViewHolder = CardStackViewHolder(it) }
                     cardStackLayoutManager.setCanScrollHorizontal(true)
                 }
                 is DailyQuestionContent -> {
-                    Log.v("HomeFragment.onCardAppeared(): DailyQuestionContent")
+                    Log.v("HomeFragment.onCardAppeared(): DailyQuestionContent $currentPosition")
+                    view?.let { currentViewHolder = DailyQuestionViewHolder(it) }
                     cardStackLayoutManager.setCanScrollHorizontal(true)
                 }
                 else -> {
-                    Log.v("HomeFragment.onCardAppeared(): not all above")
+                    Log.v("HomeFragment.onCardAppeared(): not all above $currentPosition")
+                    view?.let { currentViewHolder = EmptyViewHolder(it, this@HomeFragment) }
                     cardStackLayoutManager.setCanScrollHorizontal(false)
                 }
             }
-            currentPosition = position
         }
 
         /**
@@ -231,17 +239,20 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
          * 일반 카드일 경우 배경 어둡게, PICK, NOPE 노출, 일일 질문일 경우 답변 highlight
          */
         override fun onCardDragging(direction: Direction?, ratio: Float) {
-            cardStackAdapter.cardStackViewHolders[currentPosition]?.let {
-                when {
-                    ratio < 0.1f -> it.setDefaultTransparency()
-                    direction == Direction.Left -> it.setNopeTransparency(ratio)
-                    direction == Direction.Right -> it.setPickTransparency(ratio)
+            when (val viewHolder = currentViewHolder) {
+                is CardStackViewHolder -> {
+                    when {
+                        ratio < 0.1f -> viewHolder.setDefaultTransparency()
+                        direction == Direction.Left -> viewHolder.setNopeTransparency(ratio)
+                        direction == Direction.Right -> viewHolder.setPickTransparency(ratio)
+                    }
                 }
-            } ?: cardStackAdapter.dailyQuestionViewHolders[currentPosition]?.let {
-                when {
-                    ratio < 0.1f -> it.disableAll()
-                    direction == Direction.Left -> it.enableNope()
-                    direction == Direction.Right -> it.enablePick()
+                is DailyQuestionViewHolder -> {
+                    when {
+                        ratio < 0.1f -> viewHolder.disableAll()
+                        direction == Direction.Left -> viewHolder.enableNope()
+                        direction == Direction.Right -> viewHolder.enablePick()
+                    }
                 }
             }
         }
@@ -251,8 +262,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
          * 카드가 세장 남았을 경우 refresh
          */
         override fun onCardDisappeared(view: View?, position: Int) {
-            val holder = cardStackAdapter.cardStackViewHolders[currentPosition]
-            holder?.setDefaultTransparency()
+            (currentViewHolder as? CardStackViewHolder)?.setDefaultTransparency()
 
             if (cardStackAdapter.getLeftContents(position) == 3) {
                 refreshCardStacks()
@@ -277,16 +287,17 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
          * 카드 드래그 취소할 때 callback. Threshold 넘지 않고 손 뗐을 때 invoke
          */
         override fun onCardCanceled() {
-            cardStackAdapter.cardStackViewHolders[currentPosition]?.setDefaultTransparency()
-                ?:cardStackAdapter.dailyQuestionViewHolders[currentPosition]?.disableAll()
+            when (val viewHolder = currentViewHolder) {
+                is CardStackViewHolder -> viewHolder.setDefaultTransparency()
+                is DailyQuestionViewHolder -> viewHolder.disableAll()
+            }
         }
 
         /**
          * 카드가 rewind 됐을 떄 callback
          */
         override fun onCardRewound() {
-            val holder = cardStackAdapter.cardStackViewHolders[currentPosition]
-            holder?.setDefaultTransparency()
+            (currentViewHolder as? CardStackViewHolder)?.setDefaultTransparency()
         }
 
         private fun onCardContentSwiped(direction: Direction?, currentPosition: Int) {

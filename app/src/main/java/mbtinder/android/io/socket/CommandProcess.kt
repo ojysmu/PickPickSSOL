@@ -273,9 +273,9 @@ object CommandProcess {
     fun isAnsweredQuestion(questionId: UUID): Boolean {
         val connection = SQLiteConnection.getInstance()
         val sql = "SELECT _id FROM daily_questions WHERE question_id='$questionId'"
-        val queryResult = connection.executeQuery<LocalDailyQuestionContent>(sql)
+        val rowId = connection.getRowId(sql)
 
-        return queryResult.getRowCount() != 0
+        return rowId != -1
     }
 
     fun answerQuestion(userId: UUID, questionId: UUID, isPick: Boolean): ServerResult<Void> {
@@ -386,10 +386,9 @@ object CommandProcess {
 
     private fun getAnsweredHead(): Pair<Int, Int> {
         val connection = SQLiteConnection.getInstance()
-        val sql = "SELECT _id FROM daily_questions"
-        val queryResult = connection.executeQuery<LocalDailyQuestionContent>(sql)
-        val firstId = if (queryResult.getRowCount() > 0) queryResult.content[0]._id else -1
+        val ids = connection.getInts("daily_questions", "_id")
+        val firstId = if (ids.isNotEmpty()) ids[0] else -1
 
-        return Pair(queryResult.getRowCount(), firstId)
+        return Pair(ids.size, firstId)
     }
 }

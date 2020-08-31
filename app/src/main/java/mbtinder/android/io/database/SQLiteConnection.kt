@@ -52,7 +52,7 @@ class SQLiteConnection private constructor(databaseDir: File): AutoCloseable {
         val resultSet = try {
             statement.executeQuery(sql) as SQLDroidResultSet
         } catch (e: SQLException) {
-            Log.e("Error occurred while running query: ${query.sql}", e)
+            Log.e("Error occurred while running query: $sql", e)
             throw e
         }
 
@@ -64,6 +64,38 @@ class SQLiteConnection private constructor(databaseDir: File): AutoCloseable {
 
     inline fun <reified T: RowContent> executeQuery(sql: String): SQLiteResult<T> {
         return executeQuery(sql, T::class.java)
+    }
+
+    fun getRowId(sql: String): Int {
+        val resultSet = try {
+            statement.executeQuery(sql) as SQLDroidResultSet
+        } catch (e: SQLException) {
+            Log.e("Error occurred while running query: $sql", e)
+            throw e
+        }
+
+        val rowId = if (resultSet.next()) resultSet.getInt("_id") else -1
+        resultSet.close()
+
+        return rowId
+    }
+
+    fun getInts(table: String, column: String): List<Int> {
+        val sql = "SELECT $column FROM $table"
+        val resultSet = try {
+            statement.executeQuery(sql)
+        } catch (e: SQLException) {
+            Log.e("Error occurred while running query: $sql", e)
+            throw e
+        }
+
+        val result = ArrayList<Int>()
+        while (resultSet.next()) {
+            result.add(resultSet.getInt(column))
+        }
+        resultSet.close()
+
+        return result
     }
 
     fun executeUpdate(sql: String) = statement.executeUpdate(sql)

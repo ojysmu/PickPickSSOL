@@ -6,7 +6,6 @@ import androidx.recyclerview.widget.RecyclerView
 import mbtinder.android.R
 import mbtinder.lib.component.card_stack.CardStackContent
 import mbtinder.lib.component.card_stack.DailyQuestionContent
-import java.util.*
 
 class CardStackAdapter(private val fragment: HomeFragment): RecyclerView.Adapter<BaseCardStackViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseCardStackViewHolder {
@@ -23,21 +22,17 @@ class CardStackAdapter(private val fragment: HomeFragment): RecyclerView.Adapter
 
     override fun onBindViewHolder(holder: BaseCardStackViewHolder, position: Int) {
         when (holder) {
-            is CardStackViewHolder -> holder.bind(HomeFragment.cardStackContents[position] as CardStackContent)
-            is DailyQuestionViewHolder -> holder.bind(HomeFragment.cardStackContents[position] as DailyQuestionContent)
+            is CardStackViewHolder -> holder.bind(HomeFragment.visibleContents[position] as CardStackContent)
+            is DailyQuestionViewHolder -> holder.bind(HomeFragment.visibleContents[position] as DailyQuestionContent)
             is TutorialViewHolder -> {}
             is EmptyViewHolder -> holder.bind()
         }
     }
 
-    override fun getItemCount() = HomeFragment.cardStackContents.size
+    override fun getItemCount() = HomeFragment.visibleContents.size
 
     override fun getItemViewType(position: Int): Int {
-        if (position == itemCount - 1) {
-            return TYPE_EMPTY_CONTENT
-        }
-
-        return when (HomeFragment.cardStackContents[position]) {
+        return when (HomeFragment.visibleContents[position]) {
             is CardStackContent -> TYPE_CARD_STACK_CONTENT
             is DailyQuestionContent -> TYPE_DAILY_QUESTION_CONTENT
             is TutorialContent -> TYPE_TUTORIAL
@@ -47,23 +42,10 @@ class CardStackAdapter(private val fragment: HomeFragment): RecyclerView.Adapter
     }
 
     override fun getItemId(position: Int): Long {
-        val uuid = HomeFragment.cardStackContents[position].getUUID()
+        val uuid = HomeFragment.visibleContents[position].getUUID()
         return uuid.leastSignificantBits + uuid.mostSignificantBits
     }
 
-    fun getUserIds() = HomeFragment.cardStackContents.map { it.getUUID() }
-
-    fun getLeftContents(currentPosition: Int) = itemCount - currentPosition
-
-    fun getUserInfo(position: Int): Pair<UUID, String> {
-        val cardStackContent = HomeFragment.cardStackContents[position] as CardStackContent
-        return Pair(cardStackContent.userId, cardStackContent.userName)
-    }
-
-    fun removeAt(position: Int) {
-        HomeFragment.cardStackContents.removeAt(position)
-        notifyItemRemoved(position)
-    }
     companion object {
         const val TYPE_CARD_STACK_CONTENT = R.layout.card_home_stack
         const val TYPE_DAILY_QUESTION_CONTENT = R.layout.card_home_daily_question

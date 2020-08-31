@@ -99,7 +99,7 @@ data class NotificationContent(
                 .setLargeIcon(BitmapFactory.decodeResource(context.resources, R.mipmap.ic_launcher))
                 .setContentTitle(title)
                 .setContentText(content)
-                .setPriority(PRIORITY_DEFAULT)
+                .setPriority(PRIORITY_HIGH)
                 .setContentIntent(contentIntent)
                 .setAutoCancel(true)
 
@@ -108,7 +108,7 @@ data class NotificationContent(
             context.getNotificationManager().createNotificationChannel(channel)
 
             val notification = builder.build()
-            notification.flags = FLAG_ACTIVITY_SINGLE_TOP or FLAG_ONGOING_EVENT or FLAG_NO_CLEAR or FLAG_AUTO_CANCEL
+            notification.flags = FLAG_ACTIVITY_SINGLE_TOP or FLAG_ONGOING_EVENT or FLAG_AUTO_CANCEL
 
             return notification
         }

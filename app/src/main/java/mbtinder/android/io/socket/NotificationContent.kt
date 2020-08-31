@@ -4,10 +4,9 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
-import android.content.Intent.FLAG_ACTIVITY_SINGLE_TOP
 import android.graphics.BitmapFactory
 import android.os.Bundle
-import androidx.core.app.NotificationCompat.*
+import androidx.core.app.NotificationCompat
 import androidx.navigation.NavDeepLinkBuilder
 import mbtinder.android.R
 import mbtinder.android.component.StaticComponent
@@ -76,7 +75,6 @@ val notifications = idListOf(
     },
     NotificationContent(Notification.BLOCKED) { _, _, _, extra -> NotificationProcess.onBlockReceived(extra!!) },
     NotificationContent(Notification.CHAT_REMOVED) { _, _, _, extra -> NotificationProcess.onChatRemoveReceived(extra!!) }
-//    NotificationContent(Notification.SOCKET_CLOSED) { _, _, _, _ -> NotificationProcess.onSocketClosed() }
 )
 
 data class NotificationContent(
@@ -95,22 +93,20 @@ data class NotificationContent(
             content: CharSequence,
             contentIntent: PendingIntent
         ): android.app.Notification {
-            val builder = Builder(context, CHANNEL_ID)
+            val builder = NotificationCompat.Builder(context, CHANNEL_ID)
                 .setLargeIcon(BitmapFactory.decodeResource(context.resources, R.mipmap.ic_launcher))
                 .setContentTitle(title)
                 .setContentText(content)
-                .setPriority(PRIORITY_HIGH)
+                .setPriority(NotificationCompat.PRIORITY_MAX)
                 .setContentIntent(contentIntent)
                 .setAutoCancel(true)
-
+                .setDefaults(NotificationCompat.DEFAULT_ALL)
             builder.setSmallIcon(R.mipmap.ic_launcher)
-            val channel = NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT)
+
+            val channel = NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_MAX)
             context.getNotificationManager().createNotificationChannel(channel)
 
-            val notification = builder.build()
-            notification.flags = FLAG_ACTIVITY_SINGLE_TOP or FLAG_ONGOING_EVENT or FLAG_AUTO_CANCEL
-
-            return notification
+            return builder.build()
         }
     }
 }

@@ -49,6 +49,7 @@ class CardStackViewHolder(itemView: View): BaseCardStackViewHolder(itemView) {
         if (content.description.isNotBlank()) {
             cardStackItemContents.add(content.description)
         }
+        cardStackItemContents.add(content.mbti.name)
         val name = content.userName
         val age = content.jsonObject.getInt("age")
         val distance = content.coordinator.getDistance(
